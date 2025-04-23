@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} - Study Spot Directory</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <!-- Navigation menu (GET /<URL> via express) -->
+            <a href="/">Home</a>
+                <a href="/study-spots">Study Spots</a>
+                <a href="/forums">Forums</a>
+                {{!-- <a href="/private-messages">Private Messages</a> --}}
+            {{#if user}}
+                <a href="/users/profile">Profile</a>
+                <a href="/auth/logout">Logout</a>
+            {{else}}
+                <a href="/login">Login</a>
+            {{/if}}
+        </nav>
+    </header>
+    
+    <main>
+        {{{body}}}
+        {{!-- renders the partial html page of the respective template  
+        e.g: res.render('studySpots/list', { title: 'Study Spots' }) assigns views/studySpots/list.handlebars to body 
+
+        
+        --}}
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 Stevens Study Spot Directory</p>
+    </footer>
+    
+    <!-- Common JS -->
+    <script src="/js/main.js"></script>
+    {{#if pageScript}} 
+        <script src="/js/{{pageScript}}.js"></script>
+    {{/if}}
+    <!-- the above will check whether express passed a client-sided JS file when rendering this page
+    e.g: if the page is /study-spots, it will check if there is a file called study-spots.js in the js folder and include it:
+        res.render('study-spots', {
+        title: 'Study Spots',
+        pageScript: 'specificPageScript' //this will load public/js/specificPageScript.js
+    });
+    -->
+</body>
+</html>

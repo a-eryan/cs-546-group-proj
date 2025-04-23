@@ -1,0 +1,1 @@
+//common functionality of error-handling throughout the app
