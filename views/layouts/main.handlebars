@@ -3,23 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{title}} - Study Spot Directory</title>
+    <title>{{title}} - Duck Study Hub</title>
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Saira+Condensed:wght@100;200;300;400;500;600;700;800;900&family=Saira:ital,wght@0,100..900;1,100..900&display=swap');
+    </style>
 </head>
 <body>
-    <header>
-        <nav>
-            <!-- Navigation menu (GET /<URL> via express) -->
-            <a href="/">Home</a>
-                <a href="/study-spots">Study Spots</a>
-                <a href="/forums">Forums</a>
-                {{!-- <a href="/private-messages">Private Messages</a> --}}
-            {{#if user}}
-                <a href="/users/profile">Profile</a>
-                <a href="/auth/logout">Logout</a>
-            {{else}}
-                <a href="/login">Login</a>
-            {{/if}}
+    <header>              
+        <!-- Navigation links -->
+        <nav class="navbar">
+            <ul>
+                <li id = "logo"><a href="/"> <img src = "/public/js/images/DuckStudyHubLogo.svg" alt="Duck Study Hub Logo" title = "Home"></a> </li>
+                <li class="nav-item"> <a href="/study-spots" class="nav-link">Study Spots</a></li>
+                <li class="nav-item"> <a href="/forums" class="nav-link">Duck Study Hub Forums</a></li>
+                {{#if isSignedIn}}
+                <li class = "auth"> <a href="/users/profile" class="user-icon"> <img src="/images/profile-icon.png" alt="Profile" class="profile-circle"> </a></li>
+                {{else}}
+                <li class = "auth"> <a href="/login" class="login-button">Sign In / Register With A Click!</a> </li>
+                {{/if}}
+            </ul>
         </nav>
     </header>
     
@@ -33,7 +36,9 @@
     </main>
     
     <footer>
-        <p>&copy; 2025 Stevens Study Spot Directory</p>
+        <p>CS 546 Group 27 Duck Study Hub Group Project by Rishabh Dhadda, Anthony Eryan, Payton Bates, and Andrew Anantharajah. This web site is not endorsed by, directly affiliated with, maintained, authorized, or sponsored by
+           Stevens Institute of Technology nor its subsidiaries or its affiliates.
+        </p>
     </footer>
     
     <!-- Common JS -->
