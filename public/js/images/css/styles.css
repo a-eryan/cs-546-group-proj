@@ -63,7 +63,7 @@ footer {
 }
 
 @media (max-width: 982px) { /*mobile responsiveness*/
-    nav ul {
+    .navbar ul {
         width: 100%;
         height: auto;
         margin: 10px 0; /* Adjust margins for better spacing */
@@ -71,7 +71,6 @@ footer {
         flex-direction: column;
     }
     .navbar .auth {
-        margin-right: auto; /*no longer needed to push to the right since it's now a hamburger menu*/
-        /* Remove float: right - it doesn't work with flexbox */
+        margin-right: auto; /*no longer needed to push to the right since it's now a hamburger menu. float right won't work with flexboxes*/
     }
 }
