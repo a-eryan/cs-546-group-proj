@@ -10,7 +10,7 @@ export const register = async (
         throw "Please provide username and password"
     email = checkEmail(email)
     const userCollection = await users()
-    const duplicateUser = await userCollection.findOne({email: email})
+    const duplicateUser = await userCollection.findOne({email: email.toLowerCase()})
 
     if (duplicateUser)
         throw `User with email of: ${email} already exists, please log in instead.`
@@ -33,4 +33,34 @@ export const register = async (
         throw `Could not add user with email of ${email}`
 
     return {registrationCompleted: true}
+}
+
+export const login = async (
+    email,
+    password
+) => {
+    if (!email || !password)
+        throw "Please provide username and password"
+    email = checkEmail(email)
+    password = checkPassword(password)
+
+    const userCollection = await users()
+    const user = await userCollection.findOne({email: email.toLowerCase()})
+
+    if (!user)
+        throw "Either the email or password is invalid"
+    const matchedPassword = await bcrypt.compare(password, user.password)
+    if (matchedPassword){
+        const userObj = {
+            email: user.email,
+            isAdmin: user.isAdmin,
+            achievements: user.achievements,
+            uploadedSpots: user.uploadedSpots,
+            likedSpots: user.likedSpots,
+            messages: user.messages
+        }
+        return userObj
+    } else {
+        throw "Either the email or password is invalid"
+    }
 }
