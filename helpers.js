@@ -35,3 +35,38 @@ export const checkPassword = (password) => {
         throw `Password needs to be at least 8 characters long`
     return password
 }
+export const checkTitle = (title) => {
+    title = checkString(title)
+    if (title.length < 6)
+        throw `${title} needs to be atleast 6 characters long`
+    return title
+}
+export const checkDescription = (description) => {
+    description = checkString(description)
+    if (description.length < 10)
+        throw `${description} needs to be atleast 10 characters long`
+    return description
+}
+export const checkLocation = (location) => {
+    location = checkString(location)
+    if (location.length < 8)
+        throw `${location} needs to be atleast 8 characters long`
+    return location
+}
+
+export function getCreatedDate() {
+    const now = new Date()
+    const day = String(now.getDate()).padStart(2, '0')
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const year = now.getFullYear()
+
+    let hours = now.getHours()
+    const minutes = String(now.getMinutes()).padStart(2, '0')
+    const ampm = hours >= 12 ? 'PM' : 'AM'
+
+    hours = hours % 12
+    hours = hours ? hours : 12
+    const formattedHour = String(hours).padStart(2, '0')
+
+    return `${month}/${day}/${year} ${formattedHour}:${minutes}${ampm}`
+}
