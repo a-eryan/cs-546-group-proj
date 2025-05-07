@@ -27,7 +27,7 @@ app.set('view engine', 'handlebars')
 // app.use('/auth', require('./routes/auth'));
 
 app.get('/', (req, res) => {
-    res.redirect('/register');
+    res.redirect('/login');
 });
 
 configRoutes(app)
