@@ -80,3 +80,11 @@ router
             return res.status(400).render('login', { error: e })
         }
     })
+
+router.route('/home').get(async(req, res) => {
+    try{
+        return res.render('home')
+    } catch (e) {
+        console.log(e)
+    }
+})
