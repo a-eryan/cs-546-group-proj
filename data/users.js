@@ -1,5 +1,5 @@
-import { users } from "../config/mongoCollections"
-import { checkEmail, checkPassword } from "../helpers"
+import { users } from "../config/mongoCollections.js"
+import { checkEmail, checkPassword } from "../helpers.js"
 import bcrypt from "bcrypt"
 
 export const register = async (

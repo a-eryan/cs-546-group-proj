@@ -1,8 +1,8 @@
 //allow only stevens.edu domains to log in/register
 //docs: https://developers.google.com/identity
 import { Router } from "express";
-import { checkEmail, checkPassword } from "../helpers";
-import { login, register } from "../data/users";
+import { checkEmail, checkPassword } from "../helpers.js";
+import { login, register } from "../data/users.js";
 const router = Router()
 
 router
@@ -56,7 +56,7 @@ router
         try {
             let email = req.body.email
             let password = req.body.password
-            if (!userId || !password){
+            if (!email || !password){
                 return res.status(400).render('login', {
                     error: 'Email or password not provided'
                 })
@@ -77,6 +77,7 @@ router
 
             return res.redirect('/home')
         } catch (e) {
+            console.log(e)
             return res.status(400).render('login', { error: e })
         }
     })
@@ -88,3 +89,5 @@ router.route('/home').get(async(req, res) => {
         console.log(e)
     }
 })
+
+export default router
