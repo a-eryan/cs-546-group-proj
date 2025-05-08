@@ -1,14 +1,23 @@
 import { studySpots } from "../config/mongoCollections.js"
-import { checkDescription, checkLocation, checkTitle, getCreatedDate } from "../helpers"
+import { checkDescription, checkLocation, checkNoiseLevel, checkResources, checkTitle, getCreatedDate } from "../helpers"
 
 export const uploadStudySpot = async (
     title,
     description,
-    location
+    location,
+    resources,
+    noiseLevel
+
 ) => {
-    if (!title, !description, !location, !createdAt)
+    if (!title || !description || !location || !resources || !noiseLevel) {
         throw "All fields need to have valid values"
+    }
+
     title = checkTitle(title)
+    description = checkDescription(description)
+    location = checkLocation(location)
+    resources = checkResources(resources)
+    noiseLevel = checkNoiseLevel(noiseLevel)
 
     const studyCollection = await studySpots()
     const duplicateSpot = await studyCollection.findOne({title: title.toLowerCase()})
@@ -16,18 +25,18 @@ export const uploadStudySpot = async (
     if (duplicateSpot)
         throw `Study spot with title: ${title} already exists. Please change title or choose new study spot.`
 
-    description = checkDescription(description)
-    location = checkLocation(location)
+    
 
     let newSpot = {
         title: title,
         description: description,
-        poster: null,
+        poster: null, // this should turn into poster id?
         location: location,
-        resourcesNearby: [],
-        noiseLevel: null,
+        resourcesNearby: resources,
+        noiseLevel: noiseLevel,
         averageRating: null,
         reviews: [],
+        genAiSummary: null,
         createdDate: getCreatedDate()
     }
 
