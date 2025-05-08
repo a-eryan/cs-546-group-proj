@@ -95,7 +95,7 @@ router.route('/profile').get(async(req, res) => {
     }
 })
 
-router.route('/logout').post(async (req, res) => {
+router.route('/logout').get(async (req, res) => {
     //code here for GET
     try {
       req.session.destroy()
