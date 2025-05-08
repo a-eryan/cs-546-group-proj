@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}} - Duck Study Hub</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/public/css/styles.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Saira+Condensed:wght@100;200;300;400;500;600;700;800;900&family=Saira:ital,wght@0,100..900;1,100..900&display=swap');
     </style>
@@ -14,13 +14,16 @@
         <!-- Navigation links -->
         <nav class="navbar">
             <ul>
-                <li id = "logo"><a href="/"> <img src = "/public/js/images/DuckStudyHubLogo.svg" alt="Duck Study Hub Logo" title = "Home"></a> </li>
-                <li class="nav-item"> <a href="/study-spots" class="nav-link">Study Spots</a></li>
-                <li class="nav-item"> <a href="/forums" class="nav-link">Duck Study Hub Forums</a></li>
                 {{#if isSignedIn}}
-                <li class = "auth"> <a href="/users/profile" class="user-icon"> <img src="/images/profile-icon.png" alt="Profile" class="profile-circle"> </a></li>
+                <li id = "logo"><a href="/profile"> <img src = "/public/js/images/DuckStudyHubLogo.svg" alt="Duck Study Hub Logo" title = "Home"></a> </li>
+                <li class="nav-item"> <a href="/studyspots" class="nav-link">Study Spots</a></li>
+                <li class="nav-item"> <a href="/forums" class="nav-link">Duck Study Hub Forums</a></li>
+                <li class="auth"><a href="/profile">{{user.email}}</a></li>
                 {{else}}
-                <li class = "auth"> <a href="/login" class="login-button">Sign In / Register With A Click!</a> </li>
+                <li id = "logo"><a href="/"> <img src = "/public/js/images/DuckStudyHubLogo.svg" alt="Duck Study Hub Logo" title = "Home"></a> </li>
+                <li class="nav-item"> <a href="/" class="nav-link">Study Spots</a></li>
+                <li class="nav-item"> <a href="/" class="nav-link">Duck Study Hub Forums</a></li>
+                <li class = "auth"> <a href="/" class="login-button">Sign In / Register With A Click!</a> </li>
                 {{/if}}
             </ul>
         </nav>

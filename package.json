@@ -1,9 +1,10 @@
 {
-  "name": "cs-546-group-proj",
+  "name": "cs-546-group27-proj",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
   "scripts": {
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -14,7 +15,10 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "express": "^5.1.0",
-    "mongodb": "^6.16.0"
+    "express": "^4.21.2",
+    "mongodb": "^6.16.0",
+    "express-handlebars": "^8.0.1",
+    "bcrypt": "^5.1.1",
+    "express-session": "^1.18.1"
   }
 }

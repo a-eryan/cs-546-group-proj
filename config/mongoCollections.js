@@ -1,5 +1,4 @@
-
-const dbConnection = require('./mongoConnection');
+import {dbConnection} from './mongoConnections.js';
 
 const getCollectionFn = (collection) => {
   let _col = undefined;
@@ -13,12 +12,11 @@ const getCollectionFn = (collection) => {
   };
 }
 
-module.exports = {
-    users: getCollectionFn('users'),
-    studySpots: getCollectionFn('studySpots'),
-    reviews: getCollectionFn('reviews'),
-    comments: getCollectionFn('comments'),
-    forumPosts: getCollectionFn('forumPosts'),
-    reports: getCollectionFn('reports')
-    // privateMessages: getCollectionFn('privateMessages'), EXTRA FEATURE
-}
+
+export const users = getCollectionFn('users')
+export const studySpots = getCollectionFn('studySpots')
+export const reviews = getCollectionFn('reviews')
+export const comments = getCollectionFn('comments')
+export const forumPosts = getCollectionFn('forumPosts')
+export const reports = getCollectionFn('reports')
+// privateMessages: getCollectionFn('privateMessages'), EXTRA FEATURE
