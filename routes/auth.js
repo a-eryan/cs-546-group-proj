@@ -75,19 +75,34 @@ router
                 messages: user.messages
             }
 
-            return res.redirect('/home')
+            return res.redirect('/profile')
         } catch (e) {
             console.log(e)
             return res.status(400).render('login', { error: e })
         }
     })
 
-router.route('/home').get(async(req, res) => {
+router.route('/profile').get(async(req, res) => {
     try{
-        return res.render('home')
+        const user = req.session.user || null
+        const isSignedIn = !!user
+        return res.render('users/profile', {
+            isSignedIn: isSignedIn,
+            user: user
+        })
     } catch (e) {
         console.log(e)
     }
 })
+
+router.route('/logout').post(async (req, res) => {
+    //code here for GET
+    try {
+      req.session.destroy()
+      return res.redirect('/login')
+    } catch (e) {
+      return res.status(500).render('error', { error: 'Internal Server Error' })
+    }
+  });
 
 export default router
