@@ -70,3 +70,19 @@ export function getCreatedDate() {
 
     return `${month}/${day}/${year} ${formattedHour}:${minutes}${ampm}`
 }
+// created for study spot upload
+export const checkNoiseLevel = (val) => {
+    const num = Number(val);
+    if (!Number.isFinite(num) || num < 1 || num > 3) {
+        throw `${val} must be a number between 1 and 3`;
+    }
+    return num;
+}
+
+export const checkResources = (arr) => {
+    if (!Array.isArray(arr) || arr.length === 0) {
+        throw 'Resources must be a non-empty array';
+    }
+    return arr;
+}
+
