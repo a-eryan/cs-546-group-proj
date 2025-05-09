@@ -1,0 +1,14 @@
+<h1>All Study Spots</h1>
+
+{{#each spots}}
+  <div class="card">
+    <h2>{{this.title}}</h2>
+    <p>{{this.description}}</p>
+    <p><strong>Location:</strong> {{this.location}}</p>
+    <p><strong>Noise Level:</strong> {{this.noiseLevel}}</p>
+  </div>
+{{/each}}
+
+{{#if error}}
+  <p class="error-message">Error: {{error}}</p>
+{{/if}}
