@@ -88,3 +88,41 @@ export const checkResources = (arr) => {
   return arr; // not sure if we are going to turn this into check boxes yet, for now still string input.
 }
 
+export const checkReviewProperties = (spotId, userId, title, content, rating) => {
+	// Ensure that all string properties are provided
+	try {
+		spotId = checkString(spotId);
+		userId = checkString(userId);
+		title = checkString(title);
+		content = checkString(content);
+	} catch {
+		throw "A review must have an associated study spot, reviewer, title, and content";
+	}
+
+	// Ensure that the rating is a number between 1 and 5
+	if (!rating || typeof rating !== 'number' || !Number.isInteger(rating) || rating < 1 || rating > 5)
+		throw "The review rating must be an integer between 1 and 5";
+
+	return { spotId, userId, title, content, rating };
+}
+
+export const calculateAverageRating = (reviews) => {
+	// Ensure the ratings array consists of only numbers
+	if (!reviews || !Array.isArray(reviews))
+		throw "An array of reviews must be provided";
+
+	// The rating is 0 if there are no ratings
+	if (reviews.length === 0)
+		return 0;
+
+	// Ensure that all reviews have a rating property
+	reviews.forEach(review => {
+		if (typeof review.rating !== 'number')
+			throw "Not all reviews have a valid rating";
+	});
+
+	// Calculate the average rating and round it to one decimal place
+	const sum = reviews.reduce((total, review) => total + review.rating, 0);
+	const average = sum / reviews.length;
+	return Math.round(average * 10) / 10;
+};
