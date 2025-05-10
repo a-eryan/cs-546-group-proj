@@ -1,4 +1,4 @@
-import { studySpots, users, reviews } from '../config/mongoCollections.js';
+import { studySpots, users } from '../config/mongoCollections.js';
 import { checkString, checkReviewProperties, calculateAverageRating, getCreatedDate } from '../helpers.js';
 import { ObjectId } from 'mongodb';
 
@@ -14,8 +14,9 @@ export const createReview = async (spotId, userId, title, content, rating) => {
 		throw `Invalid reviewer ID ${userId}`;
 
 	// Find the study spot and reviewer by ID
+	const spotObjectId = new ObjectId(spotId);
 	const studySpotCollection = await studySpots();
-	const studySpot = await studySpotCollection.findOne({ _id: new ObjectId(spotId) });
+	const studySpot = await studySpotCollection.findOne({ _id: spotObjectId });
 
 	if (!studySpot)
 		throw `Study spot ${spotId} not found`;
@@ -27,29 +28,22 @@ export const createReview = async (spotId, userId, title, content, rating) => {
 		throw `Reviewer ${userId} not found`;
 
 	// Check if the reviewer has already reviewed this study spot
-	const reviewsCollection = await reviews();
-	// const existingReview = await reviewsCollection.findOne({ spotId: spotId, userId: userId });
-
-	// if (existingReview)
-	// 	throw `User ${userId} has already reviewed study spot ${spotId}`;
-
-	const reviewsArr = await reviewsCollection.find({ spotId: spotId }).toArray();
+	// if (studySpot.reviews && studySpot.reviews.length > 0) {
+	// 	const existingReview = studySpot.reviews.find(review => review.userId === userId);
+	// 	if (existingReview)
+	// 		throw `User ${userId} has already reviewed study spot ${spotId}`;
+	// }
 
 	// Create the review object
 	const date = getCreatedDate();
-	const reviewObj = { spotId, userId, title, content, rating, createdAt: date };
+	const reviewObj = { _id: new ObjectId(), spotId, userId, title, content, rating, createdAt: date };
 
-	const insertInfo = await reviewsCollection.insertOne(reviewObj);
-	if (!insertInfo.acknowledged || !insertInfo.insertedId)
-		throw `Could not add review to study spot with ID ${spotId}`;
-
-	// Update the study spot with the new review and overall rating
-	const averageRating = calculateAverageRating([...reviewsArr, reviewObj]);
-
+	// Add the review to the study spot and recalculate the average rating
+	const averageRating = calculateAverageRating([...studySpot.reviews, reviewObj]);
 	const updateInfo = await studySpotCollection.findOneAndUpdate(
-		{ _id: new ObjectId(spotId) },
+		{ _id: spotObjectId },
 		{
-			$push: { reviews: insertInfo.insertedId },
+			$push: { reviews: reviewObj },
 			$set: { averageRating: averageRating }
 		},
 		{ returnDocument: 'after' }
@@ -58,11 +52,11 @@ export const createReview = async (spotId, userId, title, content, rating) => {
 	if (!updateInfo)
 		throw `Could not add review to study spot with ID ${spotId}`;
 
-	return await getReview(insertInfo.insertedId.toString());
+	return reviewObj;
 };
 
 export const getReview = async (reviewId) => {
-	// Validate the review ID
+	// Validate the spot and review IDs
 	try {
 		reviewId = checkString(reviewId);
 	} catch {
@@ -73,12 +67,13 @@ export const getReview = async (reviewId) => {
 		throw `Invalid review ID ${reviewId}`;
 
 	// Find the review by ID
-	const reviewsCollection = await reviews();
-	const review = await reviewsCollection.findOne({ _id: new ObjectId(reviewId) });
+	const studySpotCollection = await studySpots();
+	const studySpot = await studySpotCollection.findOne({ 'reviews._id': new ObjectId(reviewId) });
 
-	if (!review)
+	if (!studySpot)
 		throw `Review ${reviewId} not found`;
-	
+
+	const review = studySpot.reviews.find(review => review._id.toString() === reviewId);
 	review._id = review._id.toString();
 	return review;
 }
@@ -94,19 +89,15 @@ export const getAllReviews = async (spotId) => {
 	if (!ObjectId.isValid(spotId))
 		throw `Invalid study spot ID ${spotId}`;
 
-	// Ensure the study spot exists
-	// Note: Spot ID is stored as an object ID in studySpots, but as a string in reviews
+	// Find all reviews for the study spot
+	// No need to error when a study spot has no reviews
 	const studySpotCollection = await studySpots();
 	const studySpot = await studySpotCollection.findOne({ _id: new ObjectId(spotId) });
+
 	if (!studySpot)
 		throw `Study spot ${spotId} not found`;
 
-	// Find all reviews for the study spot
-	// No need to error when a study spot has no reviews
-	const reviewsCollection = await reviews();
-	const reviewsObjs = await reviewsCollection.find({ spotId: spotId }).toArray();
-
-	return reviewsObjs.map(review => {
+	return studySpot.reviews.map(review => {
 		review._id = review._id.toString();
 		return review;
 	});
