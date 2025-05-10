@@ -102,3 +102,43 @@ export const getAllReviews = async (spotId) => {
 		return review;
 	});
 };
+
+export const removeReview = async (reviewId) => {
+	// Validate the review ID
+	try {
+		reviewId = checkString(reviewId);
+	} catch {
+		throw "A non-empty string reviewId must be provided";
+	}
+
+	if (!ObjectId.isValid(reviewId))
+		throw `Invalid review ID ${reviewId}`;
+
+	// Find the review by ID, or throw if not found
+	const reviewObjectId = new ObjectId(reviewId);
+	const studySpotCollection = await studySpots();
+	const studySpot = await studySpotCollection.findOne({ 'reviews._id': reviewObjectId });
+
+	if (!studySpot)
+		throw `Review ${reviewId} not found`;
+
+	// Recalculate the overall rating
+	const reviews = studySpot.reviews.filter(review => review._id.toString() !== reviewId);
+	const averageRating = reviews.length > 0 ? calculateAverageRating(reviews) : null;
+
+	// Remove the review
+	const updateInfo = await studySpotCollection.findOneAndUpdate(
+		{ 'reviews._id': reviewObjectId },
+		{
+			$pull: { reviews: { _id: reviewObjectId } },
+			$set: { averageRating: averageRating }
+		},
+		{ returnDocument: 'after' }
+	);
+
+	if (!updateInfo)
+		throw `Could not remove review with ID ${reviewId}`;
+
+	updateInfo._id = updateInfo._id.toString();
+	return updateInfo;
+};
