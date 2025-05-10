@@ -8,7 +8,18 @@ html, body {
     margin: 0;
     padding: 0;
     font-family: "Saira", "Arial";
-  }
+    min-height: 100vh; /* Ensure minimum height is full viewport */
+}
+
+body {
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    min-height: 100vh; /* Ensure body takes at least full viewport height */
+}
+
+main {
+    flex: 1; /* This makes the main content area expand to fill available space */
+}
 
 .navbar {
     background-color: var(--stevens-red);
@@ -52,14 +63,12 @@ html, body {
 
 footer {
     display: flex;
-    justify-content: space-between; /*https://imgur.com/TRlNwkz*/
-    align-items: center; /*Centers the logo*/
-    background-color: #a7382d; /* Footer background color */
+    justify-content: space-between;
+    align-items: center;
     color: white;
     padding: 10px 20px; 
-    flex-wrap: wrap; /* Allows wrapping if the screen is too small */
+    flex-wrap: wrap;
     background-color: var(--stevens-gray);
-    color: #FFF;
 }
 
 .auth-container {

@@ -20,11 +20,7 @@ app.use(
 app.engine('handlebars', exphbs.engine({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars')
 
-// app.use('/', require('./routes/index'));
-// app.use('/study-spots', require('./routes/studySpots'));
-// app.use('/forums', require('./routes/forumPosts'));
-// app.use('/users', require('./routes/users'));
-// app.use('/auth', require('./routes/auth'));
+
 
 app.get('/', (req, res) => {
     res.redirect('/login');

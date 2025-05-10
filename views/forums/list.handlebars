@@ -1,0 +1,20 @@
+<h1>Duck Study Hub Forums</h1>
+<div id = "forumView">
+    <ul>
+        {{#each forums}}
+            <li>
+                <a href="/forums/{{this._id}}">{{this.title}}</a>
+                <p>{{this.content}}</p>
+            </li>
+        {{else}}
+            <p>There seems to be no forums available at the moment. Why not lead the flock?</p>
+        {{/each}}
+    </ul>
+    {{#if isSignedIn}}
+        <div id = "createForum">
+            <a href="/forums/create">
+                <button>Create a New Forum Post</button>
+            </a>
+        </div>
+    {{/if}}     
+</div>    
