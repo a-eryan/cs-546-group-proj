@@ -82,3 +82,32 @@ export const getReview = async (reviewId) => {
 	review._id = review._id.toString();
 	return review;
 }
+
+export const getAllReviews = async (spotId) => {
+	// Validate the study spot ID
+	try {
+		spotId = checkString(spotId);
+	} catch {
+		throw "The study spot ID must be a non-empty string";
+	}
+
+	if (!ObjectId.isValid(spotId))
+		throw `Invalid study spot ID ${spotId}`;
+
+	// Ensure the study spot exists
+	// Note: Spot ID is stored as an object ID in studySpots, but as a string in reviews
+	const studySpotCollection = await studySpots();
+	const studySpot = await studySpotCollection.findOne({ _id: new ObjectId(spotId) });
+	if (!studySpot)
+		throw `Study spot ${spotId} not found`;
+
+	// Find all reviews for the study spot
+	// No need to error when a study spot has no reviews
+	const reviewsCollection = await reviews();
+	const reviewsObjs = await reviewsCollection.find({ spotId: spotId }).toArray();
+
+	return reviewsObjs.map(review => {
+		review._id = review._id.toString();
+		return review;
+	});
+};
