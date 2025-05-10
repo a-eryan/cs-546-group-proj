@@ -1,5 +1,5 @@
 import { studySpots } from "../config/mongoCollections.js"
-import { checkDescription, checkLocation, checkNoiseLevel, checkResources, checkTitle, getCreatedDate } from "../helpers"
+import { checkDescription, checkLocation, checkNoiseLevel, checkResources, checkTitle, getCreatedDate } from "../helpers.js"
 
 export const uploadStudySpot = async (
     title,
