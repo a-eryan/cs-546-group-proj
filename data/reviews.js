@@ -1,5 +1,5 @@
 import { studySpots, users } from '../config/mongoCollections.js';
-import { checkString, checkReviewProperties, calculateAverageRating, getCreatedDate } from '../helpers.js';
+import { checkID, checkReviewProperties, calculateAverageRating, getCreatedDate } from '../helpers.js';
 import { ObjectId } from 'mongodb';
 
 export const createReview = async (spotId, userId, title, content, rating) => {
@@ -20,12 +20,12 @@ export const createReview = async (spotId, userId, title, content, rating) => {
 	if (!reviewer)
 		throw `Reviewer ${userId} not found`;
 
-	// Check if the reviewer has already reviewed this study spot
-	// if (studySpot.reviews && studySpot.reviews.length > 0) {
-	// 	const existingReview = studySpot.reviews.find(review => review.userId === userId);
-	// 	if (existingReview)
-	// 		throw `User ${userId} has already reviewed study spot ${spotId}`;
-	// }
+	//Check if the reviewer has already reviewed this study spot
+	if (studySpot.reviews && studySpot.reviews.length > 0) {
+		const existingReview = studySpot.reviews.find(review => review.userId === userId);
+		if (existingReview)
+			throw `User ${userId} has already reviewed study spot ${spotId}`;
+	}
 
 	// Create the review object
 	const date = getCreatedDate();
@@ -73,7 +73,7 @@ export const getAllReviews = async (spotId) => {
 	const studySpotCollection = await studySpots();
 	const studySpot = await studySpotCollection.findOne({ _id: new ObjectId(spotId) });
 
-	if (!studySpot)
+	if (!studySpot || !studySpot.reviews) // Check for the reviews property to ensure we return a study spot
 		throw `Study spot ${spotId} not found`;
 
 	return studySpot.reviews.map(review => {

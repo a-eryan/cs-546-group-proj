@@ -27,7 +27,7 @@ router.get('/:reviewId', async (req, res) => {
 		const review = await reviews.getReview(reviewId);
 		return res.status(200).json(review);
 	} catch (e) {
-		return res.status(500).json({ error: e.message })
+		return res.status(400).json({ error: e })
 	}
 });
 
@@ -47,7 +47,7 @@ router.get('/spot/:spotId', async (req, res) => {
 		const reviewsList = await reviews.getAllReviews(req.params.spotId);
 		return res.status(200).json(reviewsList);
 	} catch (e) {
-		return res.status(500).json({ error: e.message })
+		return res.status(400).json({ error: e })
 	}
 });
 
@@ -63,7 +63,7 @@ router.post('/:spotId', isAuthenticated, async (req, res) => {
 	try {
 		checkReviewProperties(spotId, userId, title, content, ratingNum);
 	} catch (e) {
-		return res.status(400).json({ error: e.message });
+		return res.status(400).json({ error: e });
 	}
 
 	// Create the new review
@@ -71,7 +71,7 @@ router.post('/:spotId', isAuthenticated, async (req, res) => {
 		const review = await reviews.createReview(spotId, userId, title, content, ratingNum);
 		return res.status(201).json(review);
 	} catch (e) {
-		return res.status(500).json({ error: e.message });
+		return res.status(500).json({ error: e });
 	}
 });
 
@@ -94,7 +94,7 @@ router.delete('/:reviewId', isAuthenticated, async (req, res) => {
 		if (review.userId !== userId)
 			return res.status(403).json({ error: "You are not authorized to delete this review" });
 	} catch (e) {
-		return res.status(400).json({ error: e.message });
+		return res.status(400).json({ error: e });
 	}
 
 	// Delete the review
@@ -102,7 +102,7 @@ router.delete('/:reviewId', isAuthenticated, async (req, res) => {
 		const result = await reviews.removeReview(reviewId);
 		return res.status(200).json(result);
 	} catch (e) {
-		return res.status(500).json({ error: e.message });
+		return res.status(500).json({ error: e });
 	}
 });
 
