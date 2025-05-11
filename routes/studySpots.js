@@ -63,7 +63,8 @@ router
           noiseLevel
         );
 
-        if (uploaded.uploadCompleted){
+        if (uploaded.uploadCompleted && uploaded.insertedId){
+          req.session.user.uploadedSpots.push(uploaded.insertedId);
           return res.redirect('/studyspots');
         } else {
           return res.status(400).render('studySpots/create', {

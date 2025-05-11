@@ -77,10 +77,11 @@ router
 router.route('/logout').get(async (req, res) => {
     //code here for GET
     try {
-      req.session.destroy()
-      return res.redirect('/login')
+      req.session.destroy();
+      res.clearCookie('AuthenticationState');
+      return res.redirect('/login');
     } catch (e) {
-      return res.status(500).render('error', { error: 'Internal Server Error' })
+      return res.status(500).render('error', { error: 'Internal Server Error' });
     }
   });
 
