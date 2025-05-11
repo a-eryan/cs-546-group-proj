@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import { studySpots, users } from "../config/mongoCollections.js"
-import { checkDescription, checkLocation, checkNoiseLevel, checkResources, checkTitle, getCreatedDate } from "../helpers.js"
+import { checkDescription, checkID, checkLocation, checkNoiseLevel, checkResources, checkTitle, getCreatedDate } from "../helpers.js"
 
 export const uploadStudySpot = async (
     title,
@@ -59,7 +59,7 @@ export const uploadStudySpot = async (
     if (!updateUser){
       throw "Study spot created, but failed to update user's uploaded spots."
     }
-    return {uploadCompleted: true}
+    return {uploadCompleted: true, insertedId: insertInfo.insertedId.toString()}
 }
 
 export const getAllStudySpots = async() => {
@@ -72,4 +72,15 @@ export const getAllStudySpots = async() => {
   })
 
   return studyList;
+}
+
+export const getStudySpotById = async(spotId) => {
+  spotId = checkID(spotId);
+  const studyCollection = await studySpots();
+  const studySpot = await studyCollection.findOne({ _id: new ObjectId(spotId)});
+  if (!studySpot)
+    throw `Study spot with id of ${spotId} does not exist`;
+
+  studySpot._id = studySpot._id.toString();
+  return studySpot;
 }
