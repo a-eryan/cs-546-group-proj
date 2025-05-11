@@ -88,8 +88,8 @@ export function getCreatedDate() {
 // created for study spot upload
 export const checkNoiseLevel = (val) => {
     const num = Number(val);
-    if (!Number.isFinite(num) || num < 1 || num > 3) {
-        throw `${val} must be a number between 1 and 3`;
+    if (!Number.isInteger(num) || num < 1 || num > 3) {
+        throw `${val} must be an integer between 1 and 3`;
     }
     return num;
 }

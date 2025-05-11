@@ -67,6 +67,7 @@ footer {
     flex-wrap: wrap; /* Allows wrapping if the screen is too small */
     background-color: var(--stevens-gray);
     color: #FFF;
+    margin-top: 2rem;
 }
 
 .auth-container {
@@ -88,6 +89,11 @@ footer {
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
+}
+.form-container {
+    margin: 0 auto;
+    padding: 0 2rem; /* Adds space on left and right */
+    max-width: 50%; /* Optional: caps the width for large screens */
 }
 .form-group {
     display: flex;
