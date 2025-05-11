@@ -48,7 +48,14 @@ html, body {
     text-align: right;
 }
 
-
+.profile-icon {
+    width: 5rem;
+    height: 5rem;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+    /* Optional: Add border or padding if you want it visually consistent */
+}
 
 footer {
     display: flex;
@@ -267,9 +274,9 @@ footer {
 
 .study-header {
     text-align: center;
-    padding: 1rem 1rem 1rem;
+    padding: 0.5rem 1rem 1rem;
     border-bottom: 3px solid var(--stevens-red); /* dark red line */
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     font-size: 1.2rem;
 }
   
