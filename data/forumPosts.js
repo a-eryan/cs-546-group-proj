@@ -115,6 +115,7 @@ export const addCommentToForumPost = async (forumId, comment, userId) => {
 
 export const deleteForumPost = async (forumId, userId, isAdmin=false) => {
     forumId = checkID(forumId);
+    userId = checkID(userId);
 
     const forumCollection = await forumPosts();
 
@@ -127,6 +128,12 @@ export const deleteForumPost = async (forumId, userId, isAdmin=false) => {
     if (post.userId.toString() !== userId && !isAdmin){
         throw "You are not authorized to delete this post";
     }
-    await forumCollection.deleteOne({_id:new ObjectId(forumId)});
+  
+    const result = await forumCollection.deleteOne({_id:new ObjectId(forumId)});
+
+    if (!result.acknowledged){
+      throw "Could not delete forum post";
+    }
+  
     return {deleted:true};
 };
