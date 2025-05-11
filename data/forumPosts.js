@@ -1,4 +1,4 @@
-import { comments, forumPosts } from "../config/mongoCollections.js"
+import { forumPosts } from "../config/mongoCollections.js"
 import { users } from "../config/mongoCollections.js"
 import { ObjectId } from 'mongodb'; 
 import { checkTitle, checkDescription } from "../helpers.js"
