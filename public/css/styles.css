@@ -58,9 +58,92 @@ main {
     margin-left: auto; /* pushes auth element to the right */
     text-align: right;
 }
+/*======================FORUMS======================*/
+
+.forum-post, .all-forum-posts, #createForumForm {
+    color: var(--stevens-gray);
+    margin-left: 2.5rem;
+    margin-right: 2.5rem;
+}
+
+.forum-header, .forum-list-header {
+    color: var(--stevens-gray);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /*align to logo and user*/
+    margin-bottom: 0;
+}
+
+.comments-section, .forum-section, .forum-form {
+    max-width: 100%; /*changed from fixed width to 100% */
+    padding: 1rem;
+    background-color: white;
+    color: var(--stevens-gray);
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.comment, .forum {
+  list-style-type: none;
+  border-bottom: 1px solid var(--stevens-light-gray);
+  word-wrap: break-word; /*makes comment text wraps */
+}
+.comments-list, .forum-list {
+    padding-left: 0; /*remove default padding*/
+}
+
+.comment:last-child, .forum:last-child {
+  border-bottom: none;
+}
+.comment p, .forum p {
+  max-width: 100%;
+  word-break: break-word;
+}
+
+.comment-form button, .new-forum-button, .back-button {
+    background-color: var(--stevens-red);
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'Saira', 'Arial';
+    font-size: 1rem;
+}
 
 
+.comment-form button:hover, .new-forum-button:hover, .back-button:hover {
+    background-color: #881F2E;
+}
 
+.comment-form textarea, .forum-form textarea {
+    width: 98%;
+    min-height: 100px;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid var(--stevens-light-gray);
+    border-radius: 5px;
+    font-family: "Saira", "Arial";
+    resize: vertical;
+    margin-top: 0.3rem;
+    margin-bottom: 0.3rem;
+}
+
+.forum-form input[type="text"] {
+    width: 98%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    margin-top: 0.3rem;
+    MARGIN-BOTTOM: 0.3rem;
+    border: 1px solid var(--stevens-light-gray);
+    border-radius: 5px;
+    font-family: "Saira", "Arial";
+}
+
+/*============================================*/
 footer {
     display: flex;
     justify-content: space-between;
@@ -203,3 +286,5 @@ footer {
         margin-right: auto; /*no longer needed to push to the right since it's now a hamburger menu. float right won't work with flexboxes*/
     }
 }
+
+
