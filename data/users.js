@@ -52,6 +52,7 @@ export const login = async (
     const matchedPassword = await bcrypt.compare(password, user.password)
     if (matchedPassword){
         const userObj = {
+						_id: user._id.toString(),
             email: user.email,
             isAdmin: user.isAdmin,
             achievements: user.achievements,
