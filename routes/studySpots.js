@@ -1,7 +1,10 @@
 import { Router } from "express";
 import { getAllStudySpots, uploadStudySpot } from "../data/studySpots.js";
 import { checkDescription, checkLocation, checkNoiseLevel, checkTitle } from "../helpers.js";
+import multer from "multer";
 const router = Router();
+const upload = multer({ dest: 'public/uploads/' });
+
 
 router
   .route('/studyspots')
@@ -33,7 +36,8 @@ router
         return res.status(400).render('studySpots/create', { error: e });
       }
     })
-    .post(async(req,res) => {
+    .post(upload.single("image"), async(req,res) => {
+      console.log('REQ.FILE', req.file);
       try {
         let title = req.body.title;
         let description = req.body.description;
@@ -54,13 +58,16 @@ router
           resources = [resources];
         }
 
+        const imagePath = req.file ? req.file.path : null;
+
         const uploaded = await uploadStudySpot(
           title,
           description,
           req.session.user._id,
           location,
           resources,
-          noiseLevel
+          noiseLevel,
+          imagePath
         );
 
         if (uploaded.uploadCompleted && uploaded.insertedId){

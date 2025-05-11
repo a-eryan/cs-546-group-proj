@@ -8,7 +8,8 @@ export const uploadStudySpot = async (
     poster,
     location,
     resources,
-    noiseLevel
+    noiseLevel,
+    imagePath
 
 ) => {
     if (!title || !description || !location || !resources || !noiseLevel) {
@@ -39,7 +40,8 @@ export const uploadStudySpot = async (
       averageRating: null,
       reviews: [],
       genAiSummary: null,
-      createdDate: getCreatedDate()
+      createdDate: getCreatedDate(),
+      imageUrl: imagePath || null
     };
 
     const insertInfo = await studyCollection.insertOne(newSpot);
