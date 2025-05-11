@@ -1,0 +1,40 @@
+<script src="/public/js/forum.js"></script>
+<div class="forum-post">
+    {{#if error}}
+        <div class="error-message">{{error}}</div>
+    {{/if}}
+    <div class="forum-header">
+        <h1>{{title}}</h1>
+        <a href="/forums" class="back-button">Back to Forums</a>
+    </div>
+    <div class="post-content">
+        <p>{{content}}</p>
+        <p>By {{author}} on {{createdAt}}</p>
+    </div> 
+    <div class="comments-section">
+        <h2>Comments</h2>
+        {{#if comments.length}}
+            <ul class="comments-list">
+                {{#each comments}}
+                    <li class="comment">
+                        <p>{{this.content}}</p>
+                        <p class="comment-author">By {{this.author}} on {{this.createdAt}}</p>
+                    </li>
+                {{/each}}
+            </ul>
+        {{else}}
+            <p>No comments yet.</p>
+        {{/if}}
+        
+        {{#if isSignedIn}}
+            <form class="comment-form" action="/forums/{{_id}}" method="POST">
+                <h3>Add a comment</h3>
+                <textarea name="comment" required></textarea>
+                <button type="submit">Post Comment</button>
+            </form>
+        {{else}}
+            <p>Please <a href="/login">sign in</a> to comment.</p>
+        {{/if}}
+    </div> 
+</div> 
+
