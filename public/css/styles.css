@@ -2,6 +2,7 @@
     --stevens-red: #A32638;
     --stevens-gray: #363D45;
     --stevens-light-gray: #CACACA;
+    --stevens-gold: #EBC73B;
 
 }
 html, body {
@@ -67,13 +68,15 @@ main {
 }
 
 .forum-header, .forum-list-header {
+    border-bottom: 3px solid var(--stevens-gold);
     color: var(--stevens-gray);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /*align to logo and user*/
+    padding: 3.5rem 0; /* Add consistent padding */
     margin-bottom: 0;
 }
+
 
 .comments-section, .forum-section, .forum-form {
     max-width: 100%; /*changed from fixed width to 100% */
@@ -89,6 +92,7 @@ main {
   border-bottom: 1px solid var(--stevens-light-gray);
   word-wrap: break-word; /*makes comment text wraps */
 }
+
 .comments-list, .forum-list {
     padding-left: 0; /*remove default padding*/
 }
@@ -99,6 +103,11 @@ main {
 .comment p, .forum p {
   max-width: 100%;
   word-break: break-word;
+  white-space: pre-wrap; /*preserves whitespace and line breaks*/
+}
+
+.post-content p {
+    white-space: pre-wrap; /*preserves whitespace and line breaks*/
 }
 
 .comment-form button, .new-forum-button, .back-button {
@@ -113,7 +122,6 @@ main {
     font-family: 'Saira', 'Arial';
     font-size: 1rem;
 }
-
 
 .comment-form button:hover, .new-forum-button:hover, .back-button:hover {
     background-color: #881F2E;
@@ -377,7 +385,7 @@ footer {
 .study-header {
     text-align: center;
     padding: 0.5rem 1rem 1rem;
-    border-bottom: 3px solid var(--stevens-red); /* dark red line */
+    border-bottom: 3px solid var(--stevens-gold); /*change to gold for stevens contrast*/
     margin-bottom: 1rem;
     font-size: 1.2rem;
 }
