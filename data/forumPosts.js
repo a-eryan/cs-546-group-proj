@@ -1,7 +1,7 @@
 import { forumPosts } from "../config/mongoCollections.js"
 import { users } from "../config/mongoCollections.js"
 import { ObjectId } from 'mongodb'; 
-import { checkTitle, checkDescription } from "../helpers.js"
+import { checkTitle, checkDescription, checkID } from "../helpers.js"
 
 //NOTE: the better approach would to explicitly pass the stringed userId from req.session
 async function getUserIdByEmail(email) {
@@ -123,7 +123,11 @@ export const deleteForumPost = async (forumId, userId, isAdmin=false) => {
     if (!post){
         throw "Forum post not found";
     }
-    
+    console.log('DB    author', post.userId.toString());
+    console.log('Caller id  ', userId);
+    console.log('Admin?', isAdmin);
+
+
     if (post.userId.toString() !== userId && !isAdmin){
         throw "You are not authorized to delete this post";
     }

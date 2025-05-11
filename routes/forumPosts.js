@@ -1,6 +1,6 @@
 import { Router } from "express";
 const router = Router()
-import { findEmailById, forums, getAllForumPosts, getForumPostById, addCommentToForumPost } from "../data/forumPosts.js";
+import { findEmailById, forums, getAllForumPosts, getForumPostById, addCommentToForumPost , deleteForumPost} from "../data/forumPosts.js";
 
 router
     .route('/')
@@ -91,6 +91,9 @@ router
                 });
             }
             const author = await findEmailById(forumPost.userId.toString());
+            //add flag for who is allowed to modify the post
+
+            const canModify = req.session.user && (req.session.user._id.toString() === forumPost.userId.toString() || req.session.user.isAdmin);
             console.log("Forum Post:", forumPost);
             return res.render('forums/post', {
                 title: forumPost.title,
@@ -100,7 +103,9 @@ router
                 createdAt: forumPost.createdAt,
                 comments: forumPost.comments,
                 user: req.session.user, //shows the user object in the navbar
-                isSignedIn: req.session.user ? true : false
+                isSignedIn: req.session.user ? true : false,
+                userId: forumPost.userId,
+                canModify: canModify
             });
         } catch (e) {
             return res.status(500).render('error', {
@@ -144,6 +149,24 @@ router
         }
     })
 
+    router.post('/:id/delete', async(req, res) => {
+        try {
+            if (!req.session.user) {
+                return res.redirect('/login');
+            }
+
+            const isAdmin = req.session.user.isAdmin;
+
+            await deleteForumPost(req.params.id, req.session.user._id, isAdmin);
+            return res.redirect('/forums');
+        } catch (e) {
+            return res.status(400).render('error', {
+                error: e.toString(),
+                user: req.session.user, 
+                isSignedIn: !!req.session.user
+            })
+        }
+    });
 
 
 export default router;
