@@ -45,6 +45,7 @@ export const createReview = async (spotId, userId, title, content, rating) => {
 	if (!updateInfo)
 		throw `Could not add review to study spot with ID ${spotId}`;
 
+	reviewObj._id = reviewObj._id.toString();
 	return reviewObj;
 };
 
