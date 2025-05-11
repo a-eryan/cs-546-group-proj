@@ -2,13 +2,25 @@
     --stevens-red: #A32638;
     --stevens-gray: #363D45;
     --stevens-light-gray: #CACACA;
+    --stevens-gold: #EBC73B;
 
 }
 html, body {
     margin: 0;
     padding: 0;
     font-family: "Saira", "Arial";
-  }
+    min-height: 100vh; /* Ensure minimum height is full viewport */
+}
+
+body {
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    min-height: 100vh; /* Ensure body takes at least full viewport height */
+}
+
+main {
+    flex: 1; /* This makes the main content area expand to fill available space */
+}
 
 .navbar {
     background-color: var(--stevens-red);
@@ -47,6 +59,99 @@ html, body {
     margin-left: auto; /* pushes auth element to the right */
     text-align: right;
 }
+/*======================FORUMS======================*/
+
+.forum-post, .all-forum-posts, #createForumForm {
+    color: var(--stevens-gray);
+    margin-left: 2.5rem;
+    margin-right: 2.5rem;
+}
+
+.forum-header, .forum-list-header {
+    border-bottom: 3px solid var(--stevens-gold);
+    color: var(--stevens-gray);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3.5rem 0; /* Add consistent padding */
+    margin-bottom: 0;
+}
+
+
+.comments-section, .forum-section, .forum-form {
+    max-width: 100%; /*changed from fixed width to 100% */
+    padding: 1rem;
+    background-color: white;
+    color: var(--stevens-gray);
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.comment, .forum {
+  list-style-type: none;
+  border-bottom: 1px solid var(--stevens-light-gray);
+  word-wrap: break-word; /*makes comment text wraps */
+}
+
+.comments-list, .forum-list {
+    padding-left: 0; /*remove default padding*/
+}
+
+.comment:last-child, .forum:last-child {
+  border-bottom: none;
+}
+.comment p, .forum p {
+  max-width: 100%;
+  word-break: break-word;
+  white-space: pre-wrap; /*preserves whitespace and line breaks*/
+}
+
+.post-content p {
+    white-space: pre-wrap; /*preserves whitespace and line breaks*/
+}
+
+.comment-form button, .new-forum-button, .back-button {
+    background-color: var(--stevens-red);
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'Saira', 'Arial';
+    font-size: 1rem;
+}
+
+.comment-form button:hover, .new-forum-button:hover, .back-button:hover {
+    background-color: #881F2E;
+}
+
+.comment-form textarea, .forum-form textarea {
+    width: 98%;
+    min-height: 100px;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid var(--stevens-light-gray);
+    border-radius: 5px;
+    font-family: "Saira", "Arial";
+    resize: vertical;
+    margin-top: 0.3rem;
+    margin-bottom: 0.3rem;
+}
+
+.forum-form input[type="text"] {
+    width: 98%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    margin-top: 0.3rem;
+    MARGIN-BOTTOM: 0.3rem;
+    border: 1px solid var(--stevens-light-gray);
+    border-radius: 5px;
+    font-family: "Saira", "Arial";
+}
+
+/*============================================*/
 
 .profile-icon {
     width: 5rem;
@@ -59,12 +164,11 @@ html, body {
 
 footer {
     display: flex;
-    justify-content: space-between; /*https://imgur.com/TRlNwkz*/
-    align-items: center; /*Centers the logo*/
-    background-color: #a7382d; /* Footer background color */
+    justify-content: space-between;
+    align-items: center;
     color: white;
     padding: 10px 20px; 
-    flex-wrap: wrap; /* Allows wrapping if the screen is too small */
+    flex-wrap: wrap;
     background-color: var(--stevens-gray);
     color: #FFF;
     margin-top: 2rem;
@@ -281,7 +385,7 @@ footer {
 .study-header {
     text-align: center;
     padding: 0.5rem 1rem 1rem;
-    border-bottom: 3px solid var(--stevens-red); /* dark red line */
+    border-bottom: 3px solid var(--stevens-gold); /*change to gold for stevens contrast*/
     margin-bottom: 1rem;
     font-size: 1.2rem;
 }
@@ -305,3 +409,5 @@ footer {
         margin-right: auto; /*no longer needed to push to the right since it's now a hamburger menu. float right won't work with flexboxes*/
     }
 }
+
+
