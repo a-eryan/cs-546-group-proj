@@ -23,23 +23,33 @@ export const checkID = (id) => {
 };
 
 export const checkEmail = (email) => {
-    email = checkString(email)
-    if (email.includes(' '))
-        throw `${email} can't contain empty spaces`
-    if (!/^[^\s@]+@stevens\.edu$/.test(email))
-        throw `${email} must be a valid Stevens email address`;
-    return email
-}
+	email = checkString(email);
+
+	if (email.includes(' '))
+		throw `${email} can't contain empty spaces`;
+
+	if (!/^[^\s@]+@stevens\.edu$/.test(email))
+		throw `${email} must be a valid Stevens email address`;
+
+	return email;
+};
+
 export const checkPassword = (password) => {
-    password = checkString(password)
-    if (password.includes(' '))
-        throw `Password can't contain spaces`
-    if (!/^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])/.test(password))
-        throw `Password needs to have atleast one uppercase letter, one number, and one special character`
-    if (password.length < 8)
-        throw `Password needs to be at least 8 characters long`
-    return password
-}
+	if (!password || typeof password !== 'string')
+		throw "You must provide a password";
+	
+	if (password.includes(' '))
+		throw "Password cannot contain spaces";
+
+	if (password.length < 8)
+		throw "Password needs to be at least 8 characters long";
+
+	if (!/^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])/.test(password))
+		throw "Password needs to have atleast one uppercase letter, one number, and one special character";
+
+	return password;
+};
+
 export const checkTitle = (title) => {
     title = checkString(title)
     if (title.length < 6)
