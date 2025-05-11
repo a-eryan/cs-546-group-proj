@@ -64,16 +64,8 @@ router
 
             email = checkEmail(email)
             password = checkPassword(password)
-            const user = await login(email, password)
 
-            req.session.user = {
-                email: user.email,
-                isAdmin: user.isAdmin,
-                achievements: user.achievements,
-                uploadedSpots: user.uploadedSpots,
-                likedSpots: user.likedSpots,
-                messages: user.messages
-            }
+            req.session.user = await login(email, password);
 
             return res.redirect('/studyspots')
         } catch (e) {

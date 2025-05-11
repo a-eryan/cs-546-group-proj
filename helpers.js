@@ -8,15 +8,20 @@ export const checkString = (string) => {
         throw `${string} cannot be an empty string or string with just spaces`
     return string
 }
+
 export const checkID = (id) => {
-    if (!id) throw 'You must provide an id to search for'
-    if (typeof id !== 'string') throw `${id} must be a string`
-    id = id.trim()
-    if (id.length === 0)
-        throw `${id} cannot be an empty string or just spaces`
-    if (!ObjectId.isValid(id)) throw 'invalid object ID'
-    return id
-}
+	try {
+		id = checkString(id);
+	} catch {
+		throw "A non-empty string ID must be provided";
+	}
+
+	if (!ObjectId.isValid(id))
+		throw `Invalid object ID ${id}`;
+
+	return id;
+};
+
 export const checkEmail = (email) => {
     email = checkString(email)
     if (email.includes(' '))
