@@ -60,6 +60,10 @@ export const getReview = async (reviewId) => {
 		throw `Review ${reviewId} not found`;
 
 	const review = studySpot.reviews.find(review => review._id.toString() === reviewId);
+
+	if (!review)
+		throw `Review ${reviewId} not found`;
+
 	review._id = review._id.toString();
 	return review;
 }
@@ -73,7 +77,7 @@ export const getAllReviews = async (spotId) => {
 	const studySpotCollection = await studySpots();
 	const studySpot = await studySpotCollection.findOne({ _id: new ObjectId(spotId) });
 
-	if (!studySpot || !studySpot.reviews) // Check for the reviews property to ensure we return a study spot
+	if (!studySpot || !Array.isArray(studySpot.reviews)) // Check for the reviews property to ensure we return a study spot
 		throw `Study spot ${spotId} not found`;
 
 	return studySpot.reviews.map(review => {
