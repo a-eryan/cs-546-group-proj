@@ -96,8 +96,8 @@ export const checkResources = (arr) => {
 export const checkReviewProperties = (spotId, userId, title, content, rating) => {
 	// Ensure that all string properties are provided
 	try {
-		spotId = checkString(spotId);
-		userId = checkString(userId);
+		spotId = checkID(spotId);
+		userId = checkID(userId);
 		title = checkString(title);
 		content = checkString(content);
 	} catch {

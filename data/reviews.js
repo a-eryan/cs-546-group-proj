@@ -6,13 +6,6 @@ export const createReview = async (spotId, userId, title, content, rating) => {
 	// Validate all review properties
 	({ spotId, userId, title, content, rating } = checkReviewProperties(spotId, userId, title, content, rating));
 
-	// Check if the study spot and reviewer IDs are valid
-	if (!ObjectId.isValid(spotId))
-		throw `Invalid study spot ID ${spotId}`;
-
-	if (!ObjectId.isValid(userId))
-		throw `Invalid reviewer ID ${userId}`;
-
 	// Find the study spot and reviewer by ID
 	const spotObjectId = new ObjectId(spotId);
 	const studySpotCollection = await studySpots();
@@ -56,15 +49,8 @@ export const createReview = async (spotId, userId, title, content, rating) => {
 };
 
 export const getReview = async (reviewId) => {
-	// Validate the spot and review IDs
-	try {
-		reviewId = checkString(reviewId);
-	} catch {
-		throw "The review ID must be a non-empty string";
-	}
-
-	if (!ObjectId.isValid(reviewId))
-		throw `Invalid review ID ${reviewId}`;
+	// Validate the review ID
+	reviewId = checkID(reviewId);
 
 	// Find the review by ID
 	const studySpotCollection = await studySpots();
@@ -80,14 +66,7 @@ export const getReview = async (reviewId) => {
 
 export const getAllReviews = async (spotId) => {
 	// Validate the study spot ID
-	try {
-		spotId = checkString(spotId);
-	} catch {
-		throw "The study spot ID must be a non-empty string";
-	}
-
-	if (!ObjectId.isValid(spotId))
-		throw `Invalid study spot ID ${spotId}`;
+	spotId = checkID(spotId);
 
 	// Find all reviews for the study spot
 	// No need to error when a study spot has no reviews
@@ -105,14 +84,7 @@ export const getAllReviews = async (spotId) => {
 
 export const removeReview = async (reviewId) => {
 	// Validate the review ID
-	try {
-		reviewId = checkString(reviewId);
-	} catch {
-		throw "A non-empty string reviewId must be provided";
-	}
-
-	if (!ObjectId.isValid(reviewId))
-		throw `Invalid review ID ${reviewId}`;
+	reviewId = checkID(reviewId);
 
 	// Find the review by ID, or throw if not found
 	const reviewObjectId = new ObjectId(reviewId);
