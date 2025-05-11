@@ -13,8 +13,8 @@ const getCollectionFn = (collection) => {
 }
 
 
-export const users = getCollectionFn('users')
-export const studySpots = getCollectionFn('studySpots')
-export const forumPosts = getCollectionFn('forumPosts')
-export const reports = getCollectionFn('reports')
+export const users = getCollectionFn('users');
+export const studySpots = getCollectionFn('studySpots');
+export const forumPosts = getCollectionFn('forumPosts');
+export const reports = getCollectionFn('reports');
 // privateMessages: getCollectionFn('privateMessages'), EXTRA FEATURE
