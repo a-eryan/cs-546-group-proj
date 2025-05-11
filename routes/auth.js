@@ -67,25 +67,12 @@ router
 
             req.session.user = await login(email, password);
 
-            return res.redirect('/profile')
+            return res.redirect('/studyspots')
         } catch (e) {
             console.log(e)
             return res.status(400).render('login', { error: e })
         }
     })
-
-router.route('/profile').get(async(req, res) => {
-    try{
-        const user = req.session.user || null
-        const isSignedIn = !!user
-        return res.render('users/profile', {
-            isSignedIn: isSignedIn,
-            user: user
-        })
-    } catch (e) {
-        console.log(e)
-    }
-})
 
 router.route('/logout').get(async (req, res) => {
     //code here for GET

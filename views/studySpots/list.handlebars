@@ -1,0 +1,33 @@
+<div class="study-header">
+  <h1>✨ Welcome to Duck Study Hub, {{user.email}}</h1>
+  <p class="subtitle">Find all your favorite campus study spots and discover new ones at your fingertips.</p>
+</div>
+
+<div class="card-grid">
+  {{#if spots.length}}
+    {{#each spots}}
+      <div class="card">
+        <div class="image-wrapper">
+          {{#if this.imageUrl}}
+            <img src="{{this.imageUrl}}" alt="Picture of {{this.title}}">
+          {{else}}
+            <!-- placeholder SVG or leave blank -->
+          {{/if}}
+        </div>
+        <h2>{{this.title}}</h2>
+        <div class="poster">
+          {{this.posterUsername}}
+          <span class="stars">
+            {{#each this.stars}}
+              ★
+            {{/each}}
+          </span>
+        </div>
+        <p class="description">{{this.description}}</p>
+        <a href="/studyspots/{{this._id}}" class="view-btn">View Spot</a>
+      </div>
+    {{/each}}
+  {{else}}
+    <p>Sorry, there are no uploaded study spots as of right now.</p>
+  {{/if}}
+</div>
