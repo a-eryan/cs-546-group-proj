@@ -57,5 +57,17 @@
         pageScript: 'specificPageScript' //this will load public/js/specificPageScript.js
     });
     -->
+    <script>
+        {{#unless isSignedIn}}
+            if (
+                !document.cookie.includes('AuthenticationState') &&
+                window.location.pathname !== '/login' &&
+                window.location.pathname !== '/register'
+            ) {
+                window.location.replace('/login');
+            }
+        {{/unless}}
+    </script>
+
 </body>
 </html>

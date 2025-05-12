@@ -75,14 +75,21 @@ router
     })
 
 router.route('/logout').get(async (req, res) => {
-    //code here for GET
-    try {
-      req.session.destroy();
-      res.clearCookie('AuthenticationState');
+  try {
+    req.session.destroy(err => {
+      if (err) {
+        return res.status(500).render('error', { error: 'Failed to logout. Please try again.' });
+      }
+
+      res.set('Cache-Control', 'no-store');
+      res.set('Pragma', 'no-cache');
+      res.set('Expires', '0');
+      res.clearCookie('AuthenticationState'); // Optional, depending on your session cookie name
       return res.redirect('/login');
-    } catch (e) {
-      return res.status(500).render('error', { error: 'Internal Server Error' });
-    }
-  });
+    });
+  } catch (e) {
+    return res.status(500).render('error', { error: 'Internal Server Error' });
+  }
+});
 
 export default router

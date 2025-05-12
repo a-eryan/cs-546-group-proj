@@ -41,7 +41,7 @@
     <section class="profile-section">
         <h3>💬 Your Forum Posts</h3>
         <ul>
-            {{#each user.posts}}
+            {{#each forums}}
                 <li><a href="/forums/{{this._id}}">{{this.title}}</a></li>
             {{else}}
                 <li>No forum posts yet.</li>

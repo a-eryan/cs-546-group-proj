@@ -2,6 +2,7 @@ import { Router } from "express";
 import { getAllStudySpots, uploadStudySpot, getStudySpotById } from "../data/studySpots.js";
 import { checkDescription, checkLocation, checkNoiseLevel, checkTitle } from "../helpers.js";
 import { getAllReviews } from "../data/reviews.js";
+import { requireAuth } from "../middleware.js";
 import multer from "multer";  
 import path from "path";
 
@@ -20,7 +21,7 @@ const upload = multer({ storage});
 
 router
   .route('/studyspots')
-  .get(async(req,res) => {
+  .get(requireAuth, async(req,res) => {
     try {
       const allSpots = await getAllStudySpots();
       const user = req.session.user || null;
@@ -37,7 +38,7 @@ router
 
   router
     .route('/studyspots/upload')
-    .get(async(req,res) => {
+    .get(requireAuth, async(req,res) => {
       try {
         const user = req.session.user || null;
         const isSignedIn = !!user;
@@ -48,7 +49,7 @@ router
         return res.status(400).render('studySpots/create', { error: e });
       }
     })
-    .post(upload.single("image"), async(req,res) => {
+    .post(requireAuth, upload.single("image"), async(req,res) => {
       try {
         let title = req.body.title;
         let description = req.body.description;
@@ -95,7 +96,7 @@ router
       }
     })
 
-  router.get('/studyspots/:id', async (req, res) => {
+  router.get('/studyspots/:id', requireAuth, async (req, res) => {
     try {
       const spot = await getStudySpotById(req.params.id);
       const reviews = await getAllReviews(spot._id);
