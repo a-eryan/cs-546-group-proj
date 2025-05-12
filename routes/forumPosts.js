@@ -94,7 +94,7 @@ router
             //add flag for who is allowed to modify the post
 
             const canModify = req.session.user && (req.session.user._id.toString() === forumPost.userId.toString() || req.session.user.isAdmin);
-            console.log("Forum Post:", forumPost);
+            
             return res.render('forums/post', {
                 title: forumPost.title,
                 _id: forumId, 

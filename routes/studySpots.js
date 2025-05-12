@@ -49,7 +49,6 @@ router
       }
     })
     .post(upload.single("image"), async(req,res) => {
-      console.log('REQ.FILE', req.file);
       try {
         let title = req.body.title;
         let description = req.body.description;

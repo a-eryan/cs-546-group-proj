@@ -38,6 +38,7 @@ export const uploadStudySpot = async (
       resourcesNearby: resources,
       noiseLevel: noiseLevel,
       averageRating: null,
+			comments: [],
       reviews: [],
       genAiSummary: null,
       createdDate: getCreatedDate(),
