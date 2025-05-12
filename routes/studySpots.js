@@ -1,9 +1,20 @@
 import { Router } from "express";
-import { getAllStudySpots, uploadStudySpot } from "../data/studySpots.js";
+import { getAllStudySpots, uploadStudySpot, getStudySpotById } from "../data/studySpots.js";
 import { checkDescription, checkLocation, checkNoiseLevel, checkTitle } from "../helpers.js";
-import multer from "multer";
+import multer from "multer";  
+import path from "path";
+
 const router = Router();
-const upload = multer({ dest: 'public/uploads/' });
+
+const storage = multer.diskStorage({
+  destination: "public/uploads/",
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `${Date.now()}-${file.fieldname}${ext}`);
+  }
+});
+
+const upload = multer({ storage});
 
 
 router
@@ -58,7 +69,8 @@ router
           resources = [resources];
         }
 
-        const imagePath = req.file ? req.file.path : null;
+        const imagePath = req.file ? `/${req.file.path}` : null;
+
 
         const uploaded = await uploadStudySpot(
           title,
@@ -83,5 +95,25 @@ router
       }
     })
 
+  router.get('/studyspots/:id', async (req, res) => {
+    try {
+      const spot = await getStudySpotById(req.params.id);
+      const user = req.session.user || null;
+      const signed = !!user;
+
+      return res.render('studySpots/spot', {
+        title: spot.title,
+        spot,
+        isSignedIn: signed,
+        user
+    });
+  } catch (e) {
+    return res.status(404).render('error', {
+      error: e.toString(),
+      isSignedIn: !!req.session.user,
+      user: req.session.user
+    });
+  }
+});
 
 export default router;

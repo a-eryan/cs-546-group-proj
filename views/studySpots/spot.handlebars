@@ -1,0 +1,25 @@
+<div class="spot-container">
+  <h2 class="spot-title">{{spot.title}}</h2>
+
+  {{#if spot.imageUrl}}
+    <img class="spot-image" src="{{spot.imageUrl}}" alt="Photo of {{spot.title}}">
+  {{/if}}
+
+  <p class="spot-description">{{spot.description}}</p>
+
+  <ul class="spot-meta">
+    <li><strong>Location:</strong> {{spot.location}}</li>
+    <li><strong>Noise level:</strong> {{spot.noiseLevel}}</li>
+    <li>
+      <strong>Resources nearby:</strong>
+      {{#each spot.resourcesNearby}}
+        {{this}}{{#unless @last}}, {{/unless}}
+      {{/each}}
+    </li>
+    {{#if spot.averageRating}}
+      <li><strong>Average rating:</strong> {{spot.averageRating}} ★</li>
+    {{/if}}
+  </ul>
+
+  <a href="/studyspots" class="back-button">Back to all spots</a>
+</div>
