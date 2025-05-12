@@ -11,6 +11,12 @@
         <p>{{content}}</p>
         <p>By {{author}} on {{createdAt}}</p>
     </div> 
+    {{#if canModify}}
+        <form action = '/forums/{{_id}}/delete' method = 'POST' onsubmit="return confirm('Are you sure you want to delete this post?');">
+            <button type="submit" class="back-button">Delete Post</button>
+        </form>
+
+    {{/if}}
     <div class="comments-section">
         <h2>Comments</h2>
         {{#if comments.length}}
