@@ -21,5 +21,46 @@
     {{/if}}
   </ul>
 
-  <a href="/studyspots" class="back-button">Back to all spots</a>
-</div>
+  {{#if reviews.length}}
+    <ul class ="reviews-list">
+      {{#each reviews}}
+        <li class="review-item">
+          <strong>{{title}}</strong> - {{rating}}*<br>
+          {{content}}
+        </li>
+      {{/each}}
+
+    </ul>
+    {{else}}
+      <p>No reviews yet.</p>
+    {{/if}}
+
+
+    {{#if isSignedIn}}
+        <form id="reviewForm" class="review-form">
+        <input name="title" placeholder="Title" class="form-input" required>
+        <textarea class="form-input" name="content" placeholder="Write your review" required></textarea>
+
+        <label class="slider-label">
+            Rating:
+            <span id="ratingDisplay" style="font-weight:bolder;">3</span>
+        </label>
+
+        <input class="form-input" type="range" name="rating" id="rating" min="1" max="5" step="1" value="3" required>
+
+        <div class="slider-scale">
+        {{#each [1,2,3,4,5]}}<span>{{this}}</span>{{/each}}
+        </div>
+        <div class="review-actions">
+        <button class="back-button">Post Review</button>
+        <a  href="/studyspots" class="back-button review-back">Back to all spots</a>
+        </div>
+        </form>
+    {{else}}
+        <p>Please <a href="/login">sign in</a> to leave a review.</p>
+    {{/if}}
+
+    </div>
+
+    <script src="/public/js/reviews.js"></script>
+
