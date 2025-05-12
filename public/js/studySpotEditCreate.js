@@ -66,15 +66,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 let noiseLevel = document.getElementById("noiseLevel").value;
                 const resourceNodes = document.querySelectorAll('input[name="resourcesNearby"]:checked');
                 let resources = Array.from(resourceNodes).map(input => input.value);
-                // let imageInput = document.getElementById("image");
+                let imageInput = document.getElementById("image");
 
-                // if (!imageInput.files || imageInput.files.length === 0) {
-                //     throw "Please upload an image.";
-                // }
-                // const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-                // if (!allowedTypes.includes(imageInput.files[0].type)) {
-                //     throw "Only JPG, PNG, and WEBP images are allowed.";
-                // }
+                const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+                if (imageInput.files) {
+                    if (!allowedTypes.includes(imageInput.files[0].type)) {
+                        throw "Only JPG, PNG, and WEBP images are allowed.";
+                    }
+                }
 
                 //Will uncomment if making it required
 
