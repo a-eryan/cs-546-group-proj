@@ -1,10 +1,11 @@
 import { Router } from "express";
+import { requireAuth } from "../middleware.js";
 const router = Router()
 import { findEmailById, forums, getAllForumPosts, getForumPostById, addCommentToForumPost , deleteForumPost} from "../data/forumPosts.js";
 
 router
     .route('/')
-    .get(async(req, res) => {
+    .get(requireAuth, async(req, res) => {
         try {
             const forumPosts = await getAllForumPosts();
             return res.render('forums/list', {
@@ -24,7 +25,7 @@ router
     })
 router
     .route('/create') 
-    .get(async(req, res) => {
+    .get(requireAuth, async(req, res) => {
         try {
             if (!req.session.user) {
                 return res.status(401).redirect('/error');
@@ -42,7 +43,7 @@ router
             });
         }
     })
-    .post(async(req, res) => {
+    .post(requireAuth, async(req, res) => {
         try {
             if (!req.session.user) { //if the user somehow isn't signed in, redirect to error page
                 return res.status(401).redirect('/error');
@@ -77,7 +78,7 @@ router
     })
 router
     .route('/:id')
-    .get(async(req, res) => {
+    .get(requireAuth, async(req, res) => {
         try {
             const forumId = req.params.id;
             const forumPost = await getForumPostById(forumId);
@@ -115,7 +116,7 @@ router
             });
         }
     })
-    .post(async(req, res) => {
+    .post(requireAuth, async(req, res) => {
         try {
             if (!req.session.user) {
                 return res.status(401).redirect('/error');
