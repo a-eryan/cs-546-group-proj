@@ -1,31 +1,27 @@
 //create/edit study spot with validation
-console.log("Study spot edit/create validation script loaded")
+console.log("Study spot edit/create validation script loaded");
 
 const checkString = (string) => {
-    if (!string) throw 'You must provide a string'
-    if (typeof string !== 'string') throw `${string} must be a string`
-    string = string.trim()
-    if (string.length === 0)
-        throw `${string} cannot be an empty string or string with just spaces`
-    return string
+    if (!string) throw 'You must provide a string';
+    if (typeof string !== 'string') throw `${string} must be a string`;
+    string = string.trim();
+    if (string.length === 0) throw `Text cannot be an empty string or string with just spaces`;
+    return string;
 }
 const checkTitle = (title) => {
-    title = checkString(title)
-    if (title.length < 6)
-        throw `${title} needs to be atleast 6 characters long`
-    return title
+    title = checkString(title);
+    if (title.length < 6) throw `Title: ${title} needs to be at least 6 characters long`;
+    return title;
 }
 const checkDescription = (description) => {
-    description = checkString(description)
-    if (description.length < 10)
-        throw `${description} needs to be atleast 10 characters long`
-    return description
+    description = checkString(description);
+    if (description.length < 10) throw `Description: ${description} needs to be at least 10 characters long`;
+    return description;
 }
 const checkLocation = (location) => {
-    location = checkString(location)
-    if (location.length < 8)
-        throw `${location} needs to be atleast 8 characters long`
-    return location
+    location = checkString(location);
+    if (location.length < 8) throw `Location: ${location} needs to be at least 8 characters long`;
+    return location;
 }
 const checkNoiseLevel = (val) => {
     const num = Number(val);
@@ -34,18 +30,28 @@ const checkNoiseLevel = (val) => {
     }
     return num;
 }
-const checkResources = (arr) => {
-    if (!Array.isArray(arr) || arr.length === 0) {
-        throw 'Resources must be a non-empty array';
+const checkResources = (arr) => { //i tried to modified this to see if it would stop the logging out issue, but it didn't work
+    if (!Array.isArray(arr)) {
+        throw 'Resources must be an array';
+    } 
+    if (arr.length === 0) {
+        return arr;
     }
-    const valid = ['printer', 'water fountain', 'vending machine', 'scanner', 'whiteboard', 'outlets', 'external monitors' ];
-    arr.forEach(r => { if (!valid.includes(r)) throw `Invalid resource ${r}`; });
-  return arr; // not sure if we are going to turn this into check boxes yet, for now still string input.
+    const valid = ['printer', 'water fountain', 'vending machine', 'scanner', 'whiteboard', 'outlets', 'external monitors'];
+    arr.forEach(r => { 
+        if (!valid.includes(r)) throw `Invalid resource ${r}`; 
+    });
+    return arr;
+//        if (!Array.isArray(arr) || arr.length === 0) {
+//         throw 'Resources must be a non-empty array';
+//     }
+//     const valid = ['printer', 'water fountain', 'vending machine', 'scanner', 'whiteboard', 'outlets', 'external monitors' ];
+//     arr.forEach(r => { if (!valid.includes(r)) throw `Invalid resource ${r}`; });
+//   return arr; // not sure if we are going to turn this into check boxes yet, for now still string input.
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     const uploadForm = document.getElementById("uploadForm");
-
     const displayError = (form, message) => {
         let errorDiv = form.querySelector(".error-message");
         if (!errorDiv) {
@@ -67,16 +73,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 const resourceNodes = document.querySelectorAll('input[name="resourcesNearby"]:checked');
                 let resources = Array.from(resourceNodes).map(input => input.value);
                 let imageInput = document.getElementById("image");
-
+                
                 const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-                if (imageInput.files) {
+                if (imageInput && imageInput.files && imageInput.files.length > 0) { //needed short circuiting here, imageInput.files would throw an error if imageInput was null 
                     if (!allowedTypes.includes(imageInput.files[0].type)) {
                         throw "Only JPG, PNG, and WEBP images are allowed.";
                     }
-                }
+                } /*else {
+                    throw "Image is required.";
+                }*/
 
                 //Will uncomment if making it required
-
                 title = checkTitle(title);
                 description = checkDescription(description);
                 location = checkLocation(location);
