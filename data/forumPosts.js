@@ -123,9 +123,6 @@ export const deleteForumPost = async (forumId, userId, isAdmin=false) => {
     if (!post){
         throw "Forum post not found";
     }
-    console.log('DB    author', post.userId.toString());
-    console.log('Caller id  ', userId);
-    console.log('Admin?', isAdmin);
 
 
     if (post.userId.toString() !== userId && !isAdmin){

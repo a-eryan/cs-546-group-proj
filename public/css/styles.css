@@ -449,3 +449,44 @@ footer {
 .spot-meta li {
   margin-bottom: 0.5rem;
 }
+
+
+.review-form          { margin-top: 1rem; }
+.review-form .form-input {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid var(--stevens-light-gray);
+  border-radius: 5px;
+  font-family: "Saira", "Arial";
+  margin-bottom: 0.75rem;
+  box-sizing: border-box;
+}
+
+.review-form textarea.form-input { min-height: 120px; resize: vertical; }
+
+.review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.slider-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: bold;
+}
+
+.review-actions .review-back {
+  margin-left: 0; 
+}
+
+.slider-scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+  padding: 0 2px;
+  color: var(--stevens-gray);
+}

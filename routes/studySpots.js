@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { getAllStudySpots, uploadStudySpot, getStudySpotById } from "../data/studySpots.js";
 import { checkDescription, checkLocation, checkNoiseLevel, checkTitle } from "../helpers.js";
+import { getAllReviews } from "../data/reviews.js";
 import multer from "multer";  
 import path from "path";
 
@@ -98,12 +99,14 @@ router
   router.get('/studyspots/:id', async (req, res) => {
     try {
       const spot = await getStudySpotById(req.params.id);
+      const reviews = await getAllReviews(spot._id);
       const user = req.session.user || null;
       const signed = !!user;
 
       return res.render('studySpots/spot', {
         title: spot.title,
         spot,
+        reviews,
         isSignedIn: signed,
         user
     });
