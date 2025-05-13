@@ -452,6 +452,34 @@ footer {
   color: var(--stevens-gray);
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.study-spot-actions {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 2;
+}
+
+.study-spot-actions button {
+    background-color: transparent;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.study-spot-actions button:hover {
+    background-color: #f4f4f4;
+}
+
+.study-spot-actions .button-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    display: block;
 }
 
 .spot-title {
