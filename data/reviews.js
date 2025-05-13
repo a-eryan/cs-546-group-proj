@@ -45,6 +45,18 @@ export const createReview = async (spotId, userId, title, content, rating) => {
 	if (!updateInfo)
 		throw `Could not add review to study spot with ID ${spotId}`;
 
+	// Add the Top Critic achievement if the reviewer has 3 or more reviews
+	const userReviewsCount = await studySpotCollection.countDocuments({ 'reviews.userId': userId });
+	if (userReviewsCount >= 3) {
+		const hasAchievement = reviewer.achievements && reviewer.achievements.includes('Top Critic');
+		if (!hasAchievement) {
+			await usersCollection.updateOne(
+				{ _id: new ObjectId(userId) },
+				{ $push: { achievements: 'Top Critic' } }
+			);
+		}
+	}
+
 	reviewObj._id = reviewObj._id.toString();
 	return reviewObj;
 };
