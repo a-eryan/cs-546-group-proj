@@ -114,7 +114,8 @@ export const updateStudySpot = async(
     location: location,
     resourcesNearby: resources,
     noiseLevel: noiseLevel,
-    imageUrl: imagePath
+    imageUrl: imagePath,
+    updatedAt: new Date().toLocaleString()
   };
 
   const studyCollection = await studySpots();

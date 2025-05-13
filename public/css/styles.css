@@ -109,7 +109,7 @@ main {
     white-space: pre-wrap; /*preserves whitespace and line breaks*/
 }
 
-.comment-form button, .new-forum-button, .back-button {
+.comment-form button, .new-forum-button, .back-button, .edit-button, .delete-button {
     background-color: var(--stevens-red);
     color: white;
     padding: 0.5rem 1rem;
@@ -121,6 +121,14 @@ main {
     font-family: 'Saira', 'Arial';
     font-size: 1rem;
 }
+
+.button-container {
+    display: flex;
+    gap: 0.5rem; /* Space between buttons */
+    align-items: center;
+    margin: 0.5rem 0;
+}
+
 
 .comment-form button:hover, .new-forum-button:hover, .back-button:hover {
     background-color: #881F2E;
