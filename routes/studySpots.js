@@ -3,6 +3,7 @@ import { getAllStudySpots, uploadStudySpot, getStudySpotById } from "../data/stu
 import { checkDescription, checkLocation, checkNoiseLevel, checkTitle } from "../helpers.js";
 import { getAllReviews } from "../data/reviews.js";
 import { requireAuth } from "../middleware.js";
+import { findEmailById } from "../data/forumPosts.js";
 import multer from "multer";  
 import path from "path";
 
@@ -26,8 +27,24 @@ router
       const allSpots = await getAllStudySpots();
       const user = req.session.user || null;
       const isSignedIn = !!user;
+
+      const spotsWithEmail = [];
+      for (const spot of allSpots){
+        let posterEmail = 'Unknown';
+        try {
+          const {email} = await findEmailById(spot.poster.toString());
+          posterEmail = email;
+        } catch (e) {
+          return res.status(400).render('studySpots/list', { error: e }); 
+        }
+
+        spotsWithEmail.push({
+          ...spot,
+          posterEmail
+        })
+      }
       return res.render('studySpots/list', {
-        spots: allSpots,
+        spots: spotsWithEmail,
         isSignedIn: isSignedIn,
         user: user
       });
