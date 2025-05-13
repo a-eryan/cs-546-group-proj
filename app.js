@@ -22,7 +22,21 @@ app.use(
     })
 )
 
-app.engine('handlebars', exphbs.engine({defaultLayout: 'main'}));
+// Create the handlebars instance with helpers
+const hbs = exphbs.create({
+    defaultLayout: 'main',
+    helpers: {
+        join: function(array, separator) {
+            if (Array.isArray(array)) {
+                return array.join(separator || ', ');
+            }
+            return '';
+        }
+    }
+});
+
+// Use the configured instance
+app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
 app.get('/', (req, res) => {
