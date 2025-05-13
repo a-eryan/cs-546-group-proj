@@ -139,7 +139,6 @@ export const deleteStudySpot = async(spotId) => {
     _id: new ObjectId(spotId)
   });
 
-  console.log(deletionInfo);
   if (!deletionInfo)
     throw `Could not delete study spot with id of ${spotId}`;
 

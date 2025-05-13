@@ -2,6 +2,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterForm = document.getElementById('filter-form'); //grab reference to the whole form (#filter-form) (returns a single DOM element compared to querySelectorAll)
     // const spotsContainer = document.querySelector('.card-grid');
     const allCards = document.querySelectorAll('.card');
+    const deleteForms = document.querySelectorAll('.delete-form');
+    
+    deleteForms.forEach(form => {
+        form.addEventListener('submit', event => {
+          const confirmed = confirm("Are you sure you want to delete this study spot?");
+          if (!confirmed) {
+            event.preventDefault();
+          }
+        });
+    });
     
     if (filterForm) {
         const originalDisplays = new Map(); //Store each card’s computed display value (inline or from CSS) in a Map keyed by that element. Later, when we show it again, we can re‑apply exactly the right display mode.
