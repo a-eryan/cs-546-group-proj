@@ -48,18 +48,20 @@
       <div class="card" 
            data-noise-level="{{this.noiseLevel}}"
            data-resources="{{#each this.resourcesNearby}}{{this}},{{/each}}">
-        <div class="button-group">
-          <a href="/studyspots/{{this._id}}/edit">
-            <button class="button">
-              <img src="/public/js/images/edit.svg" alt="Edit" class="button-icon" title="Edit">
-            </button>
-          </a>
-          <form action="/studyspots/{{this._id}}/delete" method="POST" class="delete-form">
-            <button type="submit" class="button">
-              <img src="/public/js/images/delete.svg" alt="Delete" class="button-icon" title="Delete">
-            </button>
-          </form>
-        </div>
+        {{#if (isEqual this.posterEmail ../user.email)}}
+          <div class="button-group">
+            <a href="/studyspots/{{this._id}}/edit">
+              <button class="button">
+                <img src="/public/js/images/edit.svg" alt="Edit" class="button-icon" title="Edit">
+              </button>
+            </a>
+            <form action="/studyspots/{{this._id}}/delete" method="POST" class="delete-form">
+              <button type="submit" class="button">
+                <img src="/public/js/images/delete.svg" alt="Delete" class="button-icon" title="Delete">
+              </button>
+            </form>
+          </div>
+        {{/if}}
         <div class="image-wrapper">
           {{#if this.imageUrl}}
             <img src="{{this.imageUrl}}" alt="Picture of {{this.title}}">
