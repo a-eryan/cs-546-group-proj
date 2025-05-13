@@ -73,7 +73,6 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 3.5rem 0; /* Add consistent padding */
     margin-bottom: 0;
 }
 
@@ -210,12 +209,19 @@ footer {
     color: var(--stevens-gray);
 }
 
-.form-group input {
+.form-group input, .form-group #description {
     padding: 0.75rem;
     font-size: 1rem;
     border: 1px solid var(--stevens-light-gray);
     border-radius: 5px;
+    font-family: "Saira", "Arial";
 }
+
+.form-group #noiseLevel {
+    padding: 0; /* the above padding makes the slider not fill the entire width */
+    cursor: pointer;
+}
+
 
 .submit-btn {
     background-color: var(--stevens-red);
@@ -364,6 +370,7 @@ footer {
     line-height: 1.4;
     margin-bottom: 1.5rem;
     text-align: center;
+    font-size: 1rem; /*consistent font size with forums*/
 }
 
 /* View Spot button */
@@ -429,10 +436,7 @@ footer {
 
 .spot-image {
   width: 100%;
-  max-height: 400px;
   object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
 }
 
 .spot-description {
@@ -463,6 +467,11 @@ footer {
   box-sizing: border-box;
 }
 
+.review-form #rating {
+  padding: 0; /* the above padding makes the slider not fill the entire width */
+  cursor: pointer;
+}
+
 .review-form textarea.form-input { min-height: 120px; resize: vertical; }
 
 .review-actions {
@@ -490,3 +499,68 @@ footer {
   padding: 0 2px;
   color: var(--stevens-gray);
 }
+
+/* Filter container styling */
+.filters-container {
+    background-color: #f5f5f5;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+}
+
+
+
+.filter-form {
+    margin-left: 2.5rem;
+    margin-right: 2.5rem;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    align-items: flex-start; /* Changed from flex-end */
+    justify-content: space-between; /* Distribute space evenly */
+}
+
+/* Ensure button stays on the right */
+#reset-filters {
+    background-color: var(--stevens-red);
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: auto; /* Push button to the right */
+    align-self: flex-end; /* Align to bottom of container */
+}
+
+/* Results count styling */
+#results-count {
+    width: 100%;
+    text-align: center;
+    margin-top: 1rem;
+    font-weight: bold;
+}
+
+/* Grid container fix */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    min-height: 200px; /* Prevent collapse when empty */
+}
+
+.filter-inputs input[type="text"]{
+    width: 50%;
+    border: 1px solid var(--stevens-light-gray);
+    border-radius: 5px;
+    font-family: "Saira", "Arial";
+}
+
+.filter-inputs input[type="text"], .filter-inputs select {
+    width: 25;
+    border: 1px solid var(--stevens-light-gray);
+    border-radius: 5px;
+    font-family: "Saira", "Arial";
+}
+
+/*======================STUDY SPOT======================*/
