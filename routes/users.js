@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { ObjectId } from 'mongodb'; 
+import { ObjectId } from 'mongodb';
 import { getStudySpotById } from "../data/studySpots.js";
-import { forumPosts } from "../config/mongoCollections.js";
+import { forumPosts, users } from "../config/mongoCollections.js";
 import { requireAuth } from "../middleware.js";
 
 const router = Router();
@@ -19,15 +19,25 @@ router.route('/profile').get(requireAuth, async (req, res) => {
         try {
           const spot = await getStudySpotById(spotId);
           uploadedSpots.push(spot);
-          validSpotIds.push(spot._id.toString()); // Save valid IDs
+          validSpotIds.push(spot._id.toString());
         } catch (e) {
           console.warn(`Study spot with ID ${spotId} not found. Skipping.`);
-          // Skip deleted spot
         }
       }
 
-      // Clean up session to remove deleted spot IDs
-      req.session.user.uploadedSpots = validSpotIds;
+      // Update user's uploadedSpots in the database
+      const userCollection = await users();
+      await userCollection.updateOne(
+        { _id: new ObjectId(user._id) },
+        { $set: { uploadedSpots: validSpotIds.map(id => new ObjectId(id)) } }
+      );
+
+      // Refresh session data with updated uploadedSpots
+      const updatedUser = await userCollection.findOne({ _id: new ObjectId(user._id) });
+      req.session.user = {
+        ...req.session.user,
+        uploadedSpots: updatedUser.uploadedSpots.map(id => id.toString())
+      };
     }
 
     let forums = [];
@@ -46,10 +56,11 @@ router.route('/profile').get(requireAuth, async (req, res) => {
 
     return res.render('users/profile', {
       isSignedIn: isSignedIn,
-      user: { ...user, uploadedSpots },
+      user: { ...req.session.user, uploadedSpots },
       forums
     });
   } catch (e) {
+    console.error("Error in /profile route:", e);
     return res.status(400).render('users/profile', { error: e });
   }
 });
