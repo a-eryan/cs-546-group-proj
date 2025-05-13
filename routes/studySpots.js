@@ -136,4 +136,44 @@ router
   }
 });
 
+router
+  .route('/studyspots/:id/edit')
+  .get(requireAuth, async(req, res) => {
+    try{
+      const spot = await getStudySpotById(req.params.id)
+      const user = req.session.user || null;
+      const isSignedIn = !!user;
+      const spotResources = spot.resourcesNearby || [];
+
+      const resources = [
+        "printer",
+        "water fountain",
+        "vending machine",
+        "scanner",
+        "whiteboard",
+        "outlets",
+        "external monitors"
+      ].map(r => ({
+        name: r,
+        checked: spotResources.includes(r)
+      }));
+
+      if (spot.poster.toString() !== user._id.toString()) {
+        return res.status(403).render("error", {
+          error: "You are not authorized to edit this study spot.",
+          isSignedIn
+        });
+      }
+
+      return res.render('studySpots/edit', {
+        spot,
+        isSignedIn: isSignedIn,
+        user: user,
+        resources
+      });
+    } catch (e) {
+      return res.status(400).render('studySpots/create', { error: e });
+    }
+  })
+
 export default router;

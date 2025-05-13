@@ -26,6 +26,9 @@ app.use(
 const hbs = exphbs.create({
     defaultLayout: 'main',
     helpers: {
+        includes: function (value, array) {
+            return Array.isArray(array) && array.includes(value);
+        },
         isEqual: function (value1, value2) {
             return value1 === value2;
         },
