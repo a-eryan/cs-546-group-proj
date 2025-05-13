@@ -137,3 +137,37 @@ export const deleteForumPost = async (forumId, userId, isAdmin=false) => {
   
     return {deleted:true};
 };
+
+export const editForumPost = async (forumId, title, content, userId, isAdmin=false) => {
+    if (!forumId) throw "You must provide a forum post id";
+    if (!ObjectId.isValid(forumId)) throw "Invalid forum post ID";
+    
+    title = checkTitle(title);
+    content = checkDescription(content);
+    
+    const forumPostsCollection = await forumPosts();
+    
+    const post = await forumPostsCollection.findOne({ _id: new ObjectId(forumId) });
+    if (!post) throw "Forum post not found";
+    
+    if (post.userId.toString() !== userId.toString()) {
+        throw "You are not authorized to edit this post";
+    }
+    
+    const updateInfo = await forumPostsCollection.updateOne(
+        { _id: new ObjectId(forumId) },
+        { 
+            $set: { 
+                title: title,
+                content: content,
+                updatedAt: new Date().toLocaleString()
+            } 
+        }
+    );
+    
+    if (updateInfo.modifiedCount === 0) {
+        throw "Could not update forum post";
+    }
+    
+    return {updated: true};
+}
