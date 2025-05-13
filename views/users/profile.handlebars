@@ -28,17 +28,6 @@
     </section>
 
     <section class="profile-section">
-        <h3>❤️ Liked Spots</h3>
-        <ul>
-            {{#each user.likedSpots}}
-                <li><a href="/studyspots/{{this._id}}">{{this.title}}</a></li>
-            {{else}}
-                <li>You haven’t liked any posts yet.</li>
-            {{/each}}
-        </ul>
-    </section>
-
-    <section class="profile-section">
         <h3>💬 Your Forum Posts</h3>
         <ul>
             {{#each forums}}

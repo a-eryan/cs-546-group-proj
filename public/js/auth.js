@@ -59,10 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
       let password = document.getElementById("password").value;
       let confirmPassword = document.getElementById("confirmPassword").value;
 
-      console.log("Validating form...");
-      console.log("Email value:", email);
-      console.log("Password value:", confirmPassword);
-
       try {
         email = checkEmail(email);
       } catch (error) {
