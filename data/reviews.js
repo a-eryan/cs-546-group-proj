@@ -1,5 +1,5 @@
 import { studySpots, users } from '../config/mongoCollections.js';
-import { checkID, checkReviewProperties, calculateAverageRating, getCreatedDate } from '../helpers.js';
+import { checkID, checkReviewProperties, calculateAverageRating, getCreatedDate, checkString, validateReviewComment } from '../helpers.js';
 import { ObjectId } from 'mongodb';
 
 export const createReview = async (spotId, userId, title, content, rating) => {
@@ -29,7 +29,7 @@ export const createReview = async (spotId, userId, title, content, rating) => {
 
 	// Create the review object
 	const date = getCreatedDate();
-	const reviewObj = { _id: new ObjectId(), spotId, userId, title, content, rating, createdAt: date };
+	const reviewObj = { _id: new ObjectId(), spotId, userId, title, content, rating, createdAt: date, comments: [] };
 
 	// Add the review to the study spot and recalculate the average rating
 	const averageRating = calculateAverageRating([...studySpot.reviews, reviewObj]);
@@ -119,3 +119,35 @@ export const removeReview = async (reviewId) => {
 	updateInfo._id = updateInfo._id.toString();
 	return updateInfo;
 };
+
+export const addCommentToReview = async (reviewId, userId, comment) => {
+
+	const {reviewId: rId, userId: uId, comment: c} = validateReviewComment(reviewId, userId, comment);
+
+	const studySpotCollection = await studySpots();
+	const reviewObjectId = new ObjectId(rId);
+
+	const spot = await studySpotCollection.findOne({ 'reviews._id': reviewObjectId });
+	if (!spot) {
+		throw `Review ${rId} not found`;
+	}
+
+	const newComment = {
+		_id: new ObjectId(),
+		userId: uId,
+		comment: txt,
+		createdAt: getCreatedDate()
+	};
+
+	const updateRes = await studySpotCollection.updateOne(
+		{ 'reviews._id': reviewObjectId },
+		{ $push: { 'reviews.$.comments': newComment }}
+	);
+
+	if (updateRes.modifiedCount === 0) {
+		throw `Could not add comment to review ${rId}`;
+	}
+	newComment._id = newComment._id.toString();
+	return newComment;
+
+}
