@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllStudySpots, uploadStudySpot, getStudySpotById, updateStudySpot } from "../data/studySpots.js";
+import { getAllStudySpots, uploadStudySpot, getStudySpotById, updateStudySpot, deleteStudySpot } from "../data/studySpots.js";
 import { checkDescription, checkLocation, checkNoiseLevel, checkTitle } from "../helpers.js";
 import { getAllReviews } from "../data/reviews.js";
 import { requireAuth } from "../middleware.js";
@@ -223,6 +223,34 @@ router
       return res.redirect(`/studyspots/${spotId}`);
     } catch (e) {
       return res.status(400).render('studySpots/edit', { error: e });
+    }
+  });
+
+  router.post('/studyspots/:id/delete', requireAuth, async(req, res) => {
+    try {
+      const spotId = req.params.id;
+      const user = req.session.user;
+      const isSignedIn = !!user;
+
+      const spot = await getStudySpotById(spotId);
+      if (!spot) {
+        return res.status(404).render("error", {
+          error: "Study spot not found.",
+          isSignedIn
+        });
+      }
+
+      const deletedSpot = await deleteStudySpot(spotId);
+
+      if (deletedSpot.deleted){
+        req.session.user.uploadedSpots = req.session.user.uploadedSpots.filter(id => id.toString() !== spotId.toString());
+        return res.redirect('/studyspots');
+      }
+    } catch (e) {
+      return res.status(500).render("error", {
+        error: e,
+        isSignedIn: true
+      });
     }
   })
 

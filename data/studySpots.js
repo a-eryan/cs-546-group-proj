@@ -101,6 +101,7 @@ export const updateStudySpot = async(
     throw "All fields need to have valid values";
   }
 
+  spotId = checkID(spotId);
   title = checkTitle(title);
   description = checkDescription(description);
   location = checkLocation(location);
@@ -128,4 +129,19 @@ export const updateStudySpot = async(
 
   updatedInfo._id = updatedInfo._id.toString();
   return updatedInfo;
+}
+
+export const deleteStudySpot = async(spotId) => {
+  spotId = checkID(spotId);
+
+  const studyCollection = await studySpots();
+  const deletionInfo = await studyCollection.findOneAndDelete({
+    _id: new ObjectId(spotId)
+  });
+
+  console.log(deletionInfo);
+  if (!deletionInfo)
+    throw `Could not delete study spot with id of ${spotId}`;
+
+  return {deleted: true};
 }
