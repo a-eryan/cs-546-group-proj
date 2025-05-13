@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllStudySpots, uploadStudySpot, getStudySpotById } from "../data/studySpots.js";
+import { getAllStudySpots, uploadStudySpot, getStudySpotById, updateStudySpot } from "../data/studySpots.js";
 import { checkDescription, checkLocation, checkNoiseLevel, checkTitle } from "../helpers.js";
 import { getAllReviews } from "../data/reviews.js";
 import { requireAuth } from "../middleware.js";
@@ -74,7 +74,7 @@ router
         let noiseLevel = req.body.noiseLevel;
         let resources = req.body.resourcesNearby;
 
-        if (!title || !description || !location || !noiseLevel || !resources)
+        if (!title || !description || !location || !noiseLevel)
           throw new Error('All fields need to be given.')
         title = checkTitle(title);
         description = checkDescription(description);
@@ -172,7 +172,57 @@ router
         resources
       });
     } catch (e) {
-      return res.status(400).render('studySpots/create', { error: e });
+      return res.status(400).render('studySpots/edit', { error: e });
+    }
+  })
+  .post(requireAuth, upload.single("image"), async(req, res) => {
+    try {
+      const spotId = req.params.id;
+      const user = req.session.user;
+      const isSignedIn = !!user;
+      const spot = await getStudySpotById(spotId);
+
+      if (spot.poster.toString() !== user._id.toString()) {
+        return res.status(403).render("error", {
+          error: "You are not authorized to edit this study spot.",
+          isSignedIn
+        });
+      }
+
+      let title = req.body.title;
+      let description = req.body.description;
+      let location = req.body.location;
+      let noiseLevel = req.body.noiseLevel;
+      let resourcesNearby = req.body.resourcesNearby || [];
+
+      if (!title || !description || !location || !noiseLevel)
+        throw new Error('All fields need to be given.')
+      title = checkTitle(title);
+      description = checkDescription(description);
+      location = checkLocation(location);
+      noiseLevel = checkNoiseLevel(noiseLevel);
+
+      if (typeof resourcesNearby === 'string') {
+        resourcesNearby = [resourcesNearby];
+      }
+
+      console.log('Resources Nearby:', req.body.resourcesNearby);
+
+      const imagePath = req.file ? `/${req.file.path}` : spot.imageUrl;
+
+      const updatedSpot = await updateStudySpot(
+        spotId,
+        title,
+        description,
+        location,
+        resourcesNearby,
+        noiseLevel,
+        imagePath
+      );
+
+      return res.redirect(`/studyspots/${spotId}`);
+    } catch (e) {
+      return res.status(400).render('studySpots/edit', { error: e });
     }
   })
 
