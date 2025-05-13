@@ -62,6 +62,18 @@ export const uploadStudySpot = async (
     if (!updateUser){
       throw "Study spot created, but failed to update user's uploaded spots."
     }
+
+		// Add the Study Spotter achievement if the user has uploaded 3 or more spots
+		if (updateUser.uploadedSpots && updateUser.uploadedSpots.length >= 3) {
+			const hasAchievement = updateUser.achievements && updateUser.achievements.includes('Study Spotter');
+			if (!hasAchievement) {
+				await usersCollection.updateOne(
+					{ _id: new ObjectId(poster) },
+					{ $push: { achievements: 'Study Spotter' } }
+				);
+			}
+		}
+
     return {uploadCompleted: true, insertedId: insertInfo.insertedId.toString()}
 }
 

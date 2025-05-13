@@ -32,11 +32,12 @@ router.route('/profile').get(requireAuth, async (req, res) => {
         { $set: { uploadedSpots: validSpotIds.map(id => new ObjectId(id)) } }
       );
 
-      // Refresh session data with updated uploadedSpots
+      // Refresh session data with updated uploadedSpots and achievements
       const updatedUser = await userCollection.findOne({ _id: new ObjectId(user._id) });
       req.session.user = {
         ...req.session.user,
-        uploadedSpots: updatedUser.uploadedSpots.map(id => id.toString())
+        uploadedSpots: updatedUser.uploadedSpots.map(id => id.toString()),
+				achievements: updatedUser.achievements || []
       };
     }
 
@@ -57,7 +58,8 @@ router.route('/profile').get(requireAuth, async (req, res) => {
     return res.render('users/profile', {
       isSignedIn: isSignedIn,
       user: { ...req.session.user, uploadedSpots },
-      forums
+      forums,
+			achievements: req.session.user.achievements || []
     });
   } catch (e) {
     console.error("Error in /profile route:", e);

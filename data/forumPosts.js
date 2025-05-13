@@ -109,6 +109,34 @@ export const addCommentToForumPost = async (forumId, comment, userId) => {
     if (updatedInfo.modifiedCount === 0) {
         throw "We're sorry, we couldn't add your comment";
     }
+
+		// Check if the user has made 5 or more comments
+		let totalComments = 0;
+		const allForumPosts = await getAllForumPosts();
+
+		for (const post of allForumPosts) {
+			if (post.comments && Array.isArray(post.comments)) {
+				const userComments = post.comments.filter(comment => comment.author === authorEmail);
+				totalComments += userComments.length;
+			}
+		}
+
+		// Add the Study Spotter achievement if they have
+		if (totalComments >= 5) {
+			const usersCollection = await users();
+			const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+			if (!user)
+				return newComment;
+
+			const hasAchievement = user.achievements && user.achievements.includes('Big Talker');
+			if (!hasAchievement) {
+				await usersCollection.updateOne(
+					{ _id: new ObjectId(userId) },
+					{ $push: { achievements: 'Big Talker' } }
+				);
+			}
+		}
     
     return newComment;
 }
