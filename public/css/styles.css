@@ -322,6 +322,7 @@ footer {
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
 }
 
 /* Image placeholder wrapper */
@@ -332,6 +333,7 @@ footer {
     background-color: var(--stevens-gray);
     border-radius: 8px;
     margin-bottom: 1rem;
+    margin-top: 2.5rem;
 }
 .card .image-wrapper img {
     position: absolute;
@@ -356,10 +358,6 @@ footer {
     color: var(--stevens-red);
     margin-bottom: 1rem;
     text-align: center;
-}
-.card .poster .stars {
-    color: var(--stevens-red);
-    margin-left: 0.25rem;
 }
 
 /* Description */
@@ -403,6 +401,34 @@ footer {
     margin: 0;
     font-weight: 400;
 }
+
+.card .button-group {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 2;
+}
+
+.card .button-group button {
+    background-color: transparent;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.card .button-group button:hover {
+    background-color: #f4f4f4; /* Light hover effect */
+}
+
+.card .button-group .button-icon {
+    width: 24px; /* Set appropriate icon size */
+    height: 24px;
+    object-fit: contain;
+    display: block;
+}
+
 
 @media (max-width: 982px) { /*mobile responsiveness*/
     .navbar ul {
