@@ -95,12 +95,12 @@ export const checkNoiseLevel = (val) => {
 }
 
 export const checkResources = (arr) => {
-    if (!Array.isArray(arr) || arr.length === 0) {
+    if (!Array.isArray(arr)) {
         throw 'Resources must be a non-empty array';
     }
     const valid = ['printer', 'water fountain', 'vending machine', 'scanner', 'whiteboard', 'outlets', 'external monitors' ];
     arr.forEach(r => { if (!valid.includes(r)) throw `Invalid resource ${r}`; });
-  return arr; // not sure if we are going to turn this into check boxes yet, for now still string input.
+  return arr;
 }
 
 export const checkReviewProperties = (spotId, userId, title, content, rating) => {

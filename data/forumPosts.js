@@ -3,19 +3,11 @@ import { users } from "../config/mongoCollections.js"
 import { ObjectId } from 'mongodb'; 
 import { checkTitle, checkDescription, checkID } from "../helpers.js"
 
-//NOTE: the better approach would to explicitly pass the stringed userId from req.session
-async function getUserIdByEmail(email) {
-  const userCollection = await users();
-  const user = await userCollection.findOne({ email: email.toLowerCase() });
-  if (!user) throw "User not found";
-  return user._id;
-}
-
-export const forums = async (title, content, userEmail) => {
+export const createForumPost = async (title, content, userId) => {
     title = checkTitle(title);
     content = checkDescription(content);
+		userId = checkID(userId);
     const forumPostsCollection = await forumPosts();
-    const userId = await getUserIdByEmail(userEmail);
     
     const newForumPost = {
         _id: new ObjectId(),
@@ -31,7 +23,8 @@ export const forums = async (title, content, userEmail) => {
         throw 'Could not add forum post';
     }
     
-    return { id: newForumPost._id.toString() };
+		newForumPost._id = newForumPost._id.toString();
+    return newForumPost;
 }
 
 export const getForumPostById = async (id) => {

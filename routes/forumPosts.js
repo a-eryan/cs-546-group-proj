@@ -2,7 +2,7 @@ import { Router } from "express";
 import { requireAuth } from "../middleware.js";
 import xss from 'xss';
 const router = Router()
-import { findEmailById, forums, getAllForumPosts, getForumPostById, addCommentToForumPost, deleteForumPost, editForumPost} from "../data/forumPosts.js";
+import { findEmailById, createForumPost, getAllForumPosts, getForumPostById, addCommentToForumPost, deleteForumPost, editForumPost} from "../data/forumPosts.js";
 
 router
     .route('/')
@@ -55,9 +55,9 @@ router
                 throw "You must provide a title and content for the forum post";
             }
             
-            const forumPost = await forums(title, content, req.session.user.email);
+            const forumPost = await createForumPost(title, content, req.session.user._id);
 
-            return res.redirect(`/forums/${forumPost.id}`);
+            return res.redirect(`/forums/${forumPost._id}`);
         } catch (e) {
             if (e.toString().includes("cannot be an empty string or string with just spaces") || e.toString().includes("needs to be atleast")) {
                 return res.status(400).render('forums/create', {
