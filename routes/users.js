@@ -1,70 +1,77 @@
-import { Router } from "express";
+import { Router } from 'express';
 import { ObjectId } from 'mongodb';
-import { getStudySpotById } from "../data/studySpots.js";
-import { forumPosts, users } from "../config/mongoCollections.js";
-import { requireAuth } from "../middleware.js";
+import { getStudySpotById } from '../data/studySpots.js';
+import { forumPosts, users } from '../config/mongoCollections.js';
+import { requireAuth } from '../middleware.js';
 
 const router = Router();
 
-router.route('/profile').get(requireAuth, async (req, res) => {
-  try {
-    const user = req.session.user || null;
-    const isSignedIn = !!user;
+// GET the user profile page
+router.get('/', requireAuth, async (req, res) => {
+	try {
+		// Get the user from the session
+		const user = req.session.user;
 
-    let uploadedSpots = [];
-    const validSpotIds = [];
+		if (!user || !user._id)
+			return res.redirect('/login');
 
-    if (user && user.uploadedSpots) {
-      for (let spotId of user.uploadedSpots) {
-        try {
-          const spot = await getStudySpotById(spotId);
-          uploadedSpots.push(spot);
-          validSpotIds.push(spot._id.toString());
-        } catch (e) {
-          console.warn(`Study spot with ID ${spotId} not found. Skipping.`);
-        }
-      }
+		const userObjectId = new ObjectId(user._id);
+		const userCollection = await users();
 
-      // Update user's uploadedSpots in the database
-      const userCollection = await users();
-      await userCollection.updateOne(
-        { _id: new ObjectId(user._id) },
-        { $set: { uploadedSpots: validSpotIds.map(id => new ObjectId(id)) } }
-      );
+		// Get the user's uploaded study spots
+		const uploadedSpots = [];
+		const validSpotIds = [];
 
-      // Refresh session data with updated uploadedSpots and achievements
-      const updatedUser = await userCollection.findOne({ _id: new ObjectId(user._id) });
-      req.session.user = {
-        ...req.session.user,
-        uploadedSpots: updatedUser.uploadedSpots.map(id => id.toString()),
-				achievements: updatedUser.achievements || []
-      };
-    }
+		if (user.uploadedSpots && user.uploadedSpots.length > 0) {
+			for (const spotId of user.uploadedSpots) {
+				try {
+					const spot = await getStudySpotById(spotId);
+					uploadedSpots.push(spot);
+					validSpotIds.push(spot._id);
+				} catch {
+					console.warn(`Study spot with ID ${spotId} not found`);
+				}
+			}
 
-    let forums = [];
-    if (user && user._id) {
-      const forumCollection = await forumPosts();
-      forums = await forumCollection
-        .find({ userId: new ObjectId(user._id) })
-        .toArray();
+			// Update the user's uploadedSpots with only valid IDs
+			await userCollection.updateOne(
+				{ _id: userObjectId },
+				{ $set: { uploadedSpots: validSpotIds.map(id => new ObjectId(id)) } }
+			);
+		}
 
-      forums = forums.map(post => ({
-        ...post,
-        _id: post._id.toString(),
-        userId: post.userId.toString()
-      }));
-    }
+		// Update the user's session
+		const updatedUser = await userCollection.findOne({ _id: userObjectId });
+		req.session.user = {
+			...req.session.user,
+			uploadedSpots: updatedUser.uploadedSpots.map(id => id.toString()),
+			achievements: updatedUser.achievements || []
+		};
 
-    return res.render('users/profile', {
-      isSignedIn: isSignedIn,
-      user: { ...req.session.user, uploadedSpots },
-      forums,
-			achievements: req.session.user.achievements || []
-    });
-  } catch (e) {
-    console.error("Error in /profile route:", e);
-    return res.status(400).render('users/profile', { error: e });
-  }
+		// Get the user's forum posts
+		const forumCollection = await forumPosts();
+		const userForums = await forumCollection.find({ userId: user._id }).toArray();
+
+		const forums = [];
+		forums.push(...userForums.map(post => ({
+			...post,
+			_id: post._id.toString(),
+			userId: post.userId
+		})));
+
+		// Display the profile page
+		return res.render('users/profile', {
+			isSignedIn: true,
+			user: { ...req.session.user, uploadedSpots },
+			achievements: req.session.user.achievements || [],
+			forums
+		});
+	} catch (e) {
+		return res.status(500).render('error', {
+			error: e,
+			isSignedIn: true
+		});
+	}
 });
 
 export default router;

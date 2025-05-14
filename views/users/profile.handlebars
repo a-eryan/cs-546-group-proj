@@ -1,41 +1,41 @@
 <div class="profile-container">
-    <h2>Welcome, {{user.email}}</h2>
+	<h2>Welcome, {{user.email}}</h2>
     
-    <div class="profile-actions">
-        <a href="/logout" class="logout-button">Log Out</a>
-    </div>
+	<div class="profile-actions">
+		<a href="/logout" class="logout-button">Log Out</a>
+	</div>
 
-    <section class="profile-section">
-        <h3>🎖️ Achievements</h3>
-				<p>Earn achievements for uploading and reviewing 3 study spots and commenting on forum posts 5 times!</p>
-        <ul>
-            {{#each user.achievements}}
-                <li>{{this}}</li>
-            {{else}}
-                <li>No achievements yet.</li>
-            {{/each}}
-        </ul>
-    </section>
+	<section class="profile-section">
+		<h3>🎖️ Achievements</h3>
+		<p>Earn achievements for uploading and reviewing 3 study spots and commenting on forum posts 5 times!</p>
+		<ul>
+			{{#each user.achievements}}
+				<li>{{this}}</li>
+			{{else}}
+				<li>No achievements yet.</li>
+			{{/each}}
+		</ul>
+	</section>
 
-    <section class="profile-section">
-        <h3>📍 Your Uploaded Study Spots</h3>
-        <ul>
-            {{#each user.uploadedSpots}}
-                <li><a href="/studyspots/{{this._id}}">{{this.title}}</a></li>
-            {{else}}
-                <li>You haven’t posted any study spots.</li>
-            {{/each}}
-        </ul>
-    </section>
+	<section class="profile-section">
+		<h3>📍 Your Uploaded Study Spots</h3>
+			<ul>
+				{{#each user.uploadedSpots}}
+					<li><a href="/studyspots/{{this._id}}">{{this.title}}</a></li>
+				{{else}}
+					<li>You haven’t posted any study spots.</li>
+				{{/each}}
+		</ul>
+	</section>
 
-    <section class="profile-section">
-        <h3>💬 Your Forum Posts</h3>
-        <ul>
-            {{#each forums}}
-                <li><a href="/forums/{{this._id}}">{{this.title}}</a></li>
-            {{else}}
-                <li>No forum posts yet.</li>
-            {{/each}}
-        </ul>
-    </section>
+	<section class="profile-section">
+		<h3>💬 Your Forum Posts</h3>
+		<ul>
+			{{#each forums}}
+				<li><a href="/forums/{{this._id}}">{{this.title}}</a></li>
+			{{else}}
+				<li>No forum posts yet.</li>
+			{{/each}}
+		</ul>
+	</section>
 </div>

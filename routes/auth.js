@@ -80,4 +80,4 @@ router.get('/logout', (req, res) => {
 	}
 });
 
-export default router
+export default router;
