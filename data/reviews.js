@@ -184,16 +184,18 @@ export const updateReview = async (reviewId, userId, title, content, rating) => 
 		throw 'Failed to update review';
 	
 	// Recalculate the average rating
-	const updatedSpot = await studySpotCollection.findOne({ _id: studySpot._id });
-	const averageRating = calculateAverageRating(updatedSpot.reviews);
-	
-	const spotUpdateInfo = await studySpotCollection.updateOne(
-		{ _id: studySpot._id },
-		{ $set: { averageRating: averageRating } }
-	);
+	if (review.rating !== rating) {
+		const updatedSpot = await studySpotCollection.findOne({ _id: studySpot._id });
+		const averageRating = calculateAverageRating(updatedSpot.reviews);
+		
+		const spotUpdateInfo = await studySpotCollection.updateOne(
+			{ _id: studySpot._id },
+			{ $set: { averageRating: averageRating } }
+		);
 
-	if (spotUpdateInfo.modifiedCount === 0)
-		throw `Failed to update average rating for ${reviewId}`;
+		if (spotUpdateInfo.modifiedCount === 0)
+			throw `Failed to update average rating for ${reviewId}`;
+	}
 	
 	updateInfo._id = updateInfo._id.toString();
 	return updateInfo;
