@@ -6,9 +6,8 @@ export const isAuthenticated = (req, res, next) => {
 };
 
 export function requireAuth(req, res, next) {
-	if (!req.session.user) {
+	if (!req.session.user)
 	  return res.redirect('/login');
-	}
   
 	res.set('Cache-Control', 'no-store');
 	res.set('Pragma', 'no-cache');

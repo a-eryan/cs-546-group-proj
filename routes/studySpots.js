@@ -4,7 +4,7 @@ import { checkDescription, checkLocation, checkNoiseLevel, checkTitle } from "..
 import { getAllReviews } from "../data/reviews.js";
 import { getAllComments } from "../data/comments.js";
 import { requireAuth } from "../middleware.js";
-import { findEmailById } from "../data/forumPosts.js";
+import { getEmailById } from "../data/users.js";
 import multer from "multer";  
 import path from "path";
 import xss from 'xss';
@@ -32,12 +32,11 @@ router
 
       const spotsWithEmail = [];
       for (const spot of allSpots){
-        let posterEmail = 'Unknown';
+        let posterEmail;
         try {
-          const {email} = await findEmailById(spot.poster.toString());
-          posterEmail = email;
-        } catch (e) {
-          return res.status(400).render('studySpots/list', { error: e }); 
+          posterEmail = await getEmailById(spot.userId);
+        } catch {
+          posterEmail = 'Unknown User';
         }
 
         spotsWithEmail.push({
@@ -90,26 +89,14 @@ router
         }
 
         const imagePath = req.file ? `/${req.file.path}` : null;
-
-
-        const uploaded = await uploadStudySpot(
-          title,
-          description,
-          req.session.user._id,
-          location,
-          resources,
-          noiseLevel,
-          imagePath
-        );
-
-        if (uploaded.uploadCompleted && uploaded.insertedId){
-          req.session.user.uploadedSpots.push(uploaded.insertedId);
-          return res.redirect('/studyspots');
-        } else {
-          return res.status(400).render('studySpots/create', {
-            error: "Issue in creating post"
-          });
-        }
+				
+				try {
+					const studySpot = await uploadStudySpot(req.session.user._id, title, description, location, resources, noiseLevel, imagePath);
+					req.session.user.uploadedSpots.push(studySpot._id);
+					return res.redirect('/studyspots');
+				} catch (e) {
+					return res.status(400).render('studySpots/create', { error: "Issue in creating post" });
+				}
       } catch (e) {
         return res.status(400).render('studySpots/create', {
 					error: e,
@@ -248,12 +235,16 @@ router
         });
       }
 
-      const deletedSpot = await deleteStudySpot(spotId);
-
-      if (deletedSpot.deleted){
-        req.session.user.uploadedSpots = req.session.user.uploadedSpots.filter(id => id.toString() !== spotId.toString());
-        return res.redirect('/studyspots');
-      }
+			try {
+				await deleteStudySpot(spotId);
+				req.session.user.uploadedSpots = req.session.user.uploadedSpots.filter(id => id.toString() !== spotId.toString());
+				return res.redirect('/studyspots');
+			} catch (e) {
+				return res.status(500).render('error', {
+					error: e,
+					isSignedIn: true
+				});
+			}
     } catch (e) {
       return res.status(500).render("error", {
         error: e,

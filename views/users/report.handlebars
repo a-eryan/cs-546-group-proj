@@ -10,9 +10,9 @@
     <div class="report-form">
         <div class="form-group">
             <label for="reason">Briefly tell us why you're reporting this {{#if isSpot}}study spot{{else}}post{{/if}}:</label>
-            <textarea id="reason" name="reason" required maxlength="100" placeholder="Maximum 100 characters">{{reason}}</textarea>
+            <textarea id="reason" name="reason" required maxlength="250" placeholder="Maximum 250 characters">{{reason}}</textarea>
             <div class="char-counter">
-                <span id="char-count">0</span>/100 characters
+                <span id="char-count">0</span>/250 characters
             </div>
         </div>
         <button class="submit-button" type="submit">Send Report</button>

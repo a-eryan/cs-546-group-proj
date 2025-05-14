@@ -1,67 +1,66 @@
-import { users } from "../config/mongoCollections.js"
-import { checkEmail, checkPassword } from "../helpers.js"
-import bcrypt from "bcrypt"
+import { users } from '../config/mongoCollections.js';
+import { checkEmail, checkPassword, checkID } from '../helpers.js';
+import { ObjectId } from 'mongodb';
+import bcrypt from 'bcrypt';
 
-export const register = async (
-    email,
-    password,
-) => {
-    if (!email || !password)
-        throw "Please provide username and password"
-    email = checkEmail(email)
-    const userCollection = await users()
-    const duplicateUser = await userCollection.findOne({email: email.toLowerCase()})
+const saltRounds = 1;
 
-    if (duplicateUser)
-        throw `User with email of: ${email} already exists, please log in instead.`
+export const register = async (email, password) => {
+	// Validate the email and password
+	email = checkEmail(email);
+	password = checkPassword(password);
 
-    password = checkPassword(password)
-    let hashedPassword = await bcrypt.hash(password, 16)
+	// Ensure the email is not already registered
+	const userCollection = await users();
+	const duplicateUser = await userCollection.findOne({ email: email });
 
-    let newUser = {
-        email: email,
-        password: hashedPassword,
-        isAdmin: false,
-        achievements: [],
-        uploadedSpots: [],
-        likedSpots: [],
-        messages: []
-    }
+	if (duplicateUser)
+			throw `${email} is already registered, please log in instead`
 
-    const insertInfo = await userCollection.insertOne(newUser)
-    if (!insertInfo.acknowledged || !insertInfo.insertedId)
-        throw `Could not add user with email of ${email}`
+	// Create the new user
+	const hashedPassword = await bcrypt.hash(password, saltRounds)
+	const newUser = {
+		email: email,
+		password: hashedPassword,
+		achievements: [],
+		uploadedSpots: []
+	}
 
-    return {registrationCompleted: true}
+	const insertInfo = await userCollection.insertOne(newUser)
+	if (!insertInfo.acknowledged || !insertInfo.insertedId)
+		throw `Could not add user ${email}`
+
+	return insertInfo.insertedId.toString();
+};
+
+export const login = async (email, password) => {
+	// Validate the email and password
+	email = checkEmail(email);
+	password = checkPassword(password);
+
+	// Find the user by email
+	const userCollection = await users()
+	const user = await userCollection.findOne({ email: email })
+	if (!user) throw "Incorrect email or password";
+
+	// Compare the user's password with the hashed password
+	const match = await bcrypt.compare(password, user.password)
+	if (!match) throw "Incorrect email or password";
+
+	user._id = user._id.toString();
+	return user;
 }
 
-export const login = async (
-    email,
-    password
-) => {
-    if (!email || !password)
-        throw "Please provide username and password"
-    email = checkEmail(email)
-    password = checkPassword(password)
+export const getEmailById = async (userId) => {
+	// Validate the user ID
+	userId = checkID(userId);
+	
+	// Find the user by ID
+	const userCollection = await users();
+	const user = await userCollection.findOne({ _id: new ObjectId(userId) });
+	
+	if (!user || !user.email)
+		throw `User ${userId} not found`;
 
-    const userCollection = await users()
-    const user = await userCollection.findOne({email: email.toLowerCase()})
-
-    if (!user)
-        throw "Either the email or password is invalid"
-    const matchedPassword = await bcrypt.compare(password, user.password)
-    if (matchedPassword){
-        const userObj = {
-			_id: user._id.toString(),
-            email: user.email,
-            isAdmin: user.isAdmin,
-            achievements: user.achievements,
-            uploadedSpots: user.uploadedSpots,
-            likedSpots: user.likedSpots,
-            messages: user.messages
-        }
-        return userObj
-    } else {
-        throw "Either the email or password is invalid"
-    }
-}
+	return user.email;
+};

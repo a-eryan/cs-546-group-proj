@@ -1,16 +1,12 @@
-import { checkID, checkString, getCreatedDate } from '../helpers.js';
-import { studySpots, users } from '../config/mongoCollections.js';
 import { ObjectId } from 'mongodb';
+import { studySpots, users } from '../config/mongoCollections.js';
+import { checkID, checkContent, getCreatedDate } from '../helpers.js';
 
 export const createComment = async (spotId, userId, content) => {
 	// Validate all comment properties
-	try {
-		spotId = checkID(spotId);
-		userId = checkID(userId);
-		content = checkString(content);
-	} catch {
-		throw "A comment must have a valid study spot, commenter, and content";
-	}
+	spotId = checkID(spotId);
+	userId = checkID(userId);
+	content = checkContent(content);
 
 	// Find the study spot and commenter by ID
 	const spotObjectId = new ObjectId(spotId);
@@ -31,10 +27,9 @@ export const createComment = async (spotId, userId, content) => {
 	const commentObj = { _id: new ObjectId(), spotId, userId, author: user.email, content, createdAt: date };
 
 	// Add the comment to the study spot
-	const updateInfo = await studySpotCollection.findOneAndUpdate(
+	const updateInfo = await studySpotCollection.updateOne(
 		{ _id: spotObjectId },
-		{ $push: { comments: commentObj } },
-		{ returnDocument: 'after' }
+		{ $push: { comments: commentObj } }
 	);
 
 	if (!updateInfo)

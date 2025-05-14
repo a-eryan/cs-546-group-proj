@@ -1,6 +1,6 @@
-import { reports, studySpots, forumPosts } from '../config/mongoCollections.js';
-import { checkString, checkID, getCreatedDate } from '../helpers.js';
 import { ObjectId } from 'mongodb';
+import { reports, studySpots, forumPosts } from '../config/mongoCollections.js';
+import { checkString, checkID, getCreatedDate, checkDescription } from '../helpers.js';
 
 // Two different functions to handle the different contentTypes
 export const createStudySpotReport = async (contentId, userId, reason) => {
@@ -20,18 +20,11 @@ export const createForumPostReport = async (contentId, userId, reason) => {
 };
 
 const createReport = async (contentId, userId, contentType, reason) => {
-	// Validate the content ID, user ID, and reason
-	try {
-		contentId = checkID(contentId);
-		userId = checkID(userId);
-		contentType = checkString(contentType);
-		reason = checkString(reason);
-	} catch {
-		throw "A report must have a valid content ID, reporter ID, content type, and reason";
-	}
-
-	if (reason.length > 100)
-		throw "The report reason cannot exceed 100 characters";
+	// Validate the report properties
+	contentId = checkID(contentId);
+	userId = checkID(userId);
+	contentType = checkString(contentType);
+	reason = checkDescription(reason);
 
 	// Check if the content exists
 	const contentObjectId = new ObjectId(contentId);

@@ -1,4 +1,4 @@
 export const mongoConfig = {
-    serverUrl: 'mongodb://localhost:27017/',
-    database: 'Study_Spots_Directory'
+	serverUrl: 'mongodb://localhost:27017/',
+	database: 'Study_Spots_Directory'
 };

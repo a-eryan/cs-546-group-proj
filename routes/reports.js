@@ -57,7 +57,7 @@ router.post('/spot/:spotId', isAuthenticated, async (req, res) => {
     // Validate the report properties
     const spotId = xss(req.params.spotId);
     const userId = req.session.user._id;
-    const { reason } = xss(req.body);
+    const reason = xss(req.body.reason);
 
     try {
         checkID(spotId);
@@ -77,7 +77,7 @@ router.post('/spot/:spotId', isAuthenticated, async (req, res) => {
                 isSignedIn: true
             });
             
-        const report = await reports.createStudySpotReport(spotId, userId, reason);
+        await reports.createStudySpotReport(spotId, userId, reason);
         
         return res.redirect(`/studyspots/${spotId}`);
     } catch (e) {
@@ -97,7 +97,7 @@ router.post('/spot/:spotId', isAuthenticated, async (req, res) => {
 router.post('/forum/:forumId', isAuthenticated, async (req, res) => {	
 	const forumId = xss(req.params.forumId);
 	const userId = req.session.user._id;
-	const { reason } = xss(req.body);
+	const reason = xss(req.body.reason);
 
 	try {
 		checkID(forumId);
@@ -117,7 +117,7 @@ router.post('/forum/:forumId', isAuthenticated, async (req, res) => {
 				isSignedIn: true
 			});
 			
-		const report = await reports.createForumPostReport(forumId, userId, reason);
+		await reports.createForumPostReport(forumId, userId, reason);
 		
 		return res.redirect(`/forums/${forumId}`);
 	} catch (e) {

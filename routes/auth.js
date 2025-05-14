@@ -33,12 +33,12 @@ router
                 })
             }
 
-            const registered = await register(email, password)
-            if (registered.registrationCompleted){
-                return res.redirect('/login')
-            } else {
-                return res.status(500).render('error', {error: "Internal Server Error"})
-            }
+						try {
+							await register(email, password);
+							return res.redirect('/login');
+						} catch (e) {
+							return res.status(400).render('register', { error: e });
+						}
         } catch (e) {
             console.log(e)
             return res.status(400).render('register', { error: e})
@@ -86,7 +86,7 @@ router.route('/logout').get(async (req, res) => {
       res.set('Cache-Control', 'no-store');
       res.set('Pragma', 'no-cache');
       res.set('Expires', '0');
-      res.clearCookie('AuthenticationState'); // Optional, depending on your session cookie name
+      res.clearCookie('AuthenticationState');
       return res.redirect('/login');
     });
   } catch (e) {

@@ -42,7 +42,7 @@ router.get('/spot/:spotId', async (req, res) => {
 
 	// Get all reviews for the study spot
 	try {
-		const reviewsList = await getAllReviews(req.params.spotId); // Use imported function
+		const reviewsList = await getAllReviews(req.params.spotId);
 		return res.status(200).json(reviewsList);
 	} catch (e) {
 		return res.status(400).json({ error: e })
@@ -54,7 +54,9 @@ router.post('/:spotId', isAuthenticated, async (req, res) => {
 	// Validate the review properties
 	const spotId = xss(req.params.spotId);
 	const userId = req.session.user._id;
-	const { title, content, rating } = xss(req.body);
+	const title = xss(req.body.title);
+	const content = xss(req.body.content);
+	const rating = xss(req.body.rating);
 
 	const ratingNum = Number(rating);
 
@@ -107,7 +109,7 @@ router.delete('/:reviewId', isAuthenticated, async (req, res) => {
 // GET review edit form
 router.get('/:id/edit', requireAuth, async (req, res) => {
   try {
-    const reviewId = req.params.id;
+    const reviewId = xss(req.params.id);
     const userId = req.session.user._id;
     
     checkID(reviewId);
@@ -153,11 +155,13 @@ router.get('/:id/edit', requireAuth, async (req, res) => {
 
 // POST review edit
 router.post('/:id/edit', requireAuth, async (req, res) => {
+	const reviewId = xss(req.params.id);
+	const userId = req.session.user._id;
+	const title = xss(req.body.title);
+	const content = xss(req.body.content);
+	const rating = xss(req.body.rating);
+
   try {
-    const reviewId = req.params.id;
-    const userId = req.session.user._id;
-    const { title, content, rating, spotId } = req.body;  // Make sure to get spotId from form
-    
     // Add spotId to the form in edit.handlebars
     const updatedReview = await updateReview(
       reviewId,
@@ -171,17 +175,17 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
     const review = await getReview(reviewId);
     return res.redirect(`/studyspots/${review.spotId}`);
   } catch (e) {
-    const review = await getReview(req.params.id);
+    const review = await getReview(reviewId);
     const studySpot = await getStudySpotById(review.spotId);
     
     return res.status(400).render('reviews/edit', {
       title: 'Edit Review',
       error: e.toString(),
       review: {
-        _id: req.params.id,
-        title: req.body.title,
-        content: req.body.content,
-        rating: req.body.rating
+        _id: reviewId,
+        title: title,
+        content: content,
+        rating: rating
       },
       spot: studySpot,
       user: req.session.user,
@@ -193,9 +197,9 @@ router.post('/:id/edit', requireAuth, async (req, res) => {
 // DELETE review
 router.post('/:id/delete', requireAuth, async (req, res) => {
   try {
-    const reviewId = req.params.id;
+    const reviewId = xss(req.params.id);
     const userId = req.session.user._id;
-    const spotId = req.body.spotId;
+    const spotId = (req.body.spotId);
     
     checkID(reviewId);
     checkID(spotId);
@@ -238,7 +242,7 @@ router.post('/:id/delete', requireAuth, async (req, res) => {
 router.post('/comments/:reviewId', isAuthenticated, async (req, res) => {
 	const reviewId = xss(req.params.reviewId);
   const userId = req.session.user._id;
-  const { content } = xss(req.body);
+  const content = xss(req.body.content);
 
   try {
     checkID(reviewId);

@@ -51,7 +51,7 @@ router.post('/:spotId', isAuthenticated, async (req, res) => {
 	// Validate the comment properties
 	const spotId = xss(req.params.spotId);
 	const userId = req.session.user._id;
-	const { content } = xss(req.body);
+	const content = xss(req.body.content);
 
 	try {
 		checkID(spotId);

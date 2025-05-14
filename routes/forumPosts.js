@@ -1,8 +1,10 @@
 import { Router } from "express";
 import { requireAuth } from "../middleware.js";
+import { getEmailById } from '../data/users.js';
+import { createForumPost, getAllForumPosts, getForumPostById, addCommentToForumPost, deleteForumPost, editForumPost} from "../data/forumPosts.js";
 import xss from 'xss';
-const router = Router()
-import { findEmailById, createForumPost, getAllForumPosts, getForumPostById, addCommentToForumPost, deleteForumPost, editForumPost} from "../data/forumPosts.js";
+
+const router = Router();
 
 router
     .route('/')
@@ -55,7 +57,7 @@ router
                 throw "You must provide a title and content for the forum post";
             }
             
-            const forumPost = await createForumPost(title, content, req.session.user._id);
+            const forumPost = await createForumPost(req.session.user._id, title, content);
 
             return res.redirect(`/forums/${forumPost._id}`);
         } catch (e) {
@@ -80,42 +82,34 @@ router
 router
     .route('/:id')
     .get(requireAuth, async(req, res) => {
-        try {
-            const forumId = xss(req.params.id);
-            const forumPost = await getForumPostById(forumId);
+			const forumId = xss(req.params.id);
 
-            // Check if forumPost exists BEFORE trying to access its properties
-            if (!forumPost) {
-                return res.status(404).render('error', { 
-                    error: 'Forum post not found',
-                    user: req.session.user, //shows the user object in the navbar
-                    isSignedIn: req.session.user ? true : false
-                });
-            }
-            const author = await findEmailById(forumPost.userId.toString());
-            //add flag for who is allowed to modify the post
+			try {
+				const forumPost = await getForumPostById(forumId);
+				const authorEmail = await getEmailById(forumPost.userId.toString());
 
-            const canModify = req.session.user && (req.session.user._id.toString() === forumPost.userId.toString() || req.session.user.isAdmin);
-            
-            return res.render('forums/post', {
-                title: forumPost.title,
-                _id: forumId, 
-                author: author.email,
-                content: forumPost.content,
-                createdAt: forumPost.createdAt,
-                comments: forumPost.comments,
-                user: req.session.user, //shows the user object in the navbar
-                isSignedIn: req.session.user ? true : false,
-                userId: forumPost.userId,
-                canModify: canModify
-            });
-        } catch (e) {
-            return res.status(500).render('error', {
-                error: e.toString(),
-                user: req.session.user,
-                isSignedIn: req.session.user ? true : false
-            });
-        }
+				//add flag for who is allowed to modify the post
+				const canModify = req.session.user && (req.session.user._id.toString() === forumPost.userId.toString());
+				
+				return res.render('forums/post', {
+						title: forumPost.title,
+						_id: forumId, 
+						author: authorEmail,
+						content: forumPost.content,
+						createdAt: forumPost.createdAt,
+						comments: forumPost.comments,
+						user: req.session.user, //shows the user object in the navbar
+						isSignedIn: req.session.user ? true : false,
+						userId: forumPost.userId,
+						canModify: canModify
+				});
+			} catch (e) {
+				return res.status(404).render('error', { 
+							error: e,
+							user: req.session.user, //shows the user object in the navbar
+							isSignedIn: req.session.user ? true : false
+					});
+			}
     })
     .post(requireAuth, async(req, res) => {
         try {
@@ -127,11 +121,11 @@ router
             const comment = xss(req.body.comment);
             if (!comment || /^\s*$/.test(comment)) {
                 const forumPost = await getForumPostById(forumId);
-                const author = await findEmailById(forumPost.userId.toString());
+                const authorEmail = await getEmailById(forumPost.userId.toString());
                 return res.status(400).render('forums/post', {
                     title: forumPost.title, // Use actual forum title
                     _id: forumId,
-                    author: author.email,
+                    author: authorEmail,
                     content: forumPost.content,
                     createdAt: forumPost.createdAt,
                     comments: forumPost.comments,
@@ -139,8 +133,8 @@ router
                     user: req.session.user,
                     isSignedIn: req.session.user ? true : false
                 });
-        }
-            const newComment = await addCommentToForumPost(forumId, comment, userId);
+       			 }
+            await addCommentToForumPost(forumId, userId, comment);
             return res.redirect(`/forums/${forumId}`);
         } catch (e) {
             return res.status(500).render('error', {
@@ -157,9 +151,8 @@ router
                 return res.redirect('/login');
             }
 
-            const isAdmin = req.session.user.isAdmin;
-
-            await deleteForumPost(xss(req.params.id), req.session.user._id, isAdmin);
+						// TODO: Check result and if the user has permission to delete the post
+            await deleteForumPost(xss(req.params.id));
             return res.redirect('/forums');
         } catch (e) {
             return res.status(400).render('error', {
@@ -182,9 +175,7 @@ router.get('/:id/edit', requireAuth, async(req, res) => {
             });
         }
         
-        const canModify = req.session.user && 
-            (req.session.user._id.toString() === forumPost.userId.toString() || 
-             req.session.user.isAdmin);
+        const canModify = req.session.user && req.session.user._id.toString() === forumPost.userId.toString();
         
         if (!canModify) {
             return res.status(403).render('error', {
@@ -214,13 +205,12 @@ router.get('/:id/edit', requireAuth, async(req, res) => {
 router.post('/:id/edit', requireAuth, async(req, res) => { 
     try {
         const forumId = xss(req.params.id);
-        const { title, content } = xss(req.body);
+				const title = xss(req.body.title);
+				const content = xss(req.body.content);
         const userId = req.session.user._id;
         const forumPost = await getForumPostById(forumId);
        
-        const canModify = req.session.user && 
-        (req.session.user._id.toString() ===  forumPost.userId.toString() || 
-        req.session.user.isAdmin);
+        const canModify = req.session.user && req.session.user._id.toString() ===  forumPost.userId.toString();
 
         if (!title || /^\s*$/.test(title)) {
             return res.status(400).render('forums/edit', {
