@@ -67,7 +67,7 @@ main {
     margin-right: 2.5rem;
 }
 
-.forum-header, .forum-list-header {
+.forum-header, .forum-list-header, .report-header {
     border-bottom: 3px solid var(--stevens-gold);
     color: var(--stevens-gray);
     display: flex;
@@ -84,6 +84,12 @@ main {
     color: var(--stevens-gray);
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.comments-section {
+    margin-left: 2.5rem;
+    margin-right: 2.5rem;
+    margin-top: 0.3rem;
 }
 
 .comment, .forum {
@@ -109,7 +115,7 @@ main {
     white-space: pre-wrap; /*preserves whitespace and line breaks*/
 }
 
-.comment-form button, .new-forum-button, .back-button, .edit-button, .delete-button {
+.comment-form button, .new-forum-button, .back-button, .edit-button, .delete-button, .delete-forum-button, .submit-button {
     background-color: var(--stevens-red);
     color: white;
     padding: 0.5rem 1rem;
@@ -147,7 +153,7 @@ main {
     margin-bottom: 0.3rem;
 }
 
-.forum-form input[type="text"] {
+.forum-form input[type="text"],  .report-form input[type="text"], .report-form textarea {
     width: 98%;
     padding: 0.75rem;
     font-size: 1rem;
@@ -626,3 +632,20 @@ footer {
 }
 
 /*======================STUDY SPOT======================*/
+
+/*======================REPORT======================*/
+.report-header {
+    margin-left: 2.5rem;
+    margin-right: 2.5rem;
+    margin-bottom: 0;
+}
+
+.report-form {
+    margin-left: 2.5rem;
+    margin-right: 2.5rem;
+    padding: 1rem;
+    background-color: white;
+    color: var(--stevens-gray);
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}

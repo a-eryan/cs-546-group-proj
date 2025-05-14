@@ -19,8 +19,13 @@
             <a href="/forums/{{this._id}}/edit">
                 <button class="edit-button">Edit Post</button>
             </a>
-        </div>
     {{/if}}
+          <a href="/reports/forum/{{this._id}}">
+            <button class="delete-forum-button" title="Report">
+                Report Forum
+            </button>
+        </div>
+
     <div class="comments-section">
         <h2>Comments</h2>
         {{#if comments.length}}

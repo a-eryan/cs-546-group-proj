@@ -48,8 +48,8 @@
       <div class="card" 
            data-noise-level="{{this.noiseLevel}}"
            data-resources="{{#each this.resourcesNearby}}{{this}},{{/each}}">
+        <div class="button-group">
         {{#if (isEqual this.posterEmail ../user.email)}}
-          <div class="button-group">
             <a href="/studyspots/{{this._id}}/edit">
               <button class="button">
                 <img src="/public/js/images/edit.svg" alt="Edit" class="button-icon" title="Edit">
@@ -60,8 +60,13 @@
                 <img src="/public/js/images/delete.svg" alt="Delete" class="button-icon" title="Delete">
               </button>
             </form>
-          </div>
         {{/if}}
+          <a href="/reports/spot/{{this._id}}">
+            <button class="button" title="Report">
+              <img src="/public/js/images/report.svg" alt="Report" class="button-icon" title="Report">
+            </button>
+          </a>
+        </div>
         <div class="image-wrapper">
           {{#if this.imageUrl}}
             <img src="{{this.imageUrl}}" alt="Picture of {{this.title}}">
