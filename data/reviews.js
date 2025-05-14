@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { studySpots, users } from '../config/mongoCollections.js';
+import { getEmailById } from './users.js';
 import { checkContent, checkID, checkReviewProperties, calculateAverageRating, getCreatedDate } from '../helpers.js';
 
 export const createReview = async (spotId, userId, title, content, rating) => {
@@ -27,9 +28,16 @@ export const createReview = async (spotId, userId, title, content, rating) => {
 			throw `User ${userId} has already reviewed study spot ${spotId}`;
 	}
 
+	let authorEmail;
+	try {
+		authorEmail = await getEmailById(userId);
+	} catch {
+		authorEmail = 'Unknown User';
+	}
+
 	// Create the review object
 	const date = getCreatedDate();
-	const reviewObj = { _id: new ObjectId(), spotId, userId, title, content, rating, createdAt: date, comments: [] };
+	const reviewObj = { _id: new ObjectId(), spotId, userId, email: authorEmail, title, content, rating, createdAt: date, comments: [] };
 
 	// Add the review to the study spot and recalculate the average rating
 	const averageRating = calculateAverageRating([...studySpot.reviews, reviewObj]);
@@ -172,7 +180,7 @@ export const updateReview = async (reviewId, userId, title, content, rating) => 
 		{ returnDocument: 'after' }
 	);
 	
-	if (updateInfo.modifiedCount === 0)
+	if (!updateInfo)
 		throw 'Failed to update review';
 	
 	// Recalculate the average rating
@@ -219,7 +227,18 @@ export const deleteReview = async (reviewId) => {
 	
 	if (updateInfo.modifiedCount === 0)
 		throw `Could not delete review ${reviewId}`;
-	
+
+	const updatedSpot = await studySpotCollection.findOne({ _id: studySpot._id });
+	const averageRating = updatedSpot.reviews.length > 0 ? calculateAverageRating(updatedSpot.reviews) : null;
+
+	const ratingUpdateInfo = await studySpotCollection.updateOne(
+		{ _id: studySpot._id },
+		{ $set: { averageRating: averageRating } }
+	);
+
+	if (ratingUpdateInfo.modifiedCount === 0)
+		throw `Failed to update average rating for ${reviewId}`;
+
 	return true;
 };
 

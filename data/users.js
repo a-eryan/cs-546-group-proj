@@ -3,7 +3,7 @@ import { checkEmail, checkPassword, checkID } from '../helpers.js';
 import { ObjectId } from 'mongodb';
 import bcrypt from 'bcrypt';
 
-const saltRounds = 16;
+const saltRounds = 1;
 
 export const register = async (email, password) => {
 	// Validate the email and password
