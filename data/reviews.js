@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { studySpots, users } from '../config/mongoCollections.js';
-import { checkContent, checkID, checkReviewProperties, calculateAverageRating, validateReviewComment, getCreatedDate } from '../helpers.js';
+import { checkContent, checkID, checkReviewProperties, calculateAverageRating, getCreatedDate } from '../helpers.js';
 
 export const createReview = async (spotId, userId, title, content, rating) => {
 	// Validate all review properties

@@ -144,21 +144,17 @@ export const checkResources = (arr) => {
 
 export const checkReviewProperties = (spotId, userId, title, content, rating) => {
 	// Ensure that all string properties are provided
-	try {
-		spotId = checkID(spotId);
-		userId = checkID(userId);
-		title = checkTitle(title);
-		content = checkContent(content);
-	} catch {
-		throw "A review must have an associated study spot, reviewer, title, and content";
-	}
+	spotId = checkID(spotId);
+	userId = checkID(userId);
+	title = checkTitle(title);
+	content = checkContent(content);
 
 	// Ensure that the rating is a number between 1 and 5
 	if (!rating || typeof rating !== 'number' || !Number.isInteger(rating) || rating < 1 || rating > 5)
 		throw "The review rating must be an integer between 1 and 5";
 
 	return { spotId, userId, title, content, rating };
-}
+};
 
 export const calculateAverageRating = (reviews) => {
 	// Ensure the ratings array consists of only numbers
@@ -180,10 +176,3 @@ export const calculateAverageRating = (reviews) => {
 	const average = sum / reviews.length;
 	return Math.round(average * 10) / 10;
 };
-
-export const validateReviewComment = (reviewId, userId, comment) => {
-	reviewId = checkID(reviewId);
-	userId = checkID(userId);
-	comment = checkString(comment);
-	return { reviewId, userId, comment };
-}

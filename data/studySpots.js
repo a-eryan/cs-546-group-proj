@@ -1,6 +1,6 @@
-import { ObjectId } from "mongodb";
-import { studySpots, users } from "../config/mongoCollections.js"
-import { checkDescription, checkID, checkLocation, checkNoiseLevel, checkResources, checkTitle, getCreatedDate } from "../helpers.js"
+import { ObjectId } from 'mongodb';
+import { studySpots, users } from '../config/mongoCollections.js';
+import { checkDescription, checkID, checkLocation, checkNoiseLevel, checkResources, checkTitle, getCreatedDate } from '../helpers.js'
 
 export const uploadStudySpot = async (userId, title, description, location, resources, noiseLevel, imagePath) => {
 	// Validate study spot properties
