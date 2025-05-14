@@ -28,7 +28,7 @@ export const checkEmail = (email) => {
 	if (email.includes(' '))
 		throw `${email} can't contain empty spaces`;
 
-	if (!/^[^\s@]+@stevens\.edu$/.test(email))
+	if (!/^[^\s@]+@stevens\.edu$/i.test(email))
 		throw `${email} must be a valid Stevens email address`;
 
 	return email;

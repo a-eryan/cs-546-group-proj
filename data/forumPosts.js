@@ -109,6 +109,34 @@ export const addCommentToForumPost = async (forumId, comment, userId) => {
     if (updatedInfo.modifiedCount === 0) {
         throw "We're sorry, we couldn't add your comment";
     }
+
+		// Check if the user has made 5 or more comments
+		let totalComments = 0;
+		const allForumPosts = await getAllForumPosts();
+
+		for (const post of allForumPosts) {
+			if (post.comments && Array.isArray(post.comments)) {
+				const userComments = post.comments.filter(comment => comment.author === authorEmail);
+				totalComments += userComments.length;
+			}
+		}
+
+		// Add the Study Spotter achievement if they have
+		if (totalComments >= 5) {
+			const usersCollection = await users();
+			const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+			if (!user)
+				return newComment;
+
+			const hasAchievement = user.achievements && user.achievements.includes('Big Talker');
+			if (!hasAchievement) {
+				await usersCollection.updateOne(
+					{ _id: new ObjectId(userId) },
+					{ $push: { achievements: 'Big Talker' } }
+				);
+			}
+		}
     
     return newComment;
 }
@@ -137,3 +165,37 @@ export const deleteForumPost = async (forumId, userId, isAdmin=false) => {
   
     return {deleted:true};
 };
+
+export const editForumPost = async (forumId, title, content, userId, isAdmin=false) => {
+    if (!forumId) throw "You must provide a forum post id";
+    if (!ObjectId.isValid(forumId)) throw "Invalid forum post ID";
+    
+    title = checkTitle(title);
+    content = checkDescription(content);
+    
+    const forumPostsCollection = await forumPosts();
+    
+    const post = await forumPostsCollection.findOne({ _id: new ObjectId(forumId) });
+    if (!post) throw "Forum post not found";
+    
+    if (post.userId.toString() !== userId.toString()) {
+        throw "You are not authorized to edit this post";
+    }
+    
+    const updateInfo = await forumPostsCollection.updateOne(
+        { _id: new ObjectId(forumId) },
+        { 
+            $set: { 
+                title: title,
+                content: content,
+                updatedAt: new Date().toLocaleString()
+            } 
+        }
+    );
+    
+    if (updateInfo.modifiedCount === 0) {
+        throw "Could not update forum post";
+    }
+    
+    return {updated: true};
+}

@@ -2,6 +2,20 @@
 <script src="/public/js/studySpots.js"></script>
 
 <div class="spot-container">
+  {{#if (isEqual spot.poster user._id)}}
+    <div class="study-spot-actions" style="margin: 1rem 0;">
+      <a href="/studyspots/{{spot._id}}/edit">
+        <button class="button" title="Edit">
+          <img src="/public/js/images/edit.svg" alt="Edit" class="button-icon" title="Edit">
+        </button>
+      </a>
+      <form action="/studyspots/{{spot._id}}/delete" method="POST" class="delete-form">
+        <button type="submit" class="button" title="Delete">
+          <img src="/public/js/images/delete.svg" alt="Delete" class="button-icon" title="Delete">
+        </button>
+      </form>
+    </div>
+  {{/if}}
   <h2 class="spot-title">{{spot.title}}</h2>
 
   {{#if spot.imageUrl}}

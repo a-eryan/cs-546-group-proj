@@ -1,10 +1,11 @@
 import { Router } from "express";
+import { requireAuth } from "../middleware.js";
 const router = Router()
-import { findEmailById, forums, getAllForumPosts, getForumPostById, addCommentToForumPost , deleteForumPost} from "../data/forumPosts.js";
+import { findEmailById, forums, getAllForumPosts, getForumPostById, addCommentToForumPost, deleteForumPost, editForumPost} from "../data/forumPosts.js";
 
 router
     .route('/')
-    .get(async(req, res) => {
+    .get(requireAuth, async(req, res) => {
         try {
             const forumPosts = await getAllForumPosts();
             return res.render('forums/list', {
@@ -24,7 +25,7 @@ router
     })
 router
     .route('/create') 
-    .get(async(req, res) => {
+    .get(requireAuth, async(req, res) => {
         try {
             if (!req.session.user) {
                 return res.status(401).redirect('/error');
@@ -42,7 +43,7 @@ router
             });
         }
     })
-    .post(async(req, res) => {
+    .post(requireAuth, async(req, res) => {
         try {
             if (!req.session.user) { //if the user somehow isn't signed in, redirect to error page
                 return res.status(401).redirect('/error');
@@ -77,7 +78,7 @@ router
     })
 router
     .route('/:id')
-    .get(async(req, res) => {
+    .get(requireAuth, async(req, res) => {
         try {
             const forumId = req.params.id;
             const forumPost = await getForumPostById(forumId);
@@ -115,7 +116,7 @@ router
             });
         }
     })
-    .post(async(req, res) => {
+    .post(requireAuth, async(req, res) => {
         try {
             if (!req.session.user) {
                 return res.status(401).redirect('/error');
@@ -167,6 +168,120 @@ router
             })
         }
     });
+router.get('/:id/edit', requireAuth, async(req, res) => {   
+    try {
+        const forumId = req.params.id;
+        const forumPost = await getForumPostById(forumId);
+        
+        if (!forumPost) {
+            return res.status(404).render('error', { 
+                error: 'Forum post not found',
+                user: req.session.user,
+                isSignedIn: true
+            });
+        }
+        
+        const canModify = req.session.user && 
+            (req.session.user._id.toString() === forumPost.userId.toString() || 
+             req.session.user.isAdmin);
+        
+        if (!canModify) {
+            return res.status(403).render('error', {
+                error: 'You do not have permission to edit this forum post',
+                user: req.session.user,
+                isSignedIn: true
+            });
+        }
+        
+        return res.render('forums/edit', {
+            title: 'Edit Forum Post',
+            _id: forumId,
+            postTitle: forumPost.title,  
+            content: forumPost.content,
+            user: req.session.user,
+            isSignedIn: true,
+            error: null
+        });
+    } catch (e) {
+        return res.status(500).render('error', {
+            error: e.toString(),
+            user: req.session.user,
+            isSignedIn: true
+        });
+    }
+});
+router.post('/:id/edit', requireAuth, async(req, res) => { 
+    try {
+        const forumId = req.params.id;
+        const { title, content } = req.body;
+        const userId = req.session.user._id;
+        const forumPost = await getForumPostById(forumId);
+       
+        const canModify = req.session.user && 
+        (req.session.user._id.toString() ===  forumPost.userId.toString() || 
+        req.session.user.isAdmin);
+
+        if (!title || /^\s*$/.test(title)) {
+            return res.status(400).render('forums/edit', {
+                title: 'Edit Forum Post',
+                _id: forumId,
+                postTitle: title,
+                content: content,
+                error: 'Title cannot be empty',
+                user: req.session.user,
+                isSignedIn: true
+            });
+        }
+
+        if (!content || /^\s*$/.test(content)) {
+            return res.status(400).render('forums/edit', {
+                title: 'Edit Forum Post',
+                _id: forumId,
+                postTitle: title,
+                content: content,
+                error: 'Content cannot be empty',
+                user: req.session.user,
+                isSignedIn: true
+            });
+        }
+
+        if (!canModify) {
+            return res.status(403).render('error', {
+                error: 'You do not have permission to edit this forum post',
+                user: req.session.user,
+                isSignedIn: true
+            });
+        }
+
+        await editForumPost(forumId, title, content, userId);
+        return res.redirect(`/forums/${forumId}`);
+    } catch (e) {
+        const error_400 = e.toString().includes("cannot be an empty string or string with just spaces") || e.toString().includes("needs to be atleast");
+        if (error_400) {
+            return res.status(400).render('forums/edit', {
+                title: 'Edit Forum Post',
+                _id: req.params.id,
+                postTitle: req.body.title,
+                content: req.body.content,
+                error: e.toString(),
+                user: req.session.user,
+                isSignedIn: !!req.session.user
+            });
+        }
+
+        return res.status(500).render('error', {
+                error: 'A server error occurred. Please try again.',
+                formData: {  // Save form data for potential recovery
+                    id: req.params.id,
+                    title: req.body.title,
+                    content: req.body.content
+                },
+                user: req.session.user,
+                isSignedIn: !!req.session.user
+        });
+    }
+});
+
 
 
 export default router;

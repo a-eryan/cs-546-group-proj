@@ -73,7 +73,6 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 3.5rem 0; /* Add consistent padding */
     margin-bottom: 0;
 }
 
@@ -110,7 +109,7 @@ main {
     white-space: pre-wrap; /*preserves whitespace and line breaks*/
 }
 
-.comment-form button, .new-forum-button, .back-button {
+.comment-form button, .new-forum-button, .back-button, .edit-button, .delete-button {
     background-color: var(--stevens-red);
     color: white;
     padding: 0.5rem 1rem;
@@ -122,6 +121,14 @@ main {
     font-family: 'Saira', 'Arial';
     font-size: 1rem;
 }
+
+.button-container {
+    display: flex;
+    gap: 0.5rem; /* Space between buttons */
+    align-items: center;
+    margin: 0.5rem 0;
+}
+
 
 .comment-form button:hover, .new-forum-button:hover, .back-button:hover {
     background-color: #881F2E;
@@ -210,12 +217,19 @@ footer {
     color: var(--stevens-gray);
 }
 
-.form-group input {
+.form-group input, .form-group #description {
     padding: 0.75rem;
     font-size: 1rem;
     border: 1px solid var(--stevens-light-gray);
     border-radius: 5px;
+    font-family: "Saira", "Arial";
 }
+
+.form-group #noiseLevel {
+    padding: 0; /* the above padding makes the slider not fill the entire width */
+    cursor: pointer;
+}
+
 
 .submit-btn {
     background-color: var(--stevens-red);
@@ -316,6 +330,7 @@ footer {
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
 }
 
 /* Image placeholder wrapper */
@@ -326,6 +341,7 @@ footer {
     background-color: var(--stevens-gray);
     border-radius: 8px;
     margin-bottom: 1rem;
+    margin-top: 2.5rem;
 }
 .card .image-wrapper img {
     position: absolute;
@@ -351,10 +367,6 @@ footer {
     margin-bottom: 1rem;
     text-align: center;
 }
-.card .poster .stars {
-    color: var(--stevens-red);
-    margin-left: 0.25rem;
-}
 
 /* Description */
 .card p.description {
@@ -364,6 +376,7 @@ footer {
     line-height: 1.4;
     margin-bottom: 1.5rem;
     text-align: center;
+    font-size: 1rem; /*consistent font size with forums*/
 }
 
 /* View Spot button */
@@ -397,6 +410,34 @@ footer {
     font-weight: 400;
 }
 
+.card .button-group {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 2;
+}
+
+.card .button-group button {
+    background-color: transparent;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.card .button-group button:hover {
+    background-color: #f4f4f4; /* Light hover effect */
+}
+
+.card .button-group .button-icon {
+    width: 24px; /* Set appropriate icon size */
+    height: 24px;
+    object-fit: contain;
+    display: block;
+}
+
+
 @media (max-width: 982px) { /*mobile responsiveness*/
     .navbar ul {
         width: 100%;
@@ -419,6 +460,34 @@ footer {
   color: var(--stevens-gray);
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.study-spot-actions {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 2;
+}
+
+.study-spot-actions button {
+    background-color: transparent;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.study-spot-actions button:hover {
+    background-color: #f4f4f4;
+}
+
+.study-spot-actions .button-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    display: block;
 }
 
 .spot-title {
@@ -429,10 +498,7 @@ footer {
 
 .spot-image {
   width: 100%;
-  max-height: 400px;
   object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
 }
 
 .spot-description {
@@ -463,6 +529,11 @@ footer {
   box-sizing: border-box;
 }
 
+.review-form #rating {
+  padding: 0; /* the above padding makes the slider not fill the entire width */
+  cursor: pointer;
+}
+
 .review-form textarea.form-input { min-height: 120px; resize: vertical; }
 
 .review-actions {
@@ -490,3 +561,68 @@ footer {
   padding: 0 2px;
   color: var(--stevens-gray);
 }
+
+/* Filter container styling */
+.filters-container {
+    background-color: #f5f5f5;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+}
+
+
+
+.filter-form {
+    margin-left: 2.5rem;
+    margin-right: 2.5rem;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    align-items: flex-start; /* Changed from flex-end */
+    justify-content: space-between; /* Distribute space evenly */
+}
+
+/* Ensure button stays on the right */
+#reset-filters {
+    background-color: var(--stevens-red);
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: auto; /* Push button to the right */
+    align-self: flex-end; /* Align to bottom of container */
+}
+
+/* Results count styling */
+#results-count {
+    width: 100%;
+    text-align: center;
+    margin-top: 1rem;
+    font-weight: bold;
+}
+
+/* Grid container fix */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    min-height: 200px; /* Prevent collapse when empty */
+}
+
+.filter-inputs input[type="text"]{
+    width: 50%;
+    border: 1px solid var(--stevens-light-gray);
+    border-radius: 5px;
+    font-family: "Saira", "Arial";
+}
+
+.filter-inputs input[type="text"], .filter-inputs select {
+    width: 25;
+    border: 1px solid var(--stevens-light-gray);
+    border-radius: 5px;
+    font-family: "Saira", "Arial";
+}
+
+/*======================STUDY SPOT======================*/

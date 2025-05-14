@@ -46,10 +46,10 @@
     </footer>
     
     <!-- Common JS -->
-    <script src="public/js/main"></script>
+    {{!-- <script src="public/js/main"></script>
     {{#if pageScript}} 
         <script src="/js/{{pageScript}}.js"></script>
-    {{/if}}
+    {{/if}} --}}
     <!-- the above will check whether express passed a client-sided JS file when rendering this page
     e.g: if the page is /study-spots, it will check if there is a file called study-spots.js in the js folder and include it:
         res.render('study-spots', {
@@ -57,5 +57,17 @@
         pageScript: 'specificPageScript' //this will load public/js/specificPageScript.js
     });
     -->
+    <script>
+        {{#unless isSignedIn}}
+            if (
+                !document.cookie.includes('AuthenticationState') &&
+                window.location.pathname !== '/login' &&
+                window.location.pathname !== '/register'
+            ) {
+                window.location.replace('/login');
+            }
+        {{/unless}}
+    </script>
+
 </body>
 </html>

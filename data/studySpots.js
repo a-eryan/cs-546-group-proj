@@ -62,6 +62,18 @@ export const uploadStudySpot = async (
     if (!updateUser){
       throw "Study spot created, but failed to update user's uploaded spots."
     }
+
+		// Add the Study Spotter achievement if the user has uploaded 3 or more spots
+		if (updateUser.uploadedSpots && updateUser.uploadedSpots.length >= 3) {
+			const hasAchievement = updateUser.achievements && updateUser.achievements.includes('Study Spotter');
+			if (!hasAchievement) {
+				await usersCollection.updateOne(
+					{ _id: new ObjectId(poster) },
+					{ $push: { achievements: 'Study Spotter' } }
+				);
+			}
+		}
+
     return {uploadCompleted: true, insertedId: insertInfo.insertedId.toString()}
 }
 
@@ -86,4 +98,62 @@ export const getStudySpotById = async(spotId) => {
 
   studySpot._id = studySpot._id.toString();
   return studySpot;
+}
+
+export const updateStudySpot = async(
+  spotId,
+  title,
+  description,
+  location,
+  resources, 
+  noiseLevel,
+  imagePath
+) => {
+  if (!title || !description || !location || !resources || !noiseLevel) {
+    throw "All fields need to have valid values";
+  }
+
+  spotId = checkID(spotId);
+  title = checkTitle(title);
+  description = checkDescription(description);
+  location = checkLocation(location);
+  resources = checkResources(resources);
+  noiseLevel = checkNoiseLevel(noiseLevel);
+
+  let updatedStudySpot = {
+    title: title,
+    description: description,
+    location: location,
+    resourcesNearby: resources,
+    noiseLevel: noiseLevel,
+    imageUrl: imagePath,
+    updatedAt: new Date().toLocaleString()
+  };
+
+  const studyCollection = await studySpots();
+  const updatedInfo = await studyCollection.findOneAndUpdate(
+    { _id: new ObjectId(spotId) },
+    { $set: updatedStudySpot },
+    { returnDocument: 'after' }
+  );
+
+  if (!updatedInfo)
+    throw 'Could not update study spot successfully';
+
+  updatedInfo._id = updatedInfo._id.toString();
+  return updatedInfo;
+}
+
+export const deleteStudySpot = async(spotId) => {
+  spotId = checkID(spotId);
+
+  const studyCollection = await studySpots();
+  const deletionInfo = await studyCollection.findOneAndDelete({
+    _id: new ObjectId(spotId)
+  });
+
+  if (!deletionInfo)
+    throw `Could not delete study spot with id of ${spotId}`;
+
+  return {deleted: true};
 }
