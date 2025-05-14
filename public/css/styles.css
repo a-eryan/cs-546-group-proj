@@ -631,6 +631,12 @@ footer {
     font-family: "Saira", "Arial";
 }
 
+.review-header .button-group {
+    width: 50%;
+    display: flex;
+
+}
+
 /*======================STUDY SPOT======================*/
 
 /*======================REPORT======================*/
@@ -648,4 +654,58 @@ footer {
     color: var(--stevens-gray);
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Review button styling to match study spot buttons */
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.review-item .button-group {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto; /* Push to the right */
+}
+
+.review-item .button {
+  background: transparent;
+  border: none;
+  padding: 0.4rem;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.review-item .button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.button-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.edit-review-container {
+    margin-left: 2.5rem;
+    margin-right: 2.5rem;
+}
+
+
+.edit-review-container .form-actions button[type="submit"] {
+    background-color: var(--stevens-red);
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'Saira', 'Arial';
+    font-size: 1rem;
 }

@@ -43,45 +43,61 @@
   </ul>
 
   {{#if reviews.length}}
-    <ul class ="reviews-list">
+    <ul class="reviews-list">
       {{#each reviews}}
         <li class="review-item">
-          <strong>{{title}}</strong> - {{rating}}*<br>
-          {{content}}
+          <div class="review-header">
+            <strong>{{title}}</strong> {{rating}}/5 Stars
+            
+            {{#if (isEqual userId ../user._id)}}
+              <div class="button-group">
+                <a href="/reviews/{{_id}}/edit">
+                  <button class="button" title="Edit">
+                    <img src="/public/js/images/edit.svg" alt="Edit" class="button-icon" title="Edit">
+                  </button>
+                </a>
+                <form action="/reviews/{{_id}}/delete" method="POST" class="delete-review-form">
+                  <input type="hidden" name="spotId" value="{{../spot._id}}">
+                  <button type="submit" class="button" title="Delete">
+                    <img src="/public/js/images/delete.svg" alt="Delete" class="button-icon" title="Delete">
+                  </button>
+                </form>
+              </div>
+            {{/if}}
+          </div>
+          <p>{{content}}</p>
         </li>
       {{/each}}
-
     </ul>
-    {{else}}
-      <p>No reviews yet.</p>
-    {{/if}}
+  {{else}}
+    <p>No reviews yet.</p>
+  {{/if}}
 
+  {{#if isSignedIn}}
+    <form id="reviewForm" class="review-form">
+      <input name="title" placeholder="Title" class="form-input" required>
+      <textarea class="form-input" name="content" placeholder="Write your review" required></textarea>
 
-    {{#if isSignedIn}}
-        <form id="reviewForm" class="review-form">
-        <input name="title" placeholder="Title" class="form-input" required>
-        <textarea class="form-input" name="content" placeholder="Write your review" required></textarea>
+      <label class="slider-label">
+        Rating:
+        <span id="ratingDisplay" style="font-weight:bolder;">3</span>
+      </label>
 
-        <label class="slider-label">
-            Rating:
-            <span id="ratingDisplay" style="font-weight:bolder;">3</span>
-        </label>
+      <input class="form-input" type="range" name="rating" id="rating" min="1" max="5" step="1" value="3" required>
 
-        <input class="form-input" type="range" name="rating" id="rating" min="1" max="5" step="1" value="3" required>
-
-        <div class="slider-scale">
+      <div class="slider-scale">
         {{#each [1,2,3,4,5]}}<span>{{this}}</span>{{/each}}
-        </div>
-        <div class="review-actions">
+      </div>
+      <div class="review-actions">
         <button class="back-button">Post Review</button>
-        <a  href="/studyspots" class="back-button review-back">Back to all spots</a>
-        </div>
-        </form>
-    {{else}}
-        <p>Please <a href="/login">sign in</a> to leave a review.</p>
-    {{/if}}
+        <a href="/studyspots" class="back-button review-back">Back to all spots</a>
+      </div>
+    </form>
+  {{else}}
+    <p>Please <a href="/login">sign in</a> to leave a review.</p>
+  {{/if}}
 
-    </div>
+</div>
 
-    <script src="/public/js/reviews.js"></script>
+<script src="/public/js/reviews.js"></script>
 

@@ -131,3 +131,95 @@ export const removeReview = async (reviewId) => {
 	updateInfo._id = updateInfo._id.toString();
 	return updateInfo;
 };
+
+export const updateReview = async (reviewId, userId, title, content, rating) => {
+	reviewId = checkID(reviewId);
+	userId = checkID(userId);
+	
+	// First get the existing review to have access to the spotId
+	const studySpotCollection = await studySpots();
+	const studySpot = await studySpotCollection.findOne({ 'reviews._id': new ObjectId(reviewId) });
+	
+	if (!studySpot)
+		throw `Review ${reviewId} not found`;
+	
+	const review = studySpot.reviews.find(r => r._id.toString() === reviewId);
+	
+	if (!review)
+		throw `Review ${reviewId} not found`;
+	
+	if (review.userId !== userId)
+		throw 'You can only edit your own reviews';
+	
+	// Now we have the spotId from the original review
+	const spotId = studySpot._id.toString();
+	
+	// Use all needed fields in validation
+	({ title, content, rating } = checkReviewProperties(spotId, userId, title, content, rating));
+	
+	const updateInfo = await studySpotCollection.updateOne(
+		{ 
+			_id: studySpot._id,
+			'reviews._id': new ObjectId(reviewId)
+		},
+		{
+			$set: {
+				'reviews.$.title': title,
+				'reviews.$.content': content,
+				'reviews.$.rating': rating,
+				'reviews.$.updatedAt': new Date()
+			}
+		}
+	);
+	
+	if (updateInfo.modifiedCount === 0)
+		throw 'Failed to update review';
+	
+	const updatedSpot = await studySpotCollection.findOne({ _id: studySpot._id });
+	const averageRating = calculateAverageRating(updatedSpot.reviews);
+	
+	await studySpotCollection.updateOne(
+		{ _id: studySpot._id },
+		{ $set: { averageRating: averageRating } }
+	);
+	
+	return {
+		_id: reviewId,
+		spotId: studySpot._id.toString(),
+		userId,
+		title,
+		content,
+		rating,
+		updatedAt: new Date()
+	};
+};
+
+export const deleteReview = async (reviewId) => {
+	reviewId = checkID(reviewId);
+	
+	const studySpotCollection = await studySpots();
+	const studySpot = await studySpotCollection.findOne({ 'reviews._id': new ObjectId(reviewId) });
+	
+	if (!studySpot)
+		throw `Review ${reviewId} not found`;
+	
+	const review = studySpot.reviews.find(r => r._id.toString() === reviewId);
+	
+	if (!review)
+		throw `Review ${reviewId} not found`;
+	
+	const updateInfo = await studySpotCollection.updateOne(
+		{ 
+			_id: studySpot._id,
+			'reviews._id': new ObjectId(reviewId)
+		},
+		{
+			$pull: { reviews: { _id: new ObjectId(reviewId) } }
+		}
+	);
+	
+	if (updateInfo.modifiedCount === 0)
+		throw 'Failed to delete review';
+	
+	return true;
+};
