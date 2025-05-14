@@ -34,5 +34,11 @@ Users can:
 5. Run the development server: <br>
 `npm start` 
 
-6. Log in with a seeded account
-#### need to enter seeded acount infos here
+6. Log in with a seeded account: <br>
+
+| Demo email                | Password   |
+|---------------------------|------------|
+| student1@stevens.edu      | Student1!  |
+| student2@stevens.edu      | Student2!  |
+| student3@stevens.edu      | Student3!  |
+
