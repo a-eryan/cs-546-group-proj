@@ -1,0 +1,20 @@
+<script src="/public/js/reports.js"></script>
+<form id="reportForm" action="/reports/{{type}}/{{id}}" method="POST">
+    {{#if error}} 
+    <div class="error-message">{{error}}</div>
+    {{/if}}
+    <div class="report-header">
+        <h1>Report {{#if isSpot}}Study Spot{{else}}Forum Post{{/if}}</h1>
+        <a href="/{{returnPath}}" class="back-button">Back to {{#if isSpot}}Study Spots{{else}}Forums{{/if}}</a>
+    </div>
+    <div class="report-form">
+        <div class="form-group">
+            <label for="reason">Briefly tell us why you're reporting this {{#if isSpot}}study spot{{else}}post{{/if}}:</label>
+            <textarea id="reason" name="reason" required maxlength="100" placeholder="Maximum 100 characters">{{reason}}</textarea>
+            <div class="char-counter">
+                <span id="char-count">0</span>/100 characters
+            </div>
+        </div>
+        <button class="submit-button" type="submit">Send Report</button>
+    </div>
+</form>
