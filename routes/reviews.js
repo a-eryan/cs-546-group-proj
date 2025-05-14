@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { isAuthenticated } from '../middleware.js';
-import { checkID, checkReviewProperties } from '../helpers.js';
+import { checkString, checkID, checkReviewProperties } from '../helpers.js';
 import * as reviews from '../data/reviews.js';
 import xss from 'xss';
 
@@ -101,7 +101,7 @@ router.delete('/:reviewId', isAuthenticated, async (req, res) => {
 	}
 });
 
-router.get('/comments/:reviewId', isAuthenticated, async (req, res) => {
+router.post('/comments/:reviewId', isAuthenticated, async (req, res) => {
 	const reviewId = xss(req.params.reviewId);
   const userId = req.session.user._id;
   const { content } = xss(req.body);
