@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const length = reasonTextarea.value.length;
             charCount.textContent = length;
         
-            if (length > 90) { //visual warning when approaching limit
+            if (length > 200) { //visual warning when approaching limit
                 charCount.style.color = '#f0ad4e'; //warning color
             } else {
                 charCount.style.color = ''; //reset to default
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            if (reason.length > 100) { //Validate length
+            if (reason.length > 250) { //Validate length
                 e.preventDefault();
                 showError('Report reason cannot exceed 100 characters');
                 return;

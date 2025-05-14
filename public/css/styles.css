@@ -725,3 +725,15 @@ footer {
     font-family: 'Saira', 'Arial';
     font-size: 1rem;
 }
+
+.cancel-link {
+	background-color: var(--stevens-gray);
+	color: white;
+	padding: 0.5rem 1rem;
+	text-decoration: none;
+	border-radius: 5px;
+	font-weight: bold;
+	cursor: pointer;
+	font-family: 'Saira', 'Arial';
+	font-size: 1rem;
+}
