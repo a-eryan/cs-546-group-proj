@@ -1,72 +1,75 @@
-<script src="/public/js/studySpotFiltering.js"></script>
 <div class="study-header">
   <h1>✨ Welcome to Duck Study Hub, {{user.email}}</h1>
   <p class="subtitle">Find all your favorite campus study spots and discover new ones at your fingertips.</p>
 </div>
-  <!-- Filter Section -->
+
 <div class="filters-container">
-    <form id="filter-form" class="filter-form">
-        <div class="filter-inputs">
-            <div class="filter-group">
-                <label for="filter-search">Search:</label>
-                <input type="text" id="filter-search" placeholder="Search spots...">
-            </div>
+	<form id="filter-form" class="filter-form">
+		<div class="filter-inputs">
+			<div class="filter-group">
+					<label for="filter-search">Search:</label>
+					<input type="text" id="filter-search" placeholder="Search spots...">
+			</div>
             
-            <div class="filter-group">
-                <label for="filter-noise">Noise Level:</label>
-                <select id="filter-noise">
-                    <option value="all">All Levels</option>
-                    <option value="1">Normal (1)</option>
-                    <option value="2">Quiet (2)</option>
-                    <option value="3">Silent (3)</option>
-                </select>
-            </div>
+			<div class="filter-group">
+				<label for="filter-noise">Noise Level:</label>
+					<select id="filter-noise">
+						<option value="all">All Levels</option>
+						<option value="1">Normal (1)</option>
+						<option value="2">Quiet (2)</option>
+						<option value="3">Silent (3)</option>
+					</select>
+			</div>
             
-            <div class="filter-group">
-                <label>Resources:</label>
-                <div class="checkbox-group">
-                    <label><input type="checkbox" name="filter-resources" value="printer"> Printer</label>
-                    <label><input type="checkbox" name="filter-resources" value="water fountain"> Water Fountain</label>
-                    <label><input type="checkbox" name="filter-resources" value="vending machine"> Vending Machine</label>
-                    <label><input type="checkbox" name="filter-resources" value="scanner"> Scanner</label>
-                    <label><input type="checkbox" name="filter-resources" value="external monitors"> External Monitors</label>                    
-                    <label><input type="checkbox" name="filter-resources" value="whiteboard"> Whiteboard</label>
-                    <label><input type="checkbox" name="filter-resources" value="outlets"> Outlets</label>
-                </div>
-            </div>
-        </div>
+			<div class="filter-group">
+				<label>Resources:</label>
+				<div class="checkbox-group">
+					<label><input type="checkbox" name="filter-resources" value="printer"> Printer</label>
+						<label><input type="checkbox" name="filter-resources" value="water fountain"> Water Fountain</label>
+						<label><input type="checkbox" name="filter-resources" value="vending machine"> Vending Machine</label>
+						<label><input type="checkbox" name="filter-resources" value="scanner"> Scanner</label>
+						<label><input type="checkbox" name="filter-resources" value="external monitors"> External Monitors</label>                    
+						<label><input type="checkbox" name="filter-resources" value="whiteboard"> Whiteboard</label>
+						<label><input type="checkbox" name="filter-resources" value="outlets"> Outlets</label>
+				</div>
+			</div>
+		</div>
         
-        <button class="button" type="button" id="reset-filters">Reset Filters</button>
-    </form>
+		<button class="button" type="button" id="reset-filters">Reset Filters</button>
+	</form>
     
-    <div id="results-count">Showing {{spots.length}} spots</div>
+	<div id="results-count">Showing {{spots.length}} spots</div>
 </div>
 
 <div class="card-grid">
   {{#if spots.length}}
     {{#each spots}}
       <div class="card" 
-           data-noise-level="{{this.noiseLevel}}"
-           data-resources="{{#each this.resourcesNearby}}{{this}},{{/each}}">
-        <div class="button-group">
-        {{#if (isEqual this.posterEmail ../user.email)}}
-            <a href="/studyspots/{{this._id}}/edit">
-              <button class="button">
-                <img src="/public/js/images/edit.svg" alt="Edit" class="button-icon" title="Edit">
-              </button>
-            </a>
-            <form action="/studyspots/{{this._id}}/delete" method="POST" class="delete-form">
-              <button type="submit" class="button">
-                <img src="/public/js/images/delete.svg" alt="Delete" class="button-icon" title="Delete">
-              </button>
-            </form>
-        {{/if}}
-          <a href="/reports/spot/{{this._id}}">
-            <button class="button" title="Report">
-              <img src="/public/js/images/report.svg" alt="Report" class="button-icon" title="Report">
-            </button>
-          </a>
+				data-noise-level="{{this.noiseLevel}}"
+				data-resources="{{#each this.resourcesNearby}}{{this}},{{/each}}">
+
+				<div class="button-group">
+					{{#if (isEqual this.authorEmail ../user.email)}}
+						<a href="/studyspots/{{this._id}}/edit">
+							<button class="button">
+								<img src="/public/js/images/edit.svg" alt="Edit" class="button-icon" title="Edit">
+							</button>
+						</a>
+						
+						<form action="/studyspots/{{this._id}}/delete" method="POST" class="delete-form">
+							<button type="submit" class="button">
+							<img src="/public/js/images/delete.svg" alt="Delete" class="button-icon" title="Delete">
+							</button>
+						</form>
+					{{/if}}
+					
+					<a href="/reports/spot/{{this._id}}">
+						<button class="button" title="Report">
+						<img src="/public/js/images/report.svg" alt="Report" class="button-icon" title="Report">
+						</button>
+					</a>
         </div>
+
         <div class="image-wrapper">
           {{#if this.imageUrl}}
             <img src="{{this.imageUrl}}" alt="Picture of {{this.title}}">
@@ -74,10 +77,9 @@
             <img src="public\js\images\landscape-placeholder-svgrepo-com.svg" alt="Placeholder image">
           {{/if}}
         </div>
+
         <h2>{{this.title}}</h2>
-        <div class="poster">
-          Posted by: <b>{{this.posterEmail}}</b>
-        </div>
+        <div class="poster">Posted by: <b>{{this.authorEmail}}</b></div>
         <p class="description">{{this.description}}</p>
         <a href="/studyspots/{{this._id}}" class="view-btn">View Spot</a>
       </div>
@@ -86,3 +88,5 @@
     <p>Sorry, there are no uploaded study spots as of right now.</p>
   {{/if}}
 </div>
+
+<script src="/public/js/studySpotFiltering.js"></script>

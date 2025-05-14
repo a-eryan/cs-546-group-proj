@@ -504,7 +504,9 @@ footer {
 
 .spot-image {
   width: 100%;
+	max-height: 750px;
   object-fit: cover;
+	margin-top: 2.5rem;
 }
 
 .spot-description {

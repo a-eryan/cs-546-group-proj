@@ -129,17 +129,31 @@ export const checkNoiseLevel = (val) => {
 
 // Checks if an array contains only valid resources
 export const checkResources = (arr) => {
-	if (!arr || !Array.isArray(arr))
-		throw "A resources array must be provided";
-	
+	if (!arr)
+		return [];
+
+	if (typeof arr === 'string')
+		arr = arr.split(',').map(resource => resource.trim());
+	else if (!Array.isArray(arr))
+		return [];
+
+	if (arr.length === 0)
+		return arr;
+
 	const resources = ['printer', 'water fountain', 'vending machine', 'scanner', 'whiteboard', 'outlets', 'external monitors' ];
 
-	arr.forEach(resource => {
-		if (!resources.includes(resource.toLowerCase()))
-			throw `Invalid resource ${resource}`;
-	});
+	const result = [];
+	for (let i = 0; i < arr.length; i++) {
+		if (!arr[i])
+			continue;
 
-  return arr;
+		const resource = arr[i].toLowerCase();
+		if (!resources.includes(resource))
+			throw `Invalid resource ${arr[i]}`;
+		result.push(resource);
+	}
+
+  return result;
 };
 
 export const checkReviewProperties = (spotId, userId, title, content, rating) => {

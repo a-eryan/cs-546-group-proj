@@ -8,7 +8,7 @@ import reportRoutes from './reports.js';
 
 const routes = (app) => {
 	app.use('/', authRoutes);
-	app.use('/', studySpotsRoutes);
+	app.use('/studyspots', studySpotsRoutes);
 	app.use('/profile', userRoutes);
 	app.use('/comments', commentRoutes);
 	app.use('/reviews', reviewRoutes);

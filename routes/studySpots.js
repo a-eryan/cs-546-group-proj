@@ -1,18 +1,18 @@
-import { Router } from "express";
-import { getAllStudySpots, uploadStudySpot, getStudySpotById, updateStudySpot, deleteStudySpot } from "../data/studySpots.js";
-import { checkDescription, checkLocation, checkNoiseLevel, checkTitle } from "../helpers.js";
-import { getAllReviews } from "../data/reviews.js";
-import { getAllComments } from "../data/comments.js";
-import { requireAuth } from "../middleware.js";
-import { getEmailById } from "../data/users.js";
-import multer from "multer";  
-import path from "path";
+import { getAllStudySpots, uploadStudySpot, getStudySpotById, updateStudySpot, deleteStudySpot } from '../data/studySpots.js';
+import { checkID, checkDescription, checkLocation, checkNoiseLevel, checkResources, checkTitle } from '../helpers.js';
+import { getAllReviews } from '../data/reviews.js';
+import { getAllComments } from '../data/comments.js';
+import { requireAuth } from '../middleware.js';
+import { getEmailById } from '../data/users.js';
+import { Router } from 'express';
+import multer from 'multer';  
+import path from 'path';
 import xss from 'xss';
 
 const router = Router();
 
 const storage = multer.diskStorage({
-  destination: "public/uploads/",
+  destination: 'public/uploads/',
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
     cb(null, `${Date.now()}-${file.fieldname}${ext}`);
@@ -21,236 +21,179 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage});
 
+// GET the study spots homepage
+router.get('/', requireAuth, async (req, res) => {
+	// Get the user from the session
+	const user = req.session.user;
 
-router
-  .route('/studyspots')
-  .get(requireAuth, async(req,res) => {
-    try {
-      const allSpots = await getAllStudySpots();
-      const user = req.session.user || null;
-      const isSignedIn = !!user;
+	if (!user || !user.email)
+		return res.redirect('/login');
 
-      const spotsWithEmail = [];
-      for (const spot of allSpots){
-        let posterEmail;
-        try {
-          posterEmail = await getEmailById(spot.userId);
-        } catch {
-          posterEmail = 'Unknown User';
-        }
+	try {
+		// Get all study spots
+		const studySpots = await getAllStudySpots();
 
-        spotsWithEmail.push({
-          ...spot,
-          posterEmail
-        })
-      }
-      return res.render('studySpots/list', {
-        spots: spotsWithEmail,
-        isSignedIn: isSignedIn,
-        user: user
-      });
-    } catch (e) {
-      return res.status(400).render('studySpots/list', { error: e });
-    }
-  })
-
-  router
-    .route('/studyspots/upload')
-    .get(requireAuth, async(req,res) => {
-      try {
-        const user = req.session.user || null;
-        const isSignedIn = !!user;
-        return res.render('studySpots/create', {
-          isSignedIn: isSignedIn
-        });
-      } catch (e) {
-        return res.status(400).render('studySpots/create', { error: e });
-      }
-    })
-    .post(requireAuth, upload.single("image"), async(req,res) => {
-      try {
-        let title = xss(req.body.title);
-        let description = xss(req.body.description);
-        let location = xss(req.body.location);
-        let noiseLevel = xss(req.body.noiseLevel);
-        let resources = xss(req.body.resourcesNearby);
-
-        if (!title || !description || !location || !noiseLevel)
-          throw new Error('All fields need to be given.')
-        title = checkTitle(title);
-        description = checkDescription(description);
-        location = checkLocation(location);
-        noiseLevel = checkNoiseLevel(noiseLevel);
-
-        if (!resources){
-          resources = [];
-        } else if (typeof resources === 'string') {
-          resources = [resources];
-        }
-
-        const imagePath = req.file ? `/${req.file.path}` : null;
-				
-				try {
-					const studySpot = await uploadStudySpot(req.session.user._id, title, description, location, resources, noiseLevel, imagePath);
-					req.session.user.uploadedSpots.push(studySpot._id);
-					return res.redirect('/studyspots');
-				} catch (e) {
-					return res.status(400).render('studySpots/create', { error: "Issue in creating post" });
-				}
-      } catch (e) {
-        return res.status(400).render('studySpots/create', {
-					error: e,
-					isSignedIn: true,
-					user: req.session.user
-				});
-      }
-    })
-
-  router.get('/studyspots/:id', requireAuth, async (req, res) => {
-    try {
-      const spot = await getStudySpotById(xss(req.params.id));
-      const reviews = await getAllReviews(spot._id);
-			const comments = await getAllComments(spot._id);
-      const user = req.session.user || null;
-      const signed = !!user;
-
-      return res.render('studySpots/spot', {
-        title: spot.title,
-        spot,
-        reviews,
-				comments,
-        isSignedIn: signed,
-        user
-    });
-  } catch (e) {
-    return res.status(404).render('error', {
-      error: e.toString(),
-      isSignedIn: !!req.session.user,
-      user: req.session.user
-    });
-  }
-});
-
-router
-  .route('/studyspots/:id/edit')
-  .get(requireAuth, async(req, res) => {
-    try{
-      const spot = await getStudySpotById(xss(req.params.id))
-      const user = req.session.user || null;
-      const isSignedIn = !!user;
-      const spotResources = spot.resourcesNearby || [];
-
-      const resources = [
-        "printer",
-        "water fountain",
-        "vending machine",
-        "scanner",
-        "whiteboard",
-        "outlets",
-        "external monitors"
-      ].map(r => ({
-        name: r,
-        checked: spotResources.includes(r)
-      }));
-
-      if (spot.poster.toString() !== user._id.toString()) {
-        return res.status(403).render("error", {
-          error: "You are not authorized to edit this study spot.",
-          isSignedIn
-        });
-      }
-
-      return res.render('studySpots/edit', {
-        spot,
-        isSignedIn: isSignedIn,
-        user: user,
-        resources
-      });
-    } catch (e) {
-      return res.status(400).render('studySpots/edit', { error: e });
-    }
-  })
-  .post(requireAuth, upload.single("image"), async(req, res) => {
-    try {
-      const spotId = xss(req.params.id);
-      const user = req.session.user;
-      const isSignedIn = !!user;
-      const spot = await getStudySpotById(spotId);
-
-      if (spot.poster.toString() !== user._id.toString()) {
-        return res.status(403).render("error", {
-          error: "You are not authorized to edit this study spot.",
-          isSignedIn
-        });
-      }
-
-      let title = xss(req.body.title);
-      let description = xss(req.body.description);
-      let location = xss(req.body.location);
-      let noiseLevel = xss(req.body.noiseLevel);
-      let resourcesNearby = xss(req.body.resourcesNearby) || [];
-
-      if (!title || !description || !location || !noiseLevel)
-        throw new Error('All fields need to be given.')
-      title = checkTitle(title);
-      description = checkDescription(description);
-      location = checkLocation(location);
-      noiseLevel = checkNoiseLevel(noiseLevel);
-
-      if (typeof resourcesNearby === 'string') {
-        resourcesNearby = [resourcesNearby];
-      }
-
-      console.log('Resources Nearby:', xss(req.body.resourcesNearby));
-
-      const imagePath = req.file ? `/${req.file.path}` : spot.imageUrl;
-
-      const updatedSpot = await updateStudySpot(
-        spotId,
-        title,
-        description,
-        location,
-        resourcesNearby,
-        noiseLevel,
-        imagePath
-      );
-
-      return res.redirect(`/studyspots/${spotId}`);
-    } catch (e) {
-      return res.status(400).render('studySpots/edit', { error: e });
-    }
-  });
-
-  router.post('/studyspots/:id/delete', requireAuth, async(req, res) => {
-    try {
-      const spotId = xss(req.params.id);
-      const user = req.session.user;
-      const isSignedIn = !!user;
-
-      const spot = await getStudySpotById(spotId);
-      if (!spot) {
-        return res.status(404).render("error", {
-          error: "Study spot not found.",
-          isSignedIn
-        });
-      }
+		// Get every study spot's author email
+		const spotsWithEmail = [];
+		for (const spot of studySpots) {
+			let authorEmail;
 
 			try {
-				await deleteStudySpot(spotId);
-				req.session.user.uploadedSpots = req.session.user.uploadedSpots.filter(id => id.toString() !== spotId.toString());
-				return res.redirect('/studyspots');
-			} catch (e) {
-				return res.status(500).render('error', {
-					error: e,
-					isSignedIn: true
-				});
+				authorEmail = await getEmailById(spot.userId);
+			} catch {
+				authorEmail = 'Unknown User';
 			}
-    } catch (e) {
-      return res.status(500).render("error", {
-        error: e,
-        isSignedIn: true
-      });
-    }
-  })
+
+			spotsWithEmail.push({ ...spot, authorEmail });
+		}
+
+		// Render the study spots list page
+		return res.render('studySpots/list', {
+			spots: spotsWithEmail,
+			isSignedIn: true,
+			user: user
+		});
+	} catch (e) {
+		return res.status(400).render('studySpots/list', { error: e });
+	}
+});
+
+// GET the study spots upload page
+router.get('/upload', requireAuth, async (req, res) => {
+	try {
+		return res.render('studySpots/create', { isSignedIn: true });
+	} catch (e) {
+		return res.status(500).render('error', { error: e, isSignedIn: true });
+	}
+})
+
+// POST a new study spot
+router.post('/upload', requireAuth, upload.single('image'), async (req, res) => {
+	try {
+		// Validate the input
+		const title = checkTitle(xss(req.body.title));
+		const description = checkDescription(xss(req.body.description));
+		const location = checkLocation(xss(req.body.location));
+		const noiseLevel = checkNoiseLevel(xss(req.body.noiseLevel));
+		const resources = checkResources(xss(req.body.resourcesNearby));
+
+		// Upload the study spot
+		const imagePath = req.file ? `/${req.file.path}` : null;
+		const studySpot = await uploadStudySpot(req.session.user._id, title, description, location, resources, noiseLevel, imagePath);
+		req.session.user.uploadedSpots.push(studySpot._id);
+
+		return res.redirect('/studyspots');
+	} catch (e) {
+		return res.status(400).render('studySpots/create', { error: e, isSignedIn: true });
+	}
+});
+
+// GET a specific study spot
+router.get('/:spotId', requireAuth, async (req, res) => {
+	try {
+		// Get the study spot by ID
+		const spotId = checkID(xss(req.params.spotId));
+		const spot = await getStudySpotById(spotId);
+
+		// Get the reviews and comments for the study spot
+		const reviews = await getAllReviews(spotId);
+		const comments = await getAllComments(spotId);
+
+		// Render the study spot page
+		return res.render('studySpots/spot', {
+			title: spot.title,
+			spot,
+			reviews,
+			comments,
+			isSignedIn: true,
+			user: req.session.user
+		});
+	} catch (e) {
+		return res.status(400).render('error', { error: e, isSignedIn: true });
+	}
+});
+
+// GET the edit page for a specific study spot
+router.get('/:spotId/edit', requireAuth, async (req, res) => {
+	const user = req.session.user;
+	
+	try {
+		// Get the study spot by ID
+		const spotId = checkID(xss(req.params.spotId));
+		const spot = await getStudySpotById(spotId);
+
+		// Check if the user is the owner of the study spot
+		if (user._id !== spot.userId)
+			return res.status(403).render('error', { error: "You are not authorized to edit this study spot", isSignedIn: true });
+
+		// Get the checked resources
+		const spotResources = spot.resourcesNearby || [];
+		const resources = ['printer', 'water fountain', 'vending machine', 'scanner', 'whiteboard', 'outlets', 'external monitors']
+		.map(resource => ({
+			name: resource,
+			checked: spotResources.includes(resource)
+		}));
+
+		return res.render('studySpots/edit', {
+			spot,
+			resources,
+			user,
+			isSignedIn: true
+		});
+	} catch (e) {
+		return res.status(400).render('studySpots/edit', { error: e });
+	}
+});
+
+// POST an edited study spot
+router.post('/:spotId/edit', requireAuth, upload.single('image'), async (req, res) => {
+	const user = req.session.user;
+
+	try {
+		// Get the study spot by ID
+		const spotId = checkID(xss(req.params.spotId));
+		const spot = await getStudySpotById(spotId);
+
+		// Check if the user is the owner of the study spot
+		if (user._id !== spot.userId)
+			return res.status(403).render('error', { error: "You are not authorized to edit this study spot", isSignedIn: true });
+
+		// Validate the input
+		const title = checkTitle(xss(req.body.title));
+		const description = checkDescription(xss(req.body.description));
+		const location = checkLocation(xss(req.body.location));
+		const noiseLevel = checkNoiseLevel(xss(req.body.noiseLevel));
+		const resources = checkResources(xss(req.body.resourcesNearby));
+
+		// Update the study spot
+		const imagePath = req.file ? `/${req.file.path}` : spot.imageUrl;
+		await updateStudySpot(spotId, title, description, location, resources, noiseLevel, imagePath);
+		return res.redirect(`/studyspots/${spotId}`);
+	} catch (e) {
+		return res.status(400).render('studySpots/edit', { error: e, isSignedIn: true });
+	}
+});
+
+// DELETE a study spot
+router.post('/:spotId/delete', requireAuth, async (req, res) => {
+	const user = req.session.user;
+
+	try {
+		// Get the study spot by ID
+		const spotId = checkID(xss(req.params.spotId));
+		const spot = await getStudySpotById(spotId);
+
+		// Check if the user is the owner of the study spot
+		if (user._id !== spot.userId)
+			return res.status(403).render('error', { error: "You are not authorized to delete this study spot", isSignedIn: true });
+
+		// Delete the study spot
+		await deleteStudySpot(spotId);
+		req.session.user.uploadedSpots = req.session.user.uploadedSpots.filter(id => id !== spotId);
+		return res.redirect('/studyspots');
+	} catch (e) {
+		return res.status(400).render('error', { error: e, isSignedIn: true });
+	}
+});
   
 export default router;

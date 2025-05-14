@@ -30,19 +30,34 @@ const checkNoiseLevel = (val) => {
     }
     return num;
 }
-const checkResources = (arr) => {
-    if (!arr || !Array.isArray(arr)) {
-        return [];
-    } 
-    if (arr.length === 0) {
-        return arr;
-    }
-    const valid = ['printer', 'water fountain', 'vending machine', 'scanner', 'whiteboard', 'outlets', 'external monitors'];
-    arr.forEach(r => { 
-        if (!valid.includes(r)) throw `Invalid resource ${r}`; 
-    });
-    return arr;
-}
+
+export const checkResources = (arr) => {
+	if (!arr)
+		return [];
+
+	if (typeof arr === 'string')
+		arr = arr.split(',').map(resource => resource.trim());
+	else if (!Array.isArray(arr))
+		return [];
+
+	if (arr.length === 0)
+		return arr;
+
+	const resources = ['printer', 'water fountain', 'vending machine', 'scanner', 'whiteboard', 'outlets', 'external monitors' ];
+
+	const result = [];
+	for (let i = 0; i < arr.length; i++) {
+		if (!arr[i])
+			continue;
+
+		const resource = arr[i].toLowerCase();
+		if (!resources.includes(resource))
+			throw `Invalid resource ${arr[i]}`;
+		result.push(resource);
+	}
+
+  return result;
+};
 
 document.addEventListener("DOMContentLoaded", () => {
     const uploadForm = document.getElementById("uploadForm");

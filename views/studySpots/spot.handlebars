@@ -1,9 +1,6 @@
-<script src="/public/js/reviews.js"></script>
-<script src="/public/js/studySpots.js"></script>
-
 <div class="spot-container">
   <div class="study-spot-actions" style="margin: 1rem 0;">
-    {{#if (isEqual spot.poster user._id)}}
+    {{#if (isEqual spot.userId user._id)}}
       <a href="/studyspots/{{spot._id}}/edit">
         <button class="button" title="Edit">
           <img src="/public/js/images/edit.svg" alt="Edit" class="button-icon" title="Edit">
@@ -16,13 +13,14 @@
       </form>
     {{/if}}
     
-    
     <a href="/studyspots/{{spot._id}}/report">
       <button class="button" title="Report">
         <img src="/public/js/images/report.svg" alt="Report" class="button-icon" title="Report">
       </button>
     </a>
-  </div> <!-- same ending div regardless of status, so no fear of invalid HTML here -->
+  </div>
+
+	<p><strong>{{spot.title}}</strong></p>
 
   {{#if spot.imageUrl}}
     <img class="spot-image" src="{{spot.imageUrl}}" alt="Photo of {{spot.title}}">
@@ -45,10 +43,7 @@
   </ul>
 
 	{{#if isSignedIn}}
-    <form id="reviewForm"
-          class="review-form"
-          action="/reviews/{{spot._id}}"
-          method="POST">
+    <form id="reviewForm" class="review-form" action="/reviews/{{spot._id}}" method="POST">
       <input name="title" placeholder="Title" class="form-input" required>
       <textarea class="form-input" name="content" placeholder="Write your review" required></textarea>
 
@@ -77,8 +72,8 @@
       {{#each reviews}}
         <li class="review-item">
           <div class="review-header">
-            <strong>{{title}}</strong> {{rating}}/5 Stars
-            
+						<div><strong>{{title}}</strong> {{rating}}/5 ★</div>
+
             {{#if (isEqual userId ../user._id)}}
               <div class="button-group">
                 <a href="/reviews/{{_id}}/edit">
@@ -86,6 +81,7 @@
                     <img src="/public/js/images/edit.svg" alt="Edit" class="button-icon" title="Edit">
                   </button>
                 </a>
+
                 <form action="/reviews/{{_id}}/delete" method="POST" class="delete-review-form">
                   <input type="hidden" name="spotId" value="{{../spot._id}}">
                   <button type="submit" class="button" title="Delete">
@@ -95,6 +91,7 @@
               </div>
             {{/if}}
           </div>
+					
           <p>{{content}}</p>
         </li>
       {{/each}}
@@ -102,56 +99,31 @@
   {{else}}
     <p>No reviews yet.</p>
   {{/if}}
-
-  {{#if isSignedIn}}
-    <form id="reviewForm" class="review-form">
-      <input name="title" placeholder="Title" class="form-input" required>
-      <textarea class="form-input" name="content" placeholder="Write your review" required></textarea>
-
-      <label class="slider-label">
-        Rating:
-        <span id="ratingDisplay" style="font-weight:bolder;">3</span>
-      </label>
-
-      <input class="form-input" type="range" name="rating" id="rating" min="1" max="5" step="1" value="3" required>
-
-      <div class="slider-scale">
-        {{#each [1,2,3,4,5]}}<span>{{this}}</span>{{/each}}
-      </div>
-      <div class="review-actions">
-        <button class="back-button">Post Review</button>
-        <a href="/studyspots" class="back-button review-back">Back to all spots</a>
-      </div>
-    </form>
-  {{else}}
-    <p>Please <a href="/login">sign in</a> to leave a review.</p>
-  {{/if}}
-
 </div>
 
-    <div class="comments-section">
-    <h3>Comments on this spot</h3>
+<div class="comments-section">
+	<h3>Comments on this spot</h3>
 
-    {{#if spot.comments.length}}
-      <ul class="comments-list">
-        {{#each spot.comments}}
-          <li class="comment">
-            <p>{{content}}</p>
-            <small>by {{author}} on {{createdAt}}</small>
-          </li>
-        {{/each}}
-      </ul>
-    {{else}}
-      <p>No comments yet.</p>
-    {{/if}}
+	{{#if spot.comments.length}}
+		<ul class="comments-list">
+			{{#each spot.comments}}
+				<li class="comment">
+					<p>{{content}}</p>
+					<small>by {{author}} on {{createdAt}}</small>
+				</li>
+			{{/each}}
+		</ul>
+	{{else}}
+		<p>No comments yet.</p>
+	{{/if}}
 
-    {{#if isSignedIn}}
-      <form id="spotCommentForm"
-            class="comment-form"
-            action="/comments/{{spot._id}}"
-            method="POST">
-        <textarea name="content" required placeholder="Add a comment…"></textarea>
-        <button type="submit">Post Comment</button>
-      </form>
-    {{/if}}
+	{{#if isSignedIn}}
+		<form id="spotCommentForm" class="comment-form" action="/comments/{{spot._id}}" method="POST">
+			<textarea name="content" required placeholder="Add a comment…"></textarea>
+			<button type="submit">Post Comment</button>
+		</form>
+	{{/if}}
 </div>
+
+<script src="/public/js/studySpots.js"></script>
+<script src="/public/js/reviews.js"></script>
