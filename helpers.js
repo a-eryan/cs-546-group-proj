@@ -141,3 +141,10 @@ export const calculateAverageRating = (reviews) => {
 	const average = sum / reviews.length;
 	return Math.round(average * 10) / 10;
 };
+
+export const validateReviewComment = (reviewId, userId, comment) => {
+	reviewId = checkID(reviewId);
+	userId = checkID(userId);
+	comment = checkString(comment);
+	return { reviewId, userId, comment };
+}

@@ -2,6 +2,7 @@ import { Router } from "express";
 import { getAllStudySpots, uploadStudySpot, getStudySpotById, updateStudySpot, deleteStudySpot } from "../data/studySpots.js";
 import { checkDescription, checkLocation, checkNoiseLevel, checkTitle } from "../helpers.js";
 import { getAllReviews } from "../data/reviews.js";
+import { getAllComments } from "../data/comments.js";
 import { requireAuth } from "../middleware.js";
 import { findEmailById } from "../data/forumPosts.js";
 import multer from "multer";  
@@ -117,6 +118,7 @@ router
     try {
       const spot = await getStudySpotById(req.params.id);
       const reviews = await getAllReviews(spot._id);
+			const comments = await getAllComments(spot._id);
       const user = req.session.user || null;
       const signed = !!user;
 
@@ -124,6 +126,7 @@ router
         title: spot.title,
         spot,
         reviews,
+				comments,
         isSignedIn: signed,
         user
     });
