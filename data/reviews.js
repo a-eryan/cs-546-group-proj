@@ -195,6 +195,9 @@ export const updateReview = async (reviewId, userId, title, content, rating) => 
 		if (spotUpdateInfo.modifiedCount === 0)
 			throw `Failed to update average rating for ${reviewId}`;
 	}
+		if (spotUpdateInfo.modifiedCount === 0)
+			throw `Failed to update average rating for ${reviewId}`;
+	}
 	
 	updatedSpot._id = updatedSpot._id.toString();
 	return updatedSpot;
