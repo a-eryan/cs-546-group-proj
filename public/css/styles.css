@@ -87,10 +87,11 @@ main {
 }
 
 .comments-section {
-    margin-left: 2.5rem;
     margin-right: 2.5rem;
     margin-top: 0.3rem;
 }
+
+
 
 .comment, .forum {
   list-style-type: none;
@@ -115,7 +116,7 @@ main {
     white-space: pre-wrap; /*preserves whitespace and line breaks*/
 }
 
-.comment-form button, .new-forum-button, .back-button, .edit-button, .delete-button, .delete-forum-button, .submit-button {
+.comment-form button, .new-forum-button, .back-button, .edit-button, .delete-button, .delete-forum-button, .submit-button, .button #reset-filters {
     background-color: var(--stevens-red);
     color: white;
     padding: 0.5rem 1rem;
@@ -223,13 +224,15 @@ footer {
     color: var(--stevens-gray);
 }
 
-.form-group input, .form-group #description {
+.form-group input, .form-group #description, .form-group #content {
     padding: 0.75rem;
     font-size: 1rem;
     border: 1px solid var(--stevens-light-gray);
     border-radius: 5px;
     font-family: "Saira", "Arial";
 }
+
+
 
 .form-group #noiseLevel {
     padding: 0; /* the above padding makes the slider not fill the entire width */
@@ -247,6 +250,7 @@ footer {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-family: "Saira", "Arial";
 }
 
 .submit-btn:hover {
@@ -317,6 +321,14 @@ footer {
 .profile-section ul {
     list-style: disc;
     padding-left: 1.5rem;
+}
+
+.button-group {
+    filter: invert(22%) sepia(14%) saturate(515%) hue-rotate(171deg) brightness(95%) contrast(92%);
+}
+
+.study-spot-actions {
+    filter: invert(22%) sepia(14%) saturate(515%) hue-rotate(171deg) brightness(95%) contrast(92%);
 }
 
 /* Container grid for all cards */
@@ -407,6 +419,7 @@ footer {
     border-bottom: 3px solid var(--stevens-gold); /*change to gold for stevens contrast*/
     margin-bottom: 1rem;
     font-size: 1.2rem;
+    color: var(--stevens-gray);
 }
   
 .study-header .subtitle {
@@ -609,6 +622,7 @@ footer {
     text-align: center;
     margin-top: 1rem;
     font-weight: bold;
+    color: var(--stevens-gray);
 }
 
 /* Grid container fix */
