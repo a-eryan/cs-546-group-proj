@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { getReview, updateReview, deleteReview, createReview, getAllReviews } from "../data/reviews.js";
 import { getStudySpotById } from "../data/studySpots.js";
-import { checkID } from "../helpers.js";
 import { requireAuth } from "../middleware.js";
 import { isAuthenticated } from '../middleware.js';
 import { checkString, checkID, checkReviewProperties } from '../helpers.js';
@@ -234,7 +233,7 @@ router.post('/:id/delete', requireAuth, async (req, res) => {
       isSignedIn: true
     });
   }
-};
+});
 
 router.post('/comments/:reviewId', isAuthenticated, async (req, res) => {
 	const reviewId = xss(req.params.reviewId);
