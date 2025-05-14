@@ -1,5 +1,5 @@
 import { studySpots, users } from '../config/mongoCollections.js';
-import { checkID, checkReviewProperties, calculateAverageRating, getCreatedDate } from '../helpers.js';
+import { checkString, checkID, checkReviewProperties, calculateAverageRating, validateReviewComment, getCreatedDate } from '../helpers.js';
 import { ObjectId } from 'mongodb';
 
 export const createReview = async (spotId, userId, title, content, rating) => {
@@ -29,7 +29,7 @@ export const createReview = async (spotId, userId, title, content, rating) => {
 
 	// Create the review object
 	const date = getCreatedDate();
-	const reviewObj = { _id: new ObjectId(), spotId, userId, title, content, rating, createdAt: date };
+	const reviewObj = { _id: new ObjectId(), spotId, userId, title, content, rating, createdAt: date, comments: [] };
 
 	// Add the review to the study spot and recalculate the average rating
 	const averageRating = calculateAverageRating([...studySpot.reviews, reviewObj]);
@@ -95,6 +95,7 @@ export const getAllReviews = async (spotId) => {
 
 	return studySpot.reviews.map(review => {
 		review._id = review._id.toString();
+		review.comments = Array.isArray(review.comments) ? review.comments : [];
 		return review;
 	});
 };
@@ -222,4 +223,36 @@ export const deleteReview = async (reviewId) => {
 		throw 'Failed to delete review';
 	
 	return true;
+};
+
+export const addCommentToReview = async (reviewId, userId, content) => {
+  reviewId = checkID(reviewId);
+  userId = checkID(userId);
+  content = checkString(content);
+
+  const studySpotCollection = await studySpots();
+  const reviewObjectId = new ObjectId(reviewId);
+
+  const spot=await studySpotCollection.findOne({ 'reviews._id': reviewObjectId });
+  if (!spot) throw `Review ${reviewId} not found`;
+
+  const usersCollection = await users();
+  const poster = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+  const newComment={
+    _id: new ObjectId(),
+    userId,
+    author: poster ? poster.email : 'Anonymous',
+    content,
+    createdAt: getCreatedDate()
+  };
+
+  const updateRes = await studySpotCollection.updateOne(
+    { 'reviews._id': reviewObjectId },
+    { $push:{ 'reviews.$.comments': newComment } }
+  );
+  if (updateRes.modifiedCount === 0) throw `Could not add comment to review ${reviewId}`;
+
+  newComment._id = newComment._id.toString();
+  return newComment;
 };

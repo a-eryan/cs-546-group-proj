@@ -4,15 +4,16 @@ import { getStudySpotById } from "../data/studySpots.js";
 import { checkID } from "../helpers.js";
 import { requireAuth } from "../middleware.js";
 import { isAuthenticated } from '../middleware.js';
-import { checkReviewProperties } from '../helpers.js';
+import { checkString, checkID, checkReviewProperties } from '../helpers.js';
 import * as reviews from '../data/reviews.js';
+import xss from 'xss';
 
 const router = Router();
 
 // GET a specific review
 router.get('/:reviewId', async (req, res) => {
 	// Validate the review ID
-	const reviewId = req.params.reviewId;
+	const reviewId = xss(req.params.reviewId);
 
 	try {
 		checkID(reviewId);
@@ -32,7 +33,7 @@ router.get('/:reviewId', async (req, res) => {
 // GET all reviews for a study spot
 router.get('/spot/:spotId', async (req, res) => {
 	// Validate the study spot ID
-	const spotId = req.params.spotId;
+	const spotId = xss(req.params.spotId);
 
 	try {
 		checkID(spotId);
@@ -52,9 +53,9 @@ router.get('/spot/:spotId', async (req, res) => {
 // POST a new review
 router.post('/:spotId', isAuthenticated, async (req, res) => {
 	// Validate the review properties
-	const spotId = req.params.spotId;
+	const spotId = xss(req.params.spotId);
 	const userId = req.session.user._id;
-	const { title, content, rating } = req.body;
+	const { title, content, rating } = xss(req.body);
 
 	const ratingNum = Number(rating);
 
@@ -75,7 +76,7 @@ router.post('/:spotId', isAuthenticated, async (req, res) => {
 
 router.delete('/:reviewId', isAuthenticated, async (req, res) => {
 	// Validate the review ID and user ID
-	const reviewId = req.params.reviewId;
+	const reviewId = xss(req.params.reviewId);
 	const userId = req.session.user._id;
 
 	try {
@@ -232,6 +233,27 @@ router.post('/:id/delete', requireAuth, async (req, res) => {
       user: req.session.user,
       isSignedIn: true
     });
+  }
+};
+
+router.post('/comments/:reviewId', isAuthenticated, async (req, res) => {
+	const reviewId = xss(req.params.reviewId);
+  const userId = req.session.user._id;
+  const { content } = xss(req.body);
+
+  try {
+    checkID(reviewId);
+    checkID(userId);
+    checkString(content);
+  } catch (e) {
+    return res.status(400).json({ error: e });
+  }
+
+  try {
+    const comment = await reviews.addCommentToReview(reviewId, userId, content);
+    return res.status(201).json(comment);
+  } catch (e) {
+    return res.status(500).json({ error: e.toString() });
   }
 });
 

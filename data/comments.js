@@ -28,7 +28,7 @@ export const createComment = async (spotId, userId, content) => {
 
 	// Create the comment object
 	const date = getCreatedDate();
-	const commentObj = { _id: new ObjectId(), spotId, userId, content, createdAt: date };
+	const commentObj = { _id: new ObjectId(), spotId, userId, author: user.email, content, createdAt: date };
 
 	// Add the comment to the study spot
 	const updateInfo = await studySpotCollection.findOneAndUpdate(
