@@ -109,7 +109,11 @@ router
           });
         }
       } catch (e) {
-        return res.status(400).render('studySpots/create', { error: e });
+        return res.status(400).render('studySpots/create', {
+					error: e,
+					isSignedIn: true,
+					user: req.session.user
+				});
       }
     })
 
