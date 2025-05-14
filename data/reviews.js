@@ -191,10 +191,7 @@ export const updateReview = async (reviewId, userId, title, content, rating) => 
 			{ _id: studySpot._id },
 			{ $set: { averageRating: averageRating } }
 		);
-
-		if (spotUpdateInfo.modifiedCount === 0)
-			throw `Failed to update average rating for ${reviewId}`;
-	}
+		
 		if (spotUpdateInfo.modifiedCount === 0)
 			throw `Failed to update average rating for ${reviewId}`;
 	}
