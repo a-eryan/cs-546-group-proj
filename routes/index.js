@@ -13,7 +13,7 @@ const constructorMethod = (app) => {
 	app.use('/comments', commentRoutes);
 	app.use('/reviews', reviewRoutes);
 	app.use('/forums', forumPostsRoutes);
-	app.use('./review-comments',reviewCommentsRoutes);
+	app.use('/review-comments',reviewCommentsRoutes);
 	app.use('*', (req, res) => {
 		return res.status(404).json({error: 'Not found'});
 	});

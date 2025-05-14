@@ -83,6 +83,7 @@ export const getAllReviews = async (spotId) => {
 
 	return studySpot.reviews.map(review => {
 		review._id = review._id.toString();
+		review.comments = Array.isArray(review.comments) ? review.comments : [];
 		return review;
 	});
 };
@@ -120,34 +121,35 @@ export const removeReview = async (reviewId) => {
 	return updateInfo;
 };
 
-export const addCommentToReview = async (reviewId, userId, comment) => {
+export const addCommentToReview = async (reviewId, userId, content) => {
+  reviewId = checkID(reviewId);
+  userId = checkID(userId);
+  content = checkString(content);
 
-	const {reviewId: rId, userId: uId, comment: c} = validateReviewComment(reviewId, userId, comment);
+  const studySpotCollection = await studySpots();
+  const reviewObjectId = new ObjectId(reviewId);
 
-	const studySpotCollection = await studySpots();
-	const reviewObjectId = new ObjectId(rId);
+  const spot=await studySpotCollection.findOne({ 'reviews._id': reviewObjectId });
+  if (!spot) throw `Review ${reviewId} not found`;
 
-	const spot = await studySpotCollection.findOne({ 'reviews._id': reviewObjectId });
-	if (!spot) {
-		throw `Review ${rId} not found`;
-	}
+  const usersCollection = await users();
+  const poster = await usersCollection.findOne({ _id: new ObjectId(userId) });
 
-	const newComment = {
-		_id: new ObjectId(),
-		userId: uId,
-		comment: txt,
-		createdAt: getCreatedDate()
-	};
+  const newComment={
+    _id: new ObjectId(),
+    userId,
+    author: poster ? poster.email : 'Anonymous',
+    content,
+    createdAt: getCreatedDate()
+  };
 
-	const updateRes = await studySpotCollection.updateOne(
-		{ 'reviews._id': reviewObjectId },
-		{ $push: { 'reviews.$.comments': newComment }}
-	);
+  const updateRes = await studySpotCollection.updateOne(
+    { 'reviews._id': reviewObjectId },
+    { $push:{ 'reviews.$.comments': newComment } }
+  );
+  if (updateRes.modifiedCount === 0) throw `Could not add comment to review ${reviewId}`;
 
-	if (updateRes.modifiedCount === 0) {
-		throw `Could not add comment to review ${rId}`;
-	}
-	newComment._id = newComment._id.toString();
-	return newComment;
+  newComment._id = newComment._id.toString();
+  return newComment;
+};
 
-}

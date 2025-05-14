@@ -1,3 +1,6 @@
+<script src="/public/js/reviews.js"></script>
+<script src="/public/js/studySpots.js"></script>
+
 <div class="spot-container">
   <h2 class="spot-title">{{spot.title}}</h2>
 
@@ -21,46 +24,92 @@
     {{/if}}
   </ul>
 
+  {{#if isSignedIn}}
+    <form id="reviewForm"
+          class="review-form"
+          action="/reviews/{{spot._id}}"
+          method="POST">
+      <input name="title" placeholder="Title" class="form-input" required>
+      <textarea class="form-input" name="content" placeholder="Write your review" required></textarea>
+
+      <label class="slider-label">
+        Rating:
+        <span id="ratingDisplay" style="font-weight:bolder;">3</span>
+      </label>
+
+      <input class="form-input" type="range" name="rating" id="rating" min="1" max="5" step="1" value="3" required>
+
+      <div class="slider-scale">
+        {{#each [1,2,3,4,5]}}<span>{{this}}</span>{{/each}}
+      </div>
+
+      <div class="review-actions">
+        <button class="back-button">Post Review</button>
+        <a href="/studyspots" class="back-button review-back">Back to all spots</a>
+      </div>
+    </form>
+  {{else}}
+    <p>Please <a href="/login">sign in</a> to leave a review.</p>
+  {{/if}}
+
   {{#if reviews.length}}
-    <ul class ="reviews-list">
+    <ul class="reviews-list">
       {{#each reviews}}
-        <li class="review-item">
-          <strong>{{title}}</strong> - {{rating}}*<br>
+        <li class="review-item" style="margin-bottom:1.5rem;">
+          <strong>{{title}}</strong> – {{rating}}★<br>
           {{content}}
+
+          {{#if this.comments.length}}
+            <ul class="comments-list" style="margin-top:.5rem;">
+              {{#each this.comments}}
+                <li class="comment">
+                  <p>{{content}}</p>
+                  <small>by {{author}} on {{createdAt}}</small>
+                </li>
+              {{/each}}
+            </ul>
+          {{/if}}
+
+          {{#if ../isSignedIn}}
+            <form class="comment-form review-comment-form"
+                  data-review-id="{{this._id}}"
+                  action="/review-comments/{{this._id}}"
+                  method="POST">
+              <textarea name="content" required placeholder="Add a comment…"></textarea>
+              <button type="submit">Reply</button>
+            </form>
+          {{/if}}
         </li>
       {{/each}}
-
     </ul>
-    {{else}}
-      <p>No reviews yet.</p>
-    {{/if}}
+  {{else}}
+    <p>No reviews yet.</p>
+  {{/if}}
 
+  <div class="comments-section">
+    <h3>Comments on this spot</h3>
+
+    {{#if spot.comments.length}}
+      <ul class="comments-list">
+        {{#each spot.comments}}
+          <li class="comment">
+            <p>{{content}}</p>
+            <small>by {{author}} on {{createdAt}}</small>
+          </li>
+        {{/each}}
+      </ul>
+    {{else}}
+      <p>No comments yet.</p>
+    {{/if}}
 
     {{#if isSignedIn}}
-        <form id="reviewForm" class="review-form">
-        <input name="title" placeholder="Title" class="form-input" required>
-        <textarea class="form-input" name="content" placeholder="Write your review" required></textarea>
-
-        <label class="slider-label">
-            Rating:
-            <span id="ratingDisplay" style="font-weight:bolder;">3</span>
-        </label>
-
-        <input class="form-input" type="range" name="rating" id="rating" min="1" max="5" step="1" value="3" required>
-
-        <div class="slider-scale">
-        {{#each [1,2,3,4,5]}}<span>{{this}}</span>{{/each}}
-        </div>
-        <div class="review-actions">
-        <button class="back-button">Post Review</button>
-        <a  href="/studyspots" class="back-button review-back">Back to all spots</a>
-        </div>
-        </form>
-    {{else}}
-        <p>Please <a href="/login">sign in</a> to leave a review.</p>
+      <form id="spotCommentForm"
+            class="comment-form"
+            action="/comments/{{spot._id}}"
+            method="POST">
+        <textarea name="content" required placeholder="Add a comment…"></textarea>
+        <button type="submit">Post Comment</button>
+      </form>
     {{/if}}
-
-    </div>
-
-    <script src="/public/js/reviews.js"></script>
-
+  </div>
+</div>
