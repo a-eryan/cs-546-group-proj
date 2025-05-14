@@ -7,6 +7,7 @@ import { requireAuth } from "../middleware.js";
 import { findEmailById } from "../data/forumPosts.js";
 import multer from "multer";  
 import path from "path";
+import xss from 'xss';
 
 const router = Router();
 
@@ -69,11 +70,11 @@ router
     })
     .post(requireAuth, upload.single("image"), async(req,res) => {
       try {
-        let title = req.body.title;
-        let description = req.body.description;
-        let location = req.body.location;
-        let noiseLevel = req.body.noiseLevel;
-        let resources = req.body.resourcesNearby;
+        let title = xss(req.body.title);
+        let description = xss(req.body.description);
+        let location = xss(req.body.location);
+        let noiseLevel = xss(req.body.noiseLevel);
+        let resources = xss(req.body.resourcesNearby);
 
         if (!title || !description || !location || !noiseLevel)
           throw new Error('All fields need to be given.')
@@ -120,7 +121,7 @@ router
 
   router.get('/studyspots/:id', requireAuth, async (req, res) => {
     try {
-      const spot = await getStudySpotById(req.params.id);
+      const spot = await getStudySpotById(xss(req.params.id));
       const reviews = await getAllReviews(spot._id);
 			const comments = await getAllComments(spot._id);
       const user = req.session.user || null;
@@ -147,7 +148,7 @@ router
   .route('/studyspots/:id/edit')
   .get(requireAuth, async(req, res) => {
     try{
-      const spot = await getStudySpotById(req.params.id)
+      const spot = await getStudySpotById(xss(req.params.id))
       const user = req.session.user || null;
       const isSignedIn = !!user;
       const spotResources = spot.resourcesNearby || [];
@@ -184,7 +185,7 @@ router
   })
   .post(requireAuth, upload.single("image"), async(req, res) => {
     try {
-      const spotId = req.params.id;
+      const spotId = xss(req.params.id);
       const user = req.session.user;
       const isSignedIn = !!user;
       const spot = await getStudySpotById(spotId);
@@ -196,11 +197,11 @@ router
         });
       }
 
-      let title = req.body.title;
-      let description = req.body.description;
-      let location = req.body.location;
-      let noiseLevel = req.body.noiseLevel;
-      let resourcesNearby = req.body.resourcesNearby || [];
+      let title = xss(req.body.title);
+      let description = xss(req.body.description);
+      let location = xss(req.body.location);
+      let noiseLevel = xss(req.body.noiseLevel);
+      let resourcesNearby = xss(req.body.resourcesNearby) || [];
 
       if (!title || !description || !location || !noiseLevel)
         throw new Error('All fields need to be given.')
@@ -213,7 +214,7 @@ router
         resourcesNearby = [resourcesNearby];
       }
 
-      console.log('Resources Nearby:', req.body.resourcesNearby);
+      console.log('Resources Nearby:', xss(req.body.resourcesNearby));
 
       const imagePath = req.file ? `/${req.file.path}` : spot.imageUrl;
 
@@ -235,7 +236,7 @@ router
 
   router.post('/studyspots/:id/delete', requireAuth, async(req, res) => {
     try {
-      const spotId = req.params.id;
+      const spotId = xss(req.params.id);
       const user = req.session.user;
       const isSignedIn = !!user;
 

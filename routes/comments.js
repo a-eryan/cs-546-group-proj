@@ -2,13 +2,14 @@ import { Router } from 'express';
 import { checkID, checkString } from '../helpers.js';
 import { isAuthenticated } from '../middleware.js';
 import * as comments from '../data/comments.js';
+import xss from 'xss';
 
 const router = Router();
 
 // GET a specific comment
 router.get('/:commentId', async (req, res) => {
 	// Validate the comment ID
-	const commentId = req.params.commentId;
+	const commentId = xss(req.params.commentId);
 
 	try {
 		checkID(commentId);
@@ -28,7 +29,7 @@ router.get('/:commentId', async (req, res) => {
 // GET all comments for a study spot
 router.get('/spot/:spotId', async (req, res) => {
 	// Validate the study spot ID
-	const spotId = req.params.spotId;
+	const spotId = xss(req.params.spotId);
 
 	try {
 		checkID(spotId);
@@ -48,9 +49,9 @@ router.get('/spot/:spotId', async (req, res) => {
 // POST a new comment
 router.post('/:spotId', isAuthenticated, async (req, res) => {
 	// Validate the comment properties
-	const spotId = req.params.spotId;
+	const spotId = xss(req.params.spotId);
 	const userId = req.session.user._id;
-	const { content } = req.body;
+	const { content } = xss(req.body);
 
 	try {
 		checkID(spotId);
@@ -71,7 +72,7 @@ router.post('/:spotId', isAuthenticated, async (req, res) => {
 
 router.delete('/:commentId', isAuthenticated, async (req, res) => {
 	// Validate the comment ID and user ID
-	const commentId = req.params.commentId;
+	const commentId = xss(req.params.commentId);
 	const userId = req.session.user._id;
 
 	try {

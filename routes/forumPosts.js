@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { requireAuth } from "../middleware.js";
+import xss from 'xss';
 const router = Router()
 import { findEmailById, forums, getAllForumPosts, getForumPostById, addCommentToForumPost, deleteForumPost, editForumPost} from "../data/forumPosts.js";
 
@@ -48,8 +49,8 @@ router
             if (!req.session.user) { //if the user somehow isn't signed in, redirect to error page
                 return res.status(401).redirect('/error');
             }
-            const title = req.body.title;
-            const content = req.body.content;
+            const title = xss(req.body.title);
+            const content = xss(req.body.content);
             if (!title || !content) {
                 throw "You must provide a title and content for the forum post";
             }
@@ -64,8 +65,8 @@ router
                     error: e.toString(),
                     user: req.session.user, //shows the user object in the navbar
                     isSignedIn: req.session.user ? true : false,
-                    title: req.body.title,
-                    content: req.body.content
+                    title: xss(req.body.title),
+                    content: xss(req.body.content)
                 });
             }
             console.error('Error creating forum post:', e);
@@ -80,7 +81,7 @@ router
     .route('/:id')
     .get(requireAuth, async(req, res) => {
         try {
-            const forumId = req.params.id;
+            const forumId = xss(req.params.id);
             const forumPost = await getForumPostById(forumId);
 
             // Check if forumPost exists BEFORE trying to access its properties
@@ -121,9 +122,9 @@ router
             if (!req.session.user) {
                 return res.status(401).redirect('/error');
             }
-            const forumId = req.params.id;
+            const forumId = xss(req.params.id);
             const userId = req.session.user._id;
-            const comment = req.body.comment;
+            const comment = xss(req.body.comment);
             if (!comment || /^\s*$/.test(comment)) {
                 const forumPost = await getForumPostById(forumId);
                 const author = await findEmailById(forumPost.userId.toString());
@@ -158,7 +159,7 @@ router
 
             const isAdmin = req.session.user.isAdmin;
 
-            await deleteForumPost(req.params.id, req.session.user._id, isAdmin);
+            await deleteForumPost(xss(req.params.id), req.session.user._id, isAdmin);
             return res.redirect('/forums');
         } catch (e) {
             return res.status(400).render('error', {
@@ -170,7 +171,7 @@ router
     });
 router.get('/:id/edit', requireAuth, async(req, res) => {   
     try {
-        const forumId = req.params.id;
+        const forumId = xss(req.params.id);
         const forumPost = await getForumPostById(forumId);
         
         if (!forumPost) {
@@ -212,8 +213,8 @@ router.get('/:id/edit', requireAuth, async(req, res) => {
 });
 router.post('/:id/edit', requireAuth, async(req, res) => { 
     try {
-        const forumId = req.params.id;
-        const { title, content } = req.body;
+        const forumId = xss(req.params.id);
+        const { title, content } = xss(req.body);
         const userId = req.session.user._id;
         const forumPost = await getForumPostById(forumId);
        
@@ -260,9 +261,9 @@ router.post('/:id/edit', requireAuth, async(req, res) => {
         if (error_400) {
             return res.status(400).render('forums/edit', {
                 title: 'Edit Forum Post',
-                _id: req.params.id,
-                postTitle: req.body.title,
-                content: req.body.content,
+                _id: xss(req.params.id),
+                postTitle: xss(req.body.title),
+                content: xss(req.body.content),
                 error: e.toString(),
                 user: req.session.user,
                 isSignedIn: !!req.session.user
@@ -272,9 +273,9 @@ router.post('/:id/edit', requireAuth, async(req, res) => {
         return res.status(500).render('error', {
                 error: 'A server error occurred. Please try again.',
                 formData: {  // Save form data for potential recovery
-                    id: req.params.id,
-                    title: req.body.title,
-                    content: req.body.content
+                    id: xss(req.params.id),
+                    title: xss(req.body.title),
+                    content: xss(req.body.content)
                 },
                 user: req.session.user,
                 isSignedIn: !!req.session.user

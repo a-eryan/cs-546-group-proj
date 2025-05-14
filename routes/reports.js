@@ -2,12 +2,13 @@ import { Router } from 'express';
 import { isAuthenticated } from '../middleware.js';
 import { checkString, checkID } from '../helpers.js';
 import * as reports from '../data/reports.js';
+import xss from 'xss';
 
 const router = Router();
 
 router.get('/spot/:spotId', isAuthenticated, async (req, res) => {
     try {
-        const spotId = req.params.spotId;
+        const spotId = xss(req.params.spotId);
         checkID(spotId);
         
         res.render('users/report', {
@@ -30,7 +31,7 @@ router.get('/spot/:spotId', isAuthenticated, async (req, res) => {
 
 router.get('/forum/:forumId', isAuthenticated, async (req, res) => {
     try {
-        const forumId = req.params.forumId;
+        const forumId = xss(req.params.forumId);
         checkID(forumId);
         
         res.render('users/report', {
@@ -54,9 +55,9 @@ router.get('/forum/:forumId', isAuthenticated, async (req, res) => {
 // POST a new study spot report
 router.post('/spot/:spotId', isAuthenticated, async (req, res) => {
     // Validate the report properties
-    const spotId = req.params.spotId;
+    const spotId = xss(req.params.spotId);
     const userId = req.session.user._id;
-    const { reason } = req.body;
+    const { reason } = xss(req.body);
 
     try {
         checkID(spotId);
@@ -94,9 +95,9 @@ router.post('/spot/:spotId', isAuthenticated, async (req, res) => {
     }
 });
 router.post('/forum/:forumId', isAuthenticated, async (req, res) => {	
-	const forumId = req.params.forumId;
+	const forumId = xss(req.params.forumId);
 	const userId = req.session.user._id;
-	const { reason } = req.body;
+	const { reason } = xss(req.body);
 
 	try {
 		checkID(forumId);

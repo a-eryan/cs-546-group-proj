@@ -46,7 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const body = Object.fromEntries(new FormData(form));
             const reviewId = form.dataset.reviewId;
-            const res = await fetch(`/review-comments/${reviewId}`, {
+						console.log(reviewId);
+            const res = await fetch(`/reviews/comments/${reviewId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)

@@ -3,6 +3,8 @@
 import { Router } from "express";
 import { checkEmail, checkPassword } from "../helpers.js";
 import { login, register } from "../data/users.js";
+import xss from 'xss';
+
 const router = Router()
 
 router
@@ -17,9 +19,9 @@ router
     })
     .post(async(req, res) => {
         try {
-            let email = req.body.email
-            let password = req.body.password
-            let confirmPassword = req.body.confirmPassword
+            let email = xss(req.body.email)
+            let password = xss(req.body.password)
+            let confirmPassword = xss(req.body.confirmPassword)
 
             email = checkEmail(email)
             password = checkPassword(password)
@@ -54,8 +56,8 @@ router
     })
     .post(async(req, res) => {
         try {
-            let email = req.body.email
-            let password = req.body.password
+            let email = xss(req.body.email)
+            let password = xss(req.body.password)
             if (!email || !password){
                 return res.status(400).render('login', {
                     error: 'Email or password not provided'
