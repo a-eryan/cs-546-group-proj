@@ -30,9 +30,9 @@ const checkNoiseLevel = (val) => {
     }
     return num;
 }
-const checkResources = (arr) => { //i tried to modified this to see if it would stop the logging out issue, but it didn't work
-    if (!Array.isArray(arr)) {
-        throw 'Resources must be an array';
+const checkResources = (arr) => {
+    if (!arr || !Array.isArray(arr)) {
+        return [];
     } 
     if (arr.length === 0) {
         return arr;
@@ -42,12 +42,6 @@ const checkResources = (arr) => { //i tried to modified this to see if it would 
         if (!valid.includes(r)) throw `Invalid resource ${r}`; 
     });
     return arr;
-//        if (!Array.isArray(arr) || arr.length === 0) {
-//         throw 'Resources must be a non-empty array';
-//     }
-//     const valid = ['printer', 'water fountain', 'vending machine', 'scanner', 'whiteboard', 'outlets', 'external monitors' ];
-//     arr.forEach(r => { if (!valid.includes(r)) throw `Invalid resource ${r}`; });
-//   return arr; // not sure if we are going to turn this into check boxes yet, for now still string input.
 }
 
 document.addEventListener("DOMContentLoaded", () => {
