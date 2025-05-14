@@ -1,278 +1,200 @@
-import { Router } from "express";
-import { requireAuth } from "../middleware.js";
+import { Router } from 'express';
+import { checkID, checkContent, checkDescription, checkTitle } from '../helpers.js';
+import { requireAuth } from '../middleware.js';
 import { getEmailById } from '../data/users.js';
-import { createForumPost, getAllForumPosts, getForumPostById, addCommentToForumPost, deleteForumPost, editForumPost} from "../data/forumPosts.js";
+import { createForumPost, getAllForumPosts, getForumPostById, addCommentToForumPost, deleteForumPost, editForumPost} from '../data/forumPosts.js';
 import xss from 'xss';
 
 const router = Router();
 
-router
-    .route('/')
-    .get(requireAuth, async(req, res) => {
-        try {
-            const forumPosts = await getAllForumPosts();
-            return res.render('forums/list', {
-                title: 'Forums',
-                forums: forumPosts,
-                user: req.session.user, //shows the user object in the navbar
-                isSignedIn: req.session.user ? true : false
-            });
-        } catch (e) {
-            console.error('Error rendering forums page:', e);
-            return res.status(500).render('error', {
-                error: e.toString(),
-                user: req.session.user, //shows the user object in the navbar
-                isSignedIn: req.session.user ? true : false
-            });
-        }
-    })
-router
-    .route('/create') 
-    .get(requireAuth, async(req, res) => {
-        try {
-            if (!req.session.user) {
-                return res.status(401).redirect('/error');
-            }
-            return res.render('forums/create', {
-                title: 'Create Forum',
-                user: req.session.user, //shows the user object in the navbar
-                isSignedIn: req.session.user ? true : false,
-            });
-        } catch (e) {
-            return res.status(500).render('error', {
-                error: e.toString(),
-                user: req.session.user, //shows the user object in the navbar
-                isSignedIn: req.session.user ? true : false
-            });
-        }
-    })
-    .post(requireAuth, async(req, res) => {
-        try {
-            if (!req.session.user) { //if the user somehow isn't signed in, redirect to error page
-                return res.status(401).redirect('/error');
-            }
-            const title = xss(req.body.title);
-            const content = xss(req.body.content);
-            if (!title || !content) {
-                throw "You must provide a title and content for the forum post";
-            }
-            
-            const forumPost = await createForumPost(req.session.user._id, title, content);
-
-            return res.redirect(`/forums/${forumPost._id}`);
-        } catch (e) {
-            if (e.toString().includes("cannot be an empty string or string with just spaces") || e.toString().includes("needs to be atleast")) {
-                return res.status(400).render('forums/create', {
-                    title: 'Create Forum',
-                    error: e.toString(),
-                    user: req.session.user, //shows the user object in the navbar
-                    isSignedIn: req.session.user ? true : false,
-                    title: xss(req.body.title),
-                    content: xss(req.body.content)
-                });
-            }
-            console.error('Error creating forum post:', e);
-            return res.status(500).render('error', {
-                error: e.toString(),
-                user: req.session.user, //shows the user object in the navbar
-                isSignedIn: req.session.user ? true : false
-            });
-        }
-    })
-router
-    .route('/:id')
-    .get(requireAuth, async(req, res) => {
-			const forumId = xss(req.params.id);
-
-			try {
-				const forumPost = await getForumPostById(forumId);
-				const authorEmail = await getEmailById(forumPost.userId.toString());
-
-				//add flag for who is allowed to modify the post
-				const canModify = req.session.user && (req.session.user._id.toString() === forumPost.userId.toString());
-				
-				return res.render('forums/post', {
-						title: forumPost.title,
-						_id: forumId, 
-						author: authorEmail,
-						content: forumPost.content,
-						createdAt: forumPost.createdAt,
-						comments: forumPost.comments,
-						user: req.session.user, //shows the user object in the navbar
-						isSignedIn: req.session.user ? true : false,
-						userId: forumPost.userId,
-						canModify: canModify
-				});
-			} catch (e) {
-				return res.status(404).render('error', { 
-							error: e,
-							user: req.session.user, //shows the user object in the navbar
-							isSignedIn: req.session.user ? true : false
-					});
-			}
-    })
-    .post(requireAuth, async(req, res) => {
-        try {
-            if (!req.session.user) {
-                return res.status(401).redirect('/error');
-            }
-            const forumId = xss(req.params.id);
-            const userId = req.session.user._id;
-            const comment = xss(req.body.comment);
-            if (!comment || /^\s*$/.test(comment)) {
-                const forumPost = await getForumPostById(forumId);
-                const authorEmail = await getEmailById(forumPost.userId.toString());
-                return res.status(400).render('forums/post', {
-                    title: forumPost.title, // Use actual forum title
-                    _id: forumId,
-                    author: authorEmail,
-                    content: forumPost.content,
-                    createdAt: forumPost.createdAt,
-                    comments: forumPost.comments,
-                    error: 'Comment cannot be empty',
-                    user: req.session.user,
-                    isSignedIn: req.session.user ? true : false
-                });
-       			 }
-            await addCommentToForumPost(forumId, userId, comment);
-            return res.redirect(`/forums/${forumId}`);
-        } catch (e) {
-            return res.status(500).render('error', {
-                error: e.toString(),
-                user: req.session.user, //shows the user object in the navbar
-                isSignedIn: req.session.user ? true : false
-            });
-        }
-    })
-
-    router.post('/:id/delete', async(req, res) => {
-        try {
-            if (!req.session.user) {
-                return res.redirect('/login');
-            }
-
-						// TODO: Check result and if the user has permission to delete the post
-            await deleteForumPost(xss(req.params.id));
-            return res.redirect('/forums');
-        } catch (e) {
-            return res.status(400).render('error', {
-                error: e.toString(),
-                user: req.session.user, 
-                isSignedIn: !!req.session.user
-            })
-        }
-    });
-router.get('/:id/edit', requireAuth, async(req, res) => {   
-    try {
-        const forumId = xss(req.params.id);
-        const forumPost = await getForumPostById(forumId);
-        
-        if (!forumPost) {
-            return res.status(404).render('error', { 
-                error: 'Forum post not found',
-                user: req.session.user,
-                isSignedIn: true
-            });
-        }
-        
-        const canModify = req.session.user && req.session.user._id.toString() === forumPost.userId.toString();
-        
-        if (!canModify) {
-            return res.status(403).render('error', {
-                error: 'You do not have permission to edit this forum post',
-                user: req.session.user,
-                isSignedIn: true
-            });
-        }
-        
-        return res.render('forums/edit', {
-            title: 'Edit Forum Post',
-            _id: forumId,
-            postTitle: forumPost.title,  
-            content: forumPost.content,
-            user: req.session.user,
-            isSignedIn: true,
-            error: null
-        });
-    } catch (e) {
-        return res.status(500).render('error', {
-            error: e.toString(),
-            user: req.session.user,
-            isSignedIn: true
-        });
-    }
-});
-router.post('/:id/edit', requireAuth, async(req, res) => { 
-    try {
-        const forumId = xss(req.params.id);
-				const title = xss(req.body.title);
-				const content = xss(req.body.content);
-        const userId = req.session.user._id;
-        const forumPost = await getForumPostById(forumId);
-       
-        const canModify = req.session.user && req.session.user._id.toString() ===  forumPost.userId.toString();
-
-        if (!title || /^\s*$/.test(title)) {
-            return res.status(400).render('forums/edit', {
-                title: 'Edit Forum Post',
-                _id: forumId,
-                postTitle: title,
-                content: content,
-                error: 'Title cannot be empty',
-                user: req.session.user,
-                isSignedIn: true
-            });
-        }
-
-        if (!content || /^\s*$/.test(content)) {
-            return res.status(400).render('forums/edit', {
-                title: 'Edit Forum Post',
-                _id: forumId,
-                postTitle: title,
-                content: content,
-                error: 'Content cannot be empty',
-                user: req.session.user,
-                isSignedIn: true
-            });
-        }
-
-        if (!canModify) {
-            return res.status(403).render('error', {
-                error: 'You do not have permission to edit this forum post',
-                user: req.session.user,
-                isSignedIn: true
-            });
-        }
-
-        await editForumPost(forumId, title, content, userId);
-        return res.redirect(`/forums/${forumId}`);
-    } catch (e) {
-        const error_400 = e.toString().includes("cannot be an empty string or string with just spaces") || e.toString().includes("needs to be atleast");
-        if (error_400) {
-            return res.status(400).render('forums/edit', {
-                title: 'Edit Forum Post',
-                _id: xss(req.params.id),
-                postTitle: xss(req.body.title),
-                content: xss(req.body.content),
-                error: e.toString(),
-                user: req.session.user,
-                isSignedIn: !!req.session.user
-            });
-        }
-
-        return res.status(500).render('error', {
-                error: 'A server error occurred. Please try again.',
-                formData: {  // Save form data for potential recovery
-                    id: xss(req.params.id),
-                    title: xss(req.body.title),
-                    content: xss(req.body.content)
-                },
-                user: req.session.user,
-                isSignedIn: !!req.session.user
-        });
-    }
+// GET all forum posts
+router.get('/', requireAuth, async (req, res) => {
+	try {
+		const forumPosts = await getAllForumPosts();
+		return res.render('forums/list', { title: "Forum Posts", forums: forumPosts, isSignedIn: true });
+	} catch (e) {
+		return res.status(500).render('error', { title: "Error", error: e, isSignedIn: true });
+	}
 });
 
+// GET the create page
+router.get('/create', requireAuth, async (req, res) => {
+	try {
+		return res.render('forums/create', { title: "Create Forum Post", isSignedIn: true });
+	} catch (e) {
+		return res.status(500).render('error', { title: "Error", error: e, isSignedIn: true });
+	}
+});
 
+// POST a new forum post
+router.post('/create', requireAuth, async (req, res) => {
+	let title = xss(req.body.title);
+	let content = xss(req.body.content);
+
+	try {
+		// Validate the title and content
+		title = checkTitle(title);
+		content = checkDescription(content);
+
+		// Create the forum post
+		const forumPost = await createForumPost(req.session.user._id, title, content);
+		return res.redirect(`/forums/${forumPost._id}`);
+	} catch (e) {
+		return res.status(400).render('forums/create', {
+			title: "Create Forum Post",
+			error: e,
+			isSignedIn: true,
+			forum_title: title,
+			content: content
+		});
+	}
+});
+
+// GET a specific forum post
+router.get('/:forumId', requireAuth, async (req, res) => {
+	try {
+		// Validate the forum ID
+		const forumId = checkID(xss(req.params.forumId));
+
+		// Get the forum post and its author's email
+		const forumPost = await getForumPostById(forumId);
+		const authorEmail = await getEmailById(forumPost.userId);
+
+		// Render the forum post
+		return res.render('forums/post', {
+			_id: forumId,
+			title: forumPost.title,
+			author: authorEmail,
+			content: forumPost.content,
+			createdAt: forumPost.createdAt,
+			comments: forumPost.comments,
+			isSignedIn: true,
+			canModify: req.session.user._id === forumPost.userId
+		});
+	} catch (e) {
+		return res.status(400).render('error', { title: "Error", error: e, isSignedIn: true });
+	}
+});
+
+// POST a comment to a specific forum post
+router.post('/:forumId', requireAuth, async (req, res) => {
+	try {
+		// Validate comment properties
+		const forumId = checkID(xss(req.params.forumId));
+		const userId = req.session.user._id;
+
+		// Get the forum post and its author's email
+		const forumPost = await getForumPostById(forumId);
+		const authorEmail = await getEmailById(forumPost.userId);
+
+		// Validate the comment
+		let comment;
+		try {
+			comment = checkContent(xss(req.body.comment));
+		} catch (e) {
+			return res.status(400).render('forums/post', {
+				_id: forumId,
+				error: e,
+				title: forumPost.title,
+				author: authorEmail,
+				content: forumPost.content,
+				createdAt: forumPost.createdAt,
+				comments: forumPost.comments,
+				isSignedIn: true,
+				canModify: req.session.user._id === forumPost.userId
+			});
+		}
+
+		// Redirect back to the forum page after adding the comment
+		await addCommentToForumPost(forumId, userId, comment);
+		return res.redirect(`/forums/${forumId}`);
+	} catch (e) {
+		return res.status(400).render('error', { title: "Error", error: e, isSignedIn: true });
+	}
+});
+
+// DELETE a forum post
+router.post('/:forumId/delete', requireAuth, async (req, res) => {
+	try {
+		// Validate the forum ID
+		const forumId = checkID(xss(req.params.forumId));
+
+		// Check if the user has permission to delete the post
+		const forumPost = await getForumPostById(forumId);
+		if (forumPost.userId !== req.session.user._id)
+			return res.status(403).render('error', { title: "Error", error: "You do not have permission to delete this post", isSignedIn: true });
+
+		// Delete the forum post and redirect to the forum list
+		await deleteForumPost(forumId);
+		return res.redirect('/forums');
+	} catch (e) {
+		return res.status(400).render('error', { title: "Error", error: e, isSignedIn: true });
+	}
+});
+
+// GET the edit page for a specific forum post
+router.get('/:forumId/edit', requireAuth, async (req, res) => {
+	try {
+		// Validate the forum ID
+		const forumId = checkID(xss(req.params.forumId));
+
+		// Check if the user has permission to edit the post
+		const forumPost = await getForumPostById(forumId);
+		if (forumPost.userId !== req.session.user._id)
+			return res.status(403).render('error', { title: "Error", error: "You do not have permission to edit this post", isSignedIn: true });
+
+		// Render the edit page
+		return res.render('forums/edit', {
+			_id: forumId,
+			title: "Edit Forum Post",
+			postTitle: forumPost.title,
+			content: forumPost.content,
+			isSignedIn: true
+		});
+	} catch (e) {
+		return res.status(500).render('error', { title: "Error", error: e, isSignedIn: true });
+	}
+});
+
+// POST the edited forum post
+router.post('/:forumId/edit', requireAuth, async (req, res) => {
+	let forumId = xss(req.params.forumId);
+	let title = xss(req.body.title);
+	let content = xss(req.body.content);
+
+	// Validate the forum properties
+	try {
+		forumId = checkID(forumId);
+		title = checkTitle(title);
+		content = checkDescription(content);
+	} catch (e) {
+		return res.status(400).render('forums/edit', {
+			_id: forumId,
+			error: e,
+			title: "Edit Forum Post",
+			postTitle: title,
+			content: content,
+			isSignedIn: true
+		});
+	}
+
+	try {
+		// Check if the user has permission to edit the post
+		const forumPost = await getForumPostById(forumId);
+
+		if (forumPost.userId !== req.session.user._id)
+			return res.status(403).render('error', { title: "Error", error: "You do not have permission to edit this post", isSignedIn: true });
+	} catch (e) {
+		return res.status(400).render('error', { title: "Error", error: e, isSignedIn: true });
+	}
+
+	try {
+		// Update the forum post and redirect to the forum page
+		await editForumPost(forumId, title, content);
+		return res.redirect(`/forums/${forumId}`);
+	} catch (e) {
+		return res.status(500).render('error', { title: "Error", error: e, isSignedIn: true });
+	}
+});
 
 export default router;

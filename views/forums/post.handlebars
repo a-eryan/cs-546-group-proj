@@ -1,56 +1,60 @@
-<script src="/public/js/forum.js"></script>
 <div class="forum-post">
-    {{#if error}}
-        <div class="error-message">{{error}}</div>
-    {{/if}}
-    <div class="forum-header">
-        <h1>{{title}}</h1>
-        <a href="/forums" class="back-button">Back to Forums</a>
-    </div>
-    <div class="post-content">
-        <p>{{content}}</p>
-        <p>By {{author}} on {{createdAt}}</p>
-    </div> 
-    {{#if canModify}}
-        <div class="button-container">
-            <form action="/forums/{{_id}}/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this post?');">
-                <button type="submit" class="delete-button">Delete Post</button>
-            </form>
-            <a href="/forums/{{this._id}}/edit">
-                <button class="edit-button">Edit Post</button>
-            </a>
-    {{/if}}
-          <a href="/reports/forum/{{this._id}}">
-            <button class="delete-forum-button" title="Report">
-                Report Forum
-            </button>
-            </a>
-        </div>
+	{{#if error}}
+		<div class="error-message">{{error}}</div>
+	{{/if}}
 
-    <div class="comments-section">
-        <h2>Comments</h2>
-        {{#if comments.length}}
-            <ul class="comments-list">
-                {{#each comments}}
-                    <li class="comment">
-                        <p>{{this.content}}</p>
-                        <p class="comment-author">By {{this.author}} on {{this.createdAt}}</p>
-                    </li>
-                {{/each}}
-            </ul>
-        {{else}}
-            <p>No comments yet.</p>
-        {{/if}}
-        
-        {{#if isSignedIn}}
-            <form class="comment-form" action="/forums/{{_id}}" method="POST">
-                <h3>Add a comment</h3>
-                <textarea name="comment" required></textarea>
-                <button type="submit">Post Comment</button>
-            </form>
-        {{else}}
-            <p>Please <a href="/login">sign in</a> to comment.</p>
-        {{/if}}
-    </div> 
+	<div class="forum-header">
+		<h1>{{title}}</h1>
+		<a href="/forums" class="back-button">Back to Forums</a>
+	</div>
+	
+	<div class="post-content">
+		<p>{{content}}</p>
+		<p>By {{author}} on {{createdAt}}</p>
+	</div> 
+	
+	<div class="button-container">
+		{{#if canModify}}
+			<form action="/forums/{{_id}}/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this post?');">
+				<button type="submit" class="delete-button">Delete Post</button>
+			</form>
+			<a href="/forums/{{this._id}}/edit">
+				<button class="edit-button">Edit Post</button>
+			</a>
+		{{/if}}
+		<a href="/reports/forum/{{this._id}}">
+			<button class="delete-forum-button" title="Report">
+				Report Forum
+			</button>
+		</a>
+	</div>
+
+	<div class="comments-section">
+		<h2>Comments</h2>
+		
+		{{#if comments.length}}
+			<ul class="comments-list">
+				{{#each comments}}
+					<li class="comment">
+						<p>{{this.content}}</p>
+						<p class="comment-author">by {{this.email}} on {{this.createdAt}}</p>
+					</li>
+				{{/each}}
+			</ul>
+		{{else}}
+			<p>No comments yet.</p>
+		{{/if}}
+			
+		{{#if isSignedIn}}
+			<form class="comment-form" action="/forums/{{_id}}" method="POST">
+				<h3>Add a comment</h3>
+				<textarea name="comment" required></textarea>
+				<button type="submit">Post Comment</button>
+			</form>
+		{{else}}
+			<p>Please <a href="/login">sign in</a> to comment.</p>
+		{{/if}}
+	</div> 
 </div>
 
+<script src="/public/js/forum.js"></script>
