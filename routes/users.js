@@ -73,33 +73,4 @@ router.get('/', requireAuth, async (req, res) => {
 		});
 	}
 });
-router.get('/profile/profile-picture', requireAuth, async (req, res) => {	
-	try {
-		const user = req.session.user;
-
-		if (!user || !user._id)
-			return res.redirect('/login');
-
-		const userCollection = await users();
-		const userObjectId = new ObjectId(user._id);
-
-		// Get the user's profile picture
-		const userData = await userCollection.findOne({ _id: userObjectId });
-		if (!userData || !userData.profilePicture) {
-			return res.status(404).render('error', { error: 'Profile picture not found', isSignedIn: true });
-		}
-
-		const profilePictureUrl = userData.profilePicture;
-
-		return res.render('users/profile-picture', {
-			isSignedIn: true,
-			user: { ...req.session.user, profilePictureUrl }
-		});
-	} catch (e) {
-		return res.status(500).render('error', {
-			error: e,
-			isSignedIn: true
-		});
-	}
-});
 export default router;
