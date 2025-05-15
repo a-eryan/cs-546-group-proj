@@ -22,7 +22,6 @@ export const register = async (email, password) => {
 	const newUser = {
 		email: email,
 		password: hashedPassword,
-		profilePicture: "/public/js/images/profile.svg",
 		achievements: [],
 		uploadedSpots: []
 	}
