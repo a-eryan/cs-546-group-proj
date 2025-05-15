@@ -1,37 +1,59 @@
 //create/edit study spot with validation
 console.log("Study spot edit/create validation script loaded");
 
+// Checks if a string is non-empty and trims it
 const checkString = (string) => {
-    if (!string) throw 'You must provide a string';
-    if (typeof string !== 'string') throw `${string} must be a string`;
-    string = string.trim();
-    if (string.length === 0) throw `Text cannot be an empty string or string with just spaces`;
-    return string;
-}
-const checkTitle = (title) => {
-    title = checkString(title);
-    if (title.length < 6) throw `Title: ${title} needs to be at least 6 characters long`;
-    return title;
-}
-const checkDescription = (description) => {
-    description = checkString(description);
-    if (description.length < 10) throw `Description: ${description} needs to be at least 10 characters long`;
-    return description;
-}
-const checkLocation = (location) => {
-    location = checkString(location);
-    if (location.length < 8) throw `Location: ${location} needs to be at least 8 characters long`;
-    return location;
-}
-const checkNoiseLevel = (val) => {
-    const num = Number(val);
-    if (!Number.isInteger(num) || num < 1 || num > 3) {
-        throw `${val} must be an integer between 1 and 3`;
-    }
-    return num;
-}
+	if (!string || typeof string !== 'string')
+		throw "You must provide a non-empty string";
 
-export const checkResources = (arr) => {
+	string = string.trim();
+	if (string.length === 0)
+		throw "You must provide a non-empty string";
+
+	return string;
+};
+
+// Checks if a string is a valid title
+const checkTitle = (title) => {
+	title = checkString(title);
+
+	if (title.length < 6 || title.length > 100)
+		throw "The title must be between 6 and 100 characters long";
+
+	return title;
+};
+
+// Checks if a string is a valid description
+const checkDescription = (description) => {
+	description = checkString(description);
+
+	if (description.length < 10 || description.length > 250)
+		throw "The description must be between 10 and 250 characters long";
+
+	return description;
+};
+
+// Checks if a string is a valid location
+const checkLocation = (location) => {
+	location = checkString(location);
+
+	if (location.length < 6 || location.length > 50)
+		throw "The location must be between 6 and 50 characters long";
+
+	return location;
+};
+
+// Checks if a number is a valid noise level (1, 2, or 3)
+const checkNoiseLevel = (val) => {
+	const num = Number(val);
+	
+	if (!Number.isInteger(num) || num < 1 || num > 3)
+		throw "The noise level must be 1, 2, or 3";
+
+	return num;
+};
+
+const checkResources = (arr) => {
 	if (!arr)
 		return [];
 
