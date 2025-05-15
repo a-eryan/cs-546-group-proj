@@ -103,7 +103,7 @@ router.get('/:spotId', requireAuth, async (req, res) => {
     return res.render('studySpots/spot', {
       title: spot.title,
       spot,
-      reviews, 
+      reviews,
       comments,
       isSignedIn: true,
       user: req.session.user
