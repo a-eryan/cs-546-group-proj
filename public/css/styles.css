@@ -287,10 +287,17 @@ footer {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.profile-container h2 {
+.profile-container h1 {
     color: var(--stevens-red);
-    margin-bottom: 1rem;
 }
+
+.profile-header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: #EBC73B 3px solid;
+    margin-bottom: 0;
+}   
 
 .profile-actions {
     text-align: right;

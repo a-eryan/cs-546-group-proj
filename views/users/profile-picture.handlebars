@@ -1,0 +1,8 @@
+	<h1>Upload Profile Picture</h1>
+    {{#if error}}
+        <div class="error-message">{{error}}</div>
+    {{/if}}
+    <div class="form-group">
+		<label for="image">Upload Image:</label>
+		<input type="file" name="image" id="image" accept="image/*"/>
+	</div>

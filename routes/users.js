@@ -112,5 +112,4 @@ router.post('/avatar', requireAuth, uploadAvatar.single('avatar'), async (req, r
 		return res.status(400).render('error', {error: e.toString(), isSignedIn: true});
 	}
 });
-
 export default router;
