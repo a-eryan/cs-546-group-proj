@@ -36,9 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            if (reason.length < 5) {             //validate minimum length
+            if (reason.length < 10) {             //validate minimum length
                 e.preventDefault();
-                showError('Please provide a more detailed reason (at least 5 characters)');
+                showError('Please provide a more detailed reason (at least 10 characters)');
                 return;
             }
         });

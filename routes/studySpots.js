@@ -90,27 +90,40 @@ router.post('/upload', requireAuth, upload.single('image'), async (req, res) => 
 
 // GET a specific study spot
 router.get('/:spotId', requireAuth, async (req, res) => {
-	try {
-		// Get the study spot by ID
-		const spotId = checkID(xss(req.params.spotId));
-		const spot = await getStudySpotById(spotId);
+  try {
 
-		// Get the reviews and comments for the study spot
-		const reviews = await getAllReviews(spotId);
-		const comments = await getAllComments(spotId);
+    const spotId = checkID(xss(req.params.spotId));
+    const spot = await getStudySpotById(spotId);
 
-		// Render the study spot page
-		return res.render('studySpots/spot', {
-			title: spot.title,
-			spot,
-			reviews,
-			comments,
-			isSignedIn: true,
-			user: req.session.user
-		});
-	} catch (e) {
-		return res.status(400).render('error', { error: e, isSignedIn: true });
-	}
+    const reviews = await getAllReviews(spotId);
+    
+    const reviewsWithEmail = [];
+    for (const review of reviews) {
+      let authorEmail;
+      try {
+        authorEmail = await getEmailById(review.userId);
+      } catch {
+        authorEmail = 'Unknown User';
+      }
+      reviewsWithEmail.push({
+        ...review,
+        authorEmail
+      });
+    }
+
+    const comments = await getAllComments(spotId);
+
+    return res.render('studySpots/spot', {
+      title: spot.title,
+      spot,
+      reviews: reviewsWithEmail, 
+      comments,
+      isSignedIn: true,
+      user: req.session.user
+    });
+  } catch (e) {
+    return res.status(400).render('error', { error: e, isSignedIn: true });
+  }
 });
 
 // GET the edit page for a specific study spot
