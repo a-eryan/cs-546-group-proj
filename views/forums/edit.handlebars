@@ -1,4 +1,4 @@
-<form id = "editForumForm" action="/forums/{{_id}}/edit" method="POST">
+<form class="forum-post" id="editForumForm" action="/forums/{{_id}}/edit" method="POST">
 	{{#if error}} 
 		<div class="error-message">{{error}}</div>
 	{{/if}}
@@ -11,7 +11,7 @@
 	<div class="forum-form">
 		<div class="form-group">
 			<label for="title">Title:</label>
-			<input type="text" id="title" name="title"  value = "{{postTitle}}" required>
+			<input type="text" id="title" name="title"  value="{{postTitle}}" required>
 		</div>
 		
 		<div class="form-group">
