@@ -96,6 +96,7 @@
           <p>{{content}}</p>
 					<small>by {{this.email}} on {{createdAt}}</small>
         </li>
+        
       {{/each}}
     </ul>
   {{else}}
@@ -112,6 +113,28 @@
 				<li class="comment">
 					<p>{{content}}</p>
 					<small>by {{author}} on {{createdAt}}</small>
+
+           {{#if comments.length}}
+            <ul class="comments-list">
+              {{#each comments}}
+                <li class="comment">
+                  <p>{{content}}</p>
+                  <small>by {{email}} on {{createdAt}}</small>
+                </li>
+              {{/each}}
+            </ul>
+            {{/if}}
+
+            {{#if ../isSignedIn}}
+              <form class="comment-form review-comment-form"
+                    data-review-id="{{_id}}"
+                    action="/reviews/comments/{{_id}}"
+                    method="POST">
+                <textarea name="content" required placeholder="Reply to this review…"></textarea>
+                <button type="submit">Post Reply</button>
+              </form>
+              {{/if}}
+
 				</li>
 			{{/each}}
 		</ul>
