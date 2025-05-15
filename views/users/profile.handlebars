@@ -1,8 +1,11 @@
 <div class="profile-container">
-	<h2>Welcome, {{user.email}}</h2>
-    
-	<div class="profile-actions">
-		<a href="/logout" class="logout-button">Log Out</a>
+	<div class = "profile-header-container">
+		<h1>Welcome, {{user.email}}</h1>
+		
+		<div class="profile-actions">
+			<a href="/logout" class="logout-button">Log Out</a>
+			<a href="/profile/profile-picture" class="profile-picture-button">Change Profile Picture</a>
+		</div>
 	</div>
 
 	<section class="profile-section">
