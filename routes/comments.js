@@ -83,7 +83,6 @@ router.delete('/:commentId', isAuthenticated, async (req, res) => {
 	}
 
 	// Ensure the user is authorized to delete the comment
-	// TODO: Check if the user is admin. Same for reviews
 	try {
 		const comment = await comments.getComment(commentId);
 

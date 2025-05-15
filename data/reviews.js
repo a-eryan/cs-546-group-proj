@@ -164,7 +164,7 @@ export const updateReview = async (reviewId, userId, title, content, rating) => 
 	({ spotId, userId, title, content, rating } = checkReviewProperties(spotId, userId, title, content, rating));
 	
 	// Update the review
-	const updateInfo = await studySpotCollection.findOneAndUpdate(
+	const updatedSpot = await studySpotCollection.findOneAndUpdate(
 		{ 
 			_id: studySpot._id,
 			'reviews._id': reviewObjectId
@@ -180,23 +180,24 @@ export const updateReview = async (reviewId, userId, title, content, rating) => 
 		{ returnDocument: 'after' }
 	);
 	
-	if (!updateInfo)
+	if (!updatedSpot)
 		throw 'Failed to update review';
 	
 	// Recalculate the average rating
-	const updatedSpot = await studySpotCollection.findOne({ _id: studySpot._id });
-	const averageRating = calculateAverageRating(updatedSpot.reviews);
+	if (review.rating !== rating) {
+		const averageRating = calculateAverageRating(updatedSpot.reviews);
+		
+		const spotUpdateInfo = await studySpotCollection.updateOne(
+			{ _id: studySpot._id },
+			{ $set: { averageRating: averageRating } }
+		);
+		
+		if (spotUpdateInfo.modifiedCount === 0)
+			throw `Failed to update average rating for ${reviewId}`;
+	}
 	
-	const spotUpdateInfo = await studySpotCollection.updateOne(
-		{ _id: studySpot._id },
-		{ $set: { averageRating: averageRating } }
-	);
-
-	if (spotUpdateInfo.modifiedCount === 0)
-		throw `Failed to update average rating for ${reviewId}`;
-	
-	updateInfo._id = updateInfo._id.toString();
-	return updateInfo;
+	updatedSpot._id = updatedSpot._id.toString();
+	return updatedSpot;
 };
 
 export const deleteReview = async (reviewId) => {

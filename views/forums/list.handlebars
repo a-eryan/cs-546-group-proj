@@ -1,28 +1,27 @@
-<div class = "all-forum-posts">
-    <div class="forum-list-header">    
-        <h1>Duck Study Hub Forums</h1>
-        <a href="/forums/create">
-            <button type = "button" class = "new-forum-button">Create a New Forum Post</button>
-        </a>
-    </div>
+<div class="all-forum-posts">
+	<div class="forum-list-header">    
+		<h1>Duck Study Hub Forums</h1>
 
-    <div class = "forumView">
-        <div class = "forum-section">
-            <ul class = "forum-list">
-                {{#each forums}}
-                    <li class="forum">
-                        <a href="/forums/{{this._id}}">{{this.title}}</a>
-                        <p>{{this.content}}</p>
-                    </li>
-                {{else}}
-                    <p>There seems to be no forums available at the moment. Why not lead the flock?</p>
-                {{/each}}
-            </ul>
-        </div>
-        {{#if isSignedIn}}
-            <div id = "createForum">
+		<form style="display: inline" action="/forums/create" method="GET">
+			<button type="submit" class="new-forum-button">Create a New Forum Post</button>
+		</form>
+	</div>
 
-            </div>
-        {{/if}}     
-    </div>
-</div>        
+	<div class="forumView">
+		<div class="forum-section">
+			<ul class="forum-list">
+			{{#each forums}}
+				<li class="forum">
+					<a href="/forums/{{this._id}}">{{this.title}}</a>
+					<p>{{this.content}}</p>
+				</li>
+			{{else}}
+				<p>There seems to be no forums available at the moment. Why not lead the flock?</p>
+			{{/each}}
+			</ul>
+		</div>
+		{{#if isSignedIn}}
+			<div id="createForum"></div>
+		{{/if}}
+	</div>
+</div>

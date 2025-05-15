@@ -1,73 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{title}} - Duck Study Hub</title>
-    <link rel="stylesheet" href="/public/css/styles.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Saira+Condensed:wght@100;200;300;400;500;600;700;800;900&family=Saira:ital,wght@0,100..900;1,100..900&display=swap');
-    </style>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{{title}} - Duck Study Hub</title>
+	<link rel="stylesheet" href="/public/css/styles.css">
+	<style>
+			@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Saira+Condensed:wght@100;200;300;400;500;600;700;800;900&family=Saira:ital,wght@0,100..900;1,100..900&display=swap');
+	</style>
 </head>
 <body>
-    <header>              
-        <!-- Navigation links -->
-        <nav class="navbar">
-            <ul>
-                {{#if isSignedIn}}
-                <li id = "logo"><a href="/studyspots"> <img src = "/public/js/images/DuckStudyHubLogo.svg" alt="Duck Study Hub Logo" title = "Home"></a> </li>
-                <li class="nav-item"> <a href="/studyspots" class="nav-link">Study Spots</a></li>
-                <li class="nav-item"> <a href="/forums" class="nav-link">Duck Study Hub Forums</a></li>
-                <li id="uploadPost" class="auth"><a href="/studyspots/upload"><img src = "/public/js/images/createPost.svg" alt="Upload Study Spot" title = "Upload Study Spot" class="profile-icon"></a></li>
-                <li id="profile"><a href="/profile"><img src = "/public/js/images/profile.svg" alt="Profile Icon" title = "Profile" class="profile-icon"></a></li>
-                {{else}}
-                <li id = "logo"><a href="/"> <img src = "/public/js/images/DuckStudyHubLogo.svg" alt="Duck Study Hub Logo" title = "Home"></a> </li>
-                <li class="nav-item"> <a href="/" class="nav-link">Study Spots</a></li>
-                <li class="nav-item"> <a href="/" class="nav-link">Duck Study Hub Forums</a></li>
-                <li class = "auth"> <a href="/" class="login-button">Sign In / Register With A Click!</a> </li>
-                {{/if}}
-            </ul>
-        </nav>
-    </header>
+	<header>              
+		<!-- Navigation links -->
+		<nav class="navbar">
+			<ul>
+				{{#if isSignedIn}}
+					<li id = "logo"><a href="/studyspots"> <img src = "/public/js/images/DuckStudyHubLogo.svg" alt="Duck Study Hub Logo" title = "Home"></a> </li>
+					<li class="nav-item"> <a href="/studyspots" class="nav-link">Study Spots</a></li>
+					<li class="nav-item"> <a href="/forums" class="nav-link">Duck Study Hub Forums</a></li>
+					<li id="uploadPost" class="auth"><a href="/studyspots/upload"><img src = "/public/js/images/createPost.svg" alt="Upload Study Spot" title = "Upload Study Spot" class="profile-icon"></a></li>
+					<li id="profile"><a href="/profile"><img src = "/public/js/images/profile.svg" alt="Profile Icon" title = "Profile" class="profile-icon"></a></li>
+				{{else}}
+					<li id = "logo"><a href="/"> <img src = "/public/js/images/DuckStudyHubLogo.svg" alt="Duck Study Hub Logo" title = "Home"></a> </li>
+					<li class="nav-item"> <a href="/" class="nav-link">Study Spots</a></li>
+					<li class="nav-item"> <a href="/" class="nav-link">Duck Study Hub Forums</a></li>
+					<li class = "auth"> <a href="/" class="login-button">Sign In / Register With A Click!</a> </li>
+				{{/if}}
+			</ul>
+		</nav>
+	</header>
     
-    <main>
-        {{{body}}}
-        {{!-- renders the partial html page of the respective template  
-        e.g: res.render('studySpots/list', { title: 'Study Spots' }) assigns views/studySpots/list.handlebars to body 
+	<main>
+		{{{body}}}
+	</main>
+    
+	<footer>
+		<p>
+			CS 546 Group 27 Duck Study Hub Group Project by Rishabh Dhadda, Anthony Eryan, Payton Bates, and Andrew Anantharajah.<br>
+			This web site is not endorsed by, directly affiliated with, maintained, authorized, or sponsored by Stevens Institute of Technology nor its subsidiaries or its affiliates.
+		</p>
+	</footer>
 
-        
-        --}}
-    </main>
-    
-    <footer>
-        <p>CS 546 Group 27 Duck Study Hub Group Project by Rishabh Dhadda, Anthony Eryan, Payton Bates, and Andrew Anantharajah. This web site is not endorsed by, directly affiliated with, maintained, authorized, or sponsored by
-           Stevens Institute of Technology nor its subsidiaries or its affiliates.
-        </p>
-    </footer>
-    
-    <!-- Common JS -->
-    {{!-- <script src="public/js/main"></script>
-    {{#if pageScript}} 
-        <script src="/js/{{pageScript}}.js"></script>
-    {{/if}} --}}
-    <!-- the above will check whether express passed a client-sided JS file when rendering this page
-    e.g: if the page is /study-spots, it will check if there is a file called study-spots.js in the js folder and include it:
-        res.render('study-spots', {
-        title: 'Study Spots',
-        pageScript: 'specificPageScript' //this will load public/js/specificPageScript.js
-    });
-    -->
-    <script>
-        {{#unless isSignedIn}}
-            if (
-                !document.cookie.includes('AuthenticationState') &&
-                window.location.pathname !== '/login' &&
-                window.location.pathname !== '/register'
-            ) {
-                window.location.replace('/login');
-            }
-        {{/unless}}
-    </script>
+	<script>
+		{{#unless isSignedIn}}
+			if (!document.cookie.includes('AuthenticationState') && window.location.pathname !== '/login' && window.location.pathname !== '/register')
+				window.location.replace('/login');
+		{{/unless}}
+	</script>
 
 </body>
 </html>

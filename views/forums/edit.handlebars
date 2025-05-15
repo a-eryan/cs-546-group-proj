@@ -1,21 +1,26 @@
-<script src="/public/js/forumEdit.js"></script>
-<form id = "editForumForm" action="/forums/{{_id}}/edit" method="POST">
-    {{#if error}} 
-    <div class="error-message">{{error}}</div>
-    {{/if}}
-    <div class="forum-header">
-        <h1>Edit Forum Post</h1>
-        <a href="/forums" class="back-button">Back to Forums</a>
-    </div>
-    <div class="forum-form">
-        <div class="form-group">
-            <label for="title">Title:</label>
-            <input type="text" id="title" name="title"  value = "{{postTitle}}" required>
-        </div>
-        <div class="form-group">
-            <label for="content">Description:</label>
-            <textarea id="content" name="content" required>{{content}}</textarea>
-        </div>
-        <button class="new-forum-button" type="submit">Update Post</button>
-    </div>
+<form class="forum-post" id="editForumForm" action="/forums/{{_id}}/edit" method="POST">
+	{{#if error}} 
+		<div class="error-message">{{error}}</div>
+	{{/if}}
+
+	<div class="forum-header">
+		<h1>Edit Forum Post</h1>
+		<a href="/forums" class="back-button">Back to Forums</a>
+	</div>
+	
+	<div class="forum-form">
+		<div class="form-group">
+			<label for="title">Title:</label>
+			<input type="text" id="title" name="title"  value="{{postTitle}}" required>
+		</div>
+		
+		<div class="form-group">
+			<label for="content">Description:</label>
+			<textarea id="content" name="content" required>{{content}}</textarea>
+		</div>
+		
+		<button class="new-forum-button" type="submit">Update Post</button>
+	</div>
 </form>
+
+<script src="/public/js/forumEdit.js"></script>
