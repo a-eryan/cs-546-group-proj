@@ -1,23 +1,24 @@
 <div class="spot-container">
   <div class="study-spot-actions" style="margin: 1rem 0;">
     {{#if (isEqual spot.userId user._id)}}
-      <a href="/studyspots/{{spot._id}}/edit">
-        <button class="button" title="Edit">
+			<form style="display: inline" action="/studyspots/{{spot._id}}/edit" method="GET">
+				<button class="button" title="Edit">
           <img src="/public/js/images/edit.svg" alt="Edit" class="button-icon" title="Edit">
         </button>
-      </a>
-      <form action="/studyspots/{{spot._id}}/delete" method="POST" class="delete-form">
+			</form>
+
+      <form style="display: inline" action="/studyspots/{{spot._id}}/delete" method="POST">
         <button type="submit" class="button" title="Delete">
           <img src="/public/js/images/delete.svg" alt="Delete" class="button-icon" title="Delete">
         </button>
       </form>
     {{/if}}
-    
-    <a href="/reports/spot/{{spot._id}}">
-      <button class="button" title="Report">
+
+		<form style="display: inline" action="/reports/spot/{{spot._id}}" method="GET">
+			<button class="button" title="Report">
         <img src="/public/js/images/report.svg" alt="Report" class="button-icon" title="Report">
       </button>
-    </a>
+		</form>
   </div>
 
 	<p><strong>{{spot.title}}</strong></p>
@@ -52,7 +53,7 @@
         <span id="ratingDisplay" style="font-weight:bolder;">3</span>
       </label>
 
-      <input class="form-input" type="range" name="rating" id="rating" min="1" max="5" step="1" value="3" required>
+      <input class="form-input" type="range" name="rating" id="rating" min="1" max="5" step="1" value="3">
 
       <div class="slider-scale">
         {{#each [1,2,3,4,5]}}<span>{{this}}</span>{{/each}}

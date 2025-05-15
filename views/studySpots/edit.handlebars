@@ -8,7 +8,7 @@
 	<form id="uploadForm" method="POST" action="/studyspots/{{spot._id}}/edit"  enctype="multipart/form-data" class="auth-form">
 	<div class="form-group">
 		<label for="title">Title:</label>
-		<input type="text" name="title" id="title" value="{{spot.title}}" required class="form-input" />
+		<input type="text" name="title" id="title" value="{{spot.title}}" required class="form-input">
 	</div>
 
 	<div class="form-group">
@@ -18,7 +18,7 @@
 
 	<div class="form-group">
 		<label for="location">Location:</label>
-		<input type="text" name="location" id="location" value="{{spot.location}}" required class="form-input" />
+		<input type="text" name="location" id="location" value="{{spot.location}}" required class="form-input">
 	</div>
 
 	<div class="form-group">
@@ -26,7 +26,7 @@
 		<div>
 			{{#each resources}}
 				<label>
-					<input type="checkbox" name="resourcesNearby" value="{{name}}" {{#if checked}}checked{{/if}} />
+					<input type="checkbox" name="resourcesNearby" value="{{name}}" {{#if checked}}checked{{/if}}>
 					{{name}}
 				</label>
 			{{/each}}
@@ -35,7 +35,7 @@
 
 	<div class="form-group">
 		<label for="noiseLevel">Noise Level (1 being normal conversation, 3 being silent): <span id="noiseLevelDisplay" style="font-weight: bolder;">{{spot.noiseLevel}}</span> </label>
-		<input type="range" name="noiseLevel" id="noiseLevel" min="1" max="3" step="1" value="{{spot.noiseLevel}}" required class="form-input" />
+		<input type="range" name="noiseLevel" id="noiseLevel" min="1" max="3" step="1" value="{{spot.noiseLevel}}" class="form-input">
 	</div>
 
 	{{#if spot.imageUrl}}
@@ -47,7 +47,7 @@
 
 	<div class="form-group">
 		<label for="image">Upload New Image (optional):</label>
-		<input type="file" name="image" id="image" accept="image/*"/>
+		<input type="file" name="image" id="image" accept="image/*">
 	</div>
 
 	<button type="submit" class="submit-btn">Update</button>
