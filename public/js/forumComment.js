@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			try {
 				checkContent(commentContent);
-			} catch (e) {
+			} catch (error) {
 				e.preventDefault();
 
 				let errorDiv = document.querySelector('.error-message');
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 					commentForm.prepend(errorDiv);
 				}
 				
-				errorDiv.textContent = e;
+				errorDiv.textContent = error;
 				errorDiv.scrollIntoView({ behavior: 'smooth' });
 			}
 		});

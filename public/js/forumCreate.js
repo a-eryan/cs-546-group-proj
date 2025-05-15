@@ -49,9 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
 			try {
 				checkTitle(title);
 				checkDescription(content);
-			} catch (e) {
+			} catch (error) {
 				isValid = false;
-				errorMessage = e;
+				errorMessage = error;
 			}
 			
 			if (!isValid) {
