@@ -21,11 +21,41 @@ const allowed = ['.png', '.jpg', '.jpeg', '.webp'];
 const uploadAvatar = multer({
 	storage: avatarStorage,
 	limits: { fileSize: 5 * 1024 * 1024 }, //5mb limit
-	fileFiler: (req, file, cb) => {
+	fileFilter: (req, file, cb) => {
 		const ext = path.extname(file.originalname).toLowerCase();
 		cb(null, allowed.includes(ext));
 	}
 });
+
+const handleProfileUpload = (req, res, next) => {
+	uploadAvatar.single('avatar')(req, res, (err) => {
+		if (err) {
+			if (err.code === 'LIMIT_FILE_SIZE') {
+				return res.status(400).render('users/profilePic', {
+					error: "Profile picture must be smaller than 5MB",
+					isSignedIn: true,
+					user: req.session.user
+				});
+			}
+			
+			if (err.message === 'Only image files are allowed!') {
+				return res.status(400).render('users/profilePic', {
+					error: "Only image files (JPG, PNG, JPEG, WEBP) are allowed",
+					isSignedIn: true,
+					user: req.session.user
+				});
+			}
+			
+			// Other errors
+			return res.status(400).render('users/profilePic', {
+				error: "Error uploading file: " + err.message,
+				isSignedIn: true,
+				user: req.session.user
+			});
+		}
+		next();
+	});
+};
 
 // GET the user profile page
 router.get('/', requireAuth, async (req, res) => {
@@ -94,22 +124,42 @@ router.get('/', requireAuth, async (req, res) => {
 		});
 	}
 });
-
-// POST to upload a profile picture
-router.post('/avatar', requireAuth, uploadAvatar.single('avatar'), async (req, res) => {
-	try{
-		if (!req.file){
-			throw 'No file uploaded';
-		}
-		const relPath = `/${req.file.path}`;
-		await setProfilePic(req.session.user._id, relPath);
-
-		req.session.user.profilePic = relPath;
-
-		return res.redirect('/profile')
-
-	} catch (e) {
-		return res.status(400).render('error', {error: e.toString(), isSignedIn: true});
-	}
+// GET the profile picture page
+router.get('/avatar', requireAuth, async (req, res) => {
+  try {
+    return res.render('users/profilePic', {
+      isSignedIn: true,
+      user: req.session.user
+    });
+  } catch (e) {
+    return res.status(500).render('error', {
+      error: e,
+      isSignedIn: true
+    });
+  }
 });
+// POST to upload a profile picture
+router.post('/avatar', requireAuth, handleProfileUpload, async (req, res) => {
+  try {
+    if (!req.file) {
+      throw 'Please select a file to upload';
+    }
+    
+    // Fix the path construction issue
+    const relPath = `/public/uploads/avatars/${req.file.filename}`;
+    await setProfilePic(req.session.user._id, relPath);
+
+    // Update session with new profile pic
+    req.session.user.profilePic = relPath;
+
+    return res.redirect('/profile');
+  } catch (e) {
+    return res.status(400).render('users/profilePic', { 
+      error: e.toString(), 
+      isSignedIn: true,
+      user: req.session.user
+    });
+  }
+});
+
 export default router;

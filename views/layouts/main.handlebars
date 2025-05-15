@@ -19,7 +19,13 @@
 					<li class="nav-item"> <a href="/studyspots" class="nav-link">Study Spots</a></li>
 					<li class="nav-item"> <a href="/forums" class="nav-link">Duck Study Hub Forums</a></li>
 					<li id="uploadPost" class="auth"><a href="/studyspots/upload"><img src = "/public/images/createPost.svg" alt="Upload Study Spot" title = "Upload Study Spot" class="profile-icon"></a></li>
-					<li id="profile"><a href="/profile"><img src = "/public/images/profile.svg" alt="Profile Icon" title = "Profile" class="profile-icon"></a></li>
+					<li id="profile"><a href="/profile">
+						{{#if user.profilePic}}
+							<img src="{{user.profilePic}}" alt="{{user.email}}'s Profile" title="Profile" class="profile-icon profile-pic">
+						{{else}}
+							<img src="/public/images/profile.svg" alt="Profile Icon" title="Profile" class="profile-icon">
+						{{/if}}
+					</a></li>
 				{{else}}
 					<li id = "logo"><a href="/"> <img src = "/public/images/DuckStudyHubLogo.svg" alt="Duck Study Hub Logo" title = "Home"></a> </li>
 					<li class="nav-item"> <a href="/" class="nav-link">Study Spots</a></li>
