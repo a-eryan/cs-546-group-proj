@@ -78,7 +78,7 @@ router.post('/upload', requireAuth, upload.single('image'), async (req, res) => 
 		const resources = checkResources(xss(req.body.resourcesNearby));
 
 		// Upload the study spot
-		const imagePath = req.file ? `/${req.file.path}` : null;
+		const imagePath = req.file ? `/${req.file.path.replace(/\\/g, '/')}` : null;
 		const studySpot = await uploadStudySpot(req.session.user._id, title, description, location, resources, noiseLevel, imagePath);
 		req.session.user.uploadedSpots.push(studySpot._id);
 
@@ -166,7 +166,7 @@ router.post('/:spotId/edit', requireAuth, upload.single('image'), async (req, re
 		const resources = checkResources(xss(req.body.resourcesNearby));
 
 		// Update the study spot
-		const imagePath = req.file ? `/${req.file.path}` : spot.imageUrl;
+		const imagePath = req.file ? `/${req.file.path.replace(/\\/g, '/')}` : spot.imageUrl;
 		await updateStudySpot(spotId, title, description, location, resources, noiseLevel, imagePath);
 		return res.redirect(`/studyspots/${spotId}`);
 	} catch (e) {
