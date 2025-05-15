@@ -91,32 +91,19 @@ router.post('/upload', requireAuth, upload.single('image'), async (req, res) => 
 // GET a specific study spot
 router.get('/:spotId', requireAuth, async (req, res) => {
   try {
-
+		// Get the study spot by ID
     const spotId = checkID(xss(req.params.spotId));
     const spot = await getStudySpotById(spotId);
 
+		// Get the reviewsw and comments for the study spot
     const reviews = await getAllReviews(spotId);
-    
-    const reviewsWithEmail = [];
-    for (const review of reviews) {
-      let authorEmail;
-      try {
-        authorEmail = await getEmailById(review.userId);
-      } catch {
-        authorEmail = 'Unknown User';
-      }
-      reviewsWithEmail.push({
-        ...review,
-        authorEmail
-      });
-    }
-
     const comments = await getAllComments(spotId);
 
+		// Render the study spot page
     return res.render('studySpots/spot', {
       title: spot.title,
       spot,
-      reviews: reviewsWithEmail, 
+      reviews, 
       comments,
       isSignedIn: true,
       user: req.session.user
