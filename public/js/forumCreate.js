@@ -1,4 +1,4 @@
-console.log("Forum edit validation script loaded");
+console.log("Forum creation validation script loaded");
 
 // Checks if a string is non-empty and trims it
 const checkString = (string) => {
@@ -33,11 +33,11 @@ const checkDescription = (description) => {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-	// Get the edit forum form
-	const editForumForm = document.getElementById('editForumForm');
+	// Get the create forum form
+	const createForumForm = document.getElementById('createForumForm');
 	
-	if (editForumForm) {
-		editForumForm.addEventListener('submit', (e) => {
+	if (createForumForm) {
+		createForumForm.addEventListener('submit', (e) => {
 			// Get the title and content inputs
 			const title = document.getElementById('title').value;
 			const content = document.getElementById('content').value;
@@ -53,17 +53,17 @@ document.addEventListener('DOMContentLoaded', () => {
 				isValid = false;
 				errorMessage = error;
 			}
-
+			
 			if (!isValid) {
 				e.preventDefault();
-						
+					
 				let errorDiv = document.querySelector('.error-message');
 				if (!errorDiv) {
 					errorDiv = document.createElement('div');
 					errorDiv.className = 'error-message';
-					editForumForm.prepend(errorDiv);
+					createForumForm.prepend(errorDiv);
 				}
-						
+					
 				errorDiv.textContent = errorMessage;
 				errorDiv.scrollIntoView({ behavior: 'smooth' });
 			}
