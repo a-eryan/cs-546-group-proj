@@ -3,8 +3,29 @@ import { ObjectId } from 'mongodb';
 import { getStudySpotById } from '../data/studySpots.js';
 import { forumPosts, users } from '../config/mongoCollections.js';
 import { requireAuth } from '../middleware.js';
+import { setProfilePic } from '../data/users.js';
+import multer from 'multer';
+import path from 'path';
 
 const router = Router();
+
+const avatarStorage = multer.diskStorage({
+	destination: 'public/uploads/avatars',
+	filename: (req, file, cb) => {
+		const ext = path.extname(file.originalname).toLowerCase();
+		cb(null, `${req.session.user._id}-${Date.now()}${ext}`);
+	}
+});
+
+const allowed = ['.png', '.jpg', '.jpeg', '.webp'];
+const uploadAvatar = multer({
+	storage: avatarStorage,
+	limits: { fileSize: 5 * 1024 * 1024 }, //5mb limit
+	fileFiler: (req, file, cb) => {
+		const ext = path.extname(file.originalname).toLowerCase();
+		cb(null, allowed.includes(ext));
+	}
+});
 
 // GET the user profile page
 router.get('/', requireAuth, async (req, res) => {
@@ -71,6 +92,24 @@ router.get('/', requireAuth, async (req, res) => {
 			error: e,
 			isSignedIn: true
 		});
+	}
+});
+
+// POST to upload a profile picture
+router.post('/avatar', requireAuth, uploadAvatar.single('avatar'), async (req, res) => {
+	try{
+		if (!req.file){
+			throw 'No file uploaded';
+		}
+		const relPath = `/${req.file.path}`;
+		await setProfilePic(req.session.user._id, relPath);
+
+		req.session.user.profilePic = relPath;
+
+		return res.redirect('/profile')
+
+	} catch (e) {
+		return res.status(400).render('error', {error: e.toString(), isSignedIn: true});
 	}
 });
 export default router;

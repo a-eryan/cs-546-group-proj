@@ -3,20 +3,20 @@
     {{#if (isEqual spot.userId user._id)}}
 			<form style="display: inline" action="/studyspots/{{spot._id}}/edit" method="GET">
 				<button class="button" title="Edit">
-          <img src="/public/js/images/edit.svg" alt="Edit" class="button-icon" title="Edit">
+          <img src="/public/images/edit.svg" alt="Edit" class="button-icon" title="Edit">
         </button>
 			</form>
 
       <form style="display: inline" action="/studyspots/{{spot._id}}/delete" method="POST">
         <button type="submit" class="button" title="Delete">
-          <img src="/public/js/images/delete.svg" alt="Delete" class="button-icon" title="Delete">
+          <img src="/public/images/delete.svg" alt="Delete" class="button-icon" title="Delete">
         </button>
       </form>
     {{/if}}
 
 		<form style="display: inline" action="/reports/spot/{{spot._id}}" method="GET">
 			<button class="button" title="Report">
-        <img src="/public/js/images/report.svg" alt="Report" class="button-icon" title="Report">
+        <img src="/public/images/report.svg" alt="Report" class="button-icon" title="Report">
       </button>
 		</form>
   </div>
@@ -79,14 +79,14 @@
               <div class="button-group">
                 <a href="/reviews/{{_id}}/edit">
                   <button class="button" title="Edit">
-                    <img src="/public/js/images/edit.svg" alt="Edit" class="button-icon" title="Edit">
+                    <img src="/public/images/edit.svg" alt="Edit" class="button-icon" title="Edit">
                   </button>
                 </a>
 
                 <form action="/reviews/{{_id}}/delete" method="POST" class="delete-review-form">
                   <input type="hidden" name="spotId" value="{{../spot._id}}">
                   <button type="submit" class="button" title="Delete">
-                    <img src="/public/js/images/delete.svg" alt="Delete" class="button-icon" title="Delete">
+                    <img src="/public/images/delete.svg" alt="Delete" class="button-icon" title="Delete">
                   </button>
                 </form>
               </div>

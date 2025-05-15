@@ -23,7 +23,8 @@ export const register = async (email, password) => {
 		email: email,
 		password: hashedPassword,
 		achievements: [],
-		uploadedSpots: []
+		uploadedSpots: [],
+		profilePic: null
 	}
 
 	const insertInfo = await userCollection.insertOne(newUser)
@@ -64,3 +65,21 @@ export const getEmailById = async (userId) => {
 
 	return user.email;
 };
+
+export const setProfilePic = async (userId, imgPath) => {
+	userId = checkID(userId);
+	if (!imgPath || typeof imgPath !== 'string') {
+		throw 'imgPath must be a non-empty string';
+	}
+
+	const userCollection = await users();
+	const res = await userCollection.updateOne(
+		{ _id: new ObjectId(userId) },
+		{ $set: { profilePic: imgPath } }
+	);
+	if (!res.matchedCount){
+		throw `User with ID ${userId} not found`;
+	}
+	
+	return imgPath;
+}

@@ -52,20 +52,20 @@
 					{{#if (isEqual this.authorEmail ../user.email)}}
 						<form style="display: inline" action="/studyspots/{{this._id}}/edit" method="GET">
 							<button class="button">
-								<img src="/public/js/images/edit.svg" alt="Edit" class="button-icon" title="Edit">
+								<img src="/public/images/edit.svg" alt="Edit" class="button-icon" title="Edit">
 							</button>
 						</form>
 						
 						<form style="display: inline" action="/studyspots/{{this._id}}/delete" method="POST">
 							<button type="submit" class="button">
-								<img src="/public/js/images/delete.svg" alt="Delete" class="button-icon" title="Delete">
+								<img src="/public/images/delete.svg" alt="Delete" class="button-icon" title="Delete">
 							</button>
 						</form>
 					{{/if}}
 
 					<form style="display: inline" action="/reports/spot/{{this._id}}" method="GET">
 						<button class="button" title="Report">
-							<img src="/public/js/images/report.svg" alt="Report" class="button-icon" title="Report">
+							<img src="/public/images/report.svg" alt="Report" class="button-icon" title="Report">
 						</button>
 					</form>
         </div>
@@ -74,7 +74,7 @@
           {{#if this.imageUrl}}
             <img src="{{this.imageUrl}}" alt="Picture of {{this.title}}">
           {{else}}
-            <img src="/public/js/images/landscape-placeholder-svgrepo-com.svg" alt="Placeholder image">
+            <img src="/public/images/landscape-placeholder-svgrepo-com.svg" alt="Placeholder image">
           {{/if}}
         </div>
 
