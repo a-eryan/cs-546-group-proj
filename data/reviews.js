@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+import { studySpots, users } from '../config/mongoCollections.js';
+import { checkID, checkReviewProperties, calculateAverageRating, getCreatedDate, checkString, validateReviewComment } from '../helpers.js';
+>>>>>>> 3532626 (feat: begins implmentation of reviewComments; adds helper and addCommentToReview function; creates reviewComments route)
 import { ObjectId } from 'mongodb';
 import { studySpots, users } from '../config/mongoCollections.js';
 import { getEmailById } from './users.js';
@@ -37,7 +42,11 @@ export const createReview = async (spotId, userId, title, content, rating) => {
 
 	// Create the review object
 	const date = getCreatedDate();
+<<<<<<< HEAD
 	const reviewObj = { _id: new ObjectId(), spotId, userId, email: authorEmail, title, content, rating, createdAt: date, comments: [] };
+=======
+	const reviewObj = { _id: new ObjectId(), spotId, userId, title, content, rating, createdAt: date, comments: [] };
+>>>>>>> 3532626 (feat: begins implmentation of reviewComments; adds helper and addCommentToReview function; creates reviewComments route)
 
 	// Add the review to the study spot and recalculate the average rating
 	const averageRating = calculateAverageRating([...studySpot.reviews, reviewObj]);
@@ -140,6 +149,7 @@ export const removeReview = async (reviewId) => {
 	return updateInfo;
 };
 
+<<<<<<< HEAD
 export const updateReview = async (reviewId, userId, title, content, rating) => {
 	// Validate the review ID
 	reviewId = checkID(reviewId);
@@ -284,3 +294,36 @@ export const addCommentToReview = async (reviewId, userId, content) => {
   newComment._id = newComment._id.toString();
   return newComment;
 };
+=======
+export const addCommentToReview = async (reviewId, userId, comment) => {
+
+	const {reviewId: rId, userId: uId, comment: c} = validateReviewComment(reviewId, userId, comment);
+
+	const studySpotCollection = await studySpots();
+	const reviewObjectId = new ObjectId(rId);
+
+	const spot = await studySpotCollection.findOne({ 'reviews._id': reviewObjectId });
+	if (!spot) {
+		throw `Review ${rId} not found`;
+	}
+
+	const newComment = {
+		_id: new ObjectId(),
+		userId: uId,
+		comment: txt,
+		createdAt: getCreatedDate()
+	};
+
+	const updateRes = await studySpotCollection.updateOne(
+		{ 'reviews._id': reviewObjectId },
+		{ $push: { 'reviews.$.comments': newComment }}
+	);
+
+	if (updateRes.modifiedCount === 0) {
+		throw `Could not add comment to review ${rId}`;
+	}
+	newComment._id = newComment._id.toString();
+	return newComment;
+
+}
+>>>>>>> 3532626 (feat: begins implmentation of reviewComments; adds helper and addCommentToReview function; creates reviewComments route)

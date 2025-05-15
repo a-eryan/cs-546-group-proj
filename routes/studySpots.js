@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { getAllStudySpots, uploadStudySpot, getStudySpotById, updateStudySpot, deleteStudySpot } from '../data/studySpots.js';
 import { checkID, checkDescription, checkLocation, checkNoiseLevel, checkResources, checkTitle } from '../helpers.js';
 import { getAllReviews } from '../data/reviews.js';
@@ -8,6 +9,15 @@ import { Router } from 'express';
 import multer from 'multer';  
 import path from 'path';
 import xss from 'xss';
+=======
+import { Router } from "express";
+import { getAllStudySpots, uploadStudySpot, getStudySpotById } from "../data/studySpots.js";
+import { checkDescription, checkLocation, checkNoiseLevel, checkTitle } from "../helpers.js";
+import { getAllReviews } from "../data/reviews.js";
+import { getAllComments } from "../data/comments.js";
+import multer from "multer";  
+import path from "path";
+>>>>>>> 3532626 (feat: begins implmentation of reviewComments; adds helper and addCommentToReview function; creates reviewComments route)
 
 const router = Router();
 
@@ -77,6 +87,7 @@ router.post('/upload', requireAuth, upload.single('image'), async (req, res) => 
 		const noiseLevel = checkNoiseLevel(xss(req.body.noiseLevel));
 		const resources = checkResources(xss(req.body.resourcesNearby));
 
+<<<<<<< HEAD
 		// Upload the study spot
 		const imagePath = req.file ? `/${req.file.path}` : null;
 		const studySpot = await uploadStudySpot(req.session.user._id, title, description, location, resources, noiseLevel, imagePath);
@@ -106,6 +117,28 @@ router.get('/:spotId', requireAuth, async (req, res) => {
       reviews,
       comments,
       isSignedIn: true,
+=======
+  router.get('/studyspots/:id', async (req, res) => {
+    try {
+      const spot = await getStudySpotById(req.params.id);
+      const reviews = await getAllReviews(spot._id);
+      const comments = await getAllComments(spot._id);
+      const user = req.session.user || null;
+      const signed = !!user;
+
+      return res.render('studySpots/spot', {
+        title: spot.title,
+        spot,
+        reviews,
+        comments,
+        isSignedIn: signed,
+        user
+    });
+  } catch (e) {
+    return res.status(404).render('error', {
+      error: e.toString(),
+      isSignedIn: !!req.session.user,
+>>>>>>> 3532626 (feat: begins implmentation of reviewComments; adds helper and addCommentToReview function; creates reviewComments route)
       user: req.session.user
     });
   } catch (e) {
