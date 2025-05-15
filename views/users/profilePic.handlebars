@@ -1,0 +1,28 @@
+<script src="/public/js/profilePicEdit.js"></script>
+<div class="profile-container">
+  <h1>Manage Profile Picture</h1>
+  
+  {{#if error}}
+    <div class="error-message">{{error}}</div>
+  {{/if}}
+  
+  {{#if user.profilePic}}
+    <div class="current-picture">
+      <h2>Current Picture</h2>
+      <img src="{{user.profilePic}}" alt="Profile Picture" class="profile-image">
+    </div>
+  {{/if}}
+  
+  <form action="/profile/avatar" method="POST" enctype="multipart/form-data" class="upload-form">
+    <div class="form-group">
+      <label for="avatar">Select Image:</label>
+      <input type="file" name="avatar" id="avatar" accept="image/*" required/>
+      <small>Maximum file size: 5MB. Supported formats: JPG, PNG, JPEG, WEBP</small>
+    </div>
+    
+    <div class="form-actions">
+      <button type="submit" class="submit-button">Upload Picture</button>
+      <a href="/profile" class="cancel-link">Back to Profile</a>
+    </div>
+  </form>
+</div>

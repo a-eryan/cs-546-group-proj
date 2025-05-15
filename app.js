@@ -20,7 +20,17 @@ app.use(
 			maxAge: 1000 * 60 * 60 * 2  // 2 hours
 		}
 	})
-)
+);
+
+app.use((req, res, next) => {
+  if (req.session && req.session.user) {
+    res.locals.user = req.session.user;
+    res.locals.isSignedIn = true;
+  } else {
+    res.locals.isSignedIn = false;
+  }
+  next();
+});
 
 // Create the handlebars instance with helpers
 const hbs = exphbs.create({

@@ -304,7 +304,9 @@ footer {
     margin-bottom: 1rem;
 }
 
-.logout-button {
+
+
+.logout-button, .profile-picture-button {
     background-color: var(--stevens-red);
     color: white;
     padding: 0.5rem 1rem;
@@ -744,3 +746,13 @@ footer {
 	font-family: 'Saira', 'Arial';
 	font-size: 1rem;
 }
+/*=======================AVATAR======================*/
+.current-picture img {
+    width: 100%;
+    max-width: 900px;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+/*=======================AVATAR======================*/
